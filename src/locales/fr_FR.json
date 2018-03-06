@@ -1,0 +1,16 @@
+{
+  "Live Counter": "Compteur temps réel",
+  "START": "DEMARRER",
+  "STOP": "ARRETER",
+  "NEXT": "SUIVANT",
+  "From": "A partir de",
+  "To": "Jusqu'à",
+  "Voluntary": "Volontaire",
+  "Yes": "Oui",
+  "No": "Non",
+  "Medium": "Medium",
+  "Actor": "Acteur",
+  "Details": "Details",
+  "Counter is not started": "Le compteur n'a pas été démarré",
+  "Activities awaiting classification": "Activités en attente de classification"
+}

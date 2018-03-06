@@ -1,18 +1,18 @@
 <template>
   <div>
-    <h1>Live Counter</h1>
+    <h1>{{ $t("Live Counter") }}</h1>
 
     <div v-if="current !== null">
       <activity v-bind:start="current.start"></activity>
     </div>
-    <p v-else>Counter is not started.</p>
+    <p v-else>{{ $t("Counter is not started") }}.</p>
 
-    <button v-on:click="startCounter" v-bind:disabled="current !== null">START</button>
-    <button v-on:click="stopCounter" v-bind:disabled="current === null">STOP</button>
-    <button v-on:click="nextCounter" v-bind:disabled="current === null">NEXT</button>
+    <button v-on:click="startCounter" v-bind:disabled="current !== null">{{ $t("START") }}</button>
+    <button v-on:click="stopCounter" v-bind:disabled="current === null">{{ $t("STOP") }}</button>
+    <button v-on:click="nextCounter" v-bind:disabled="current === null">{{ $t("NEXT") }}</button>
 
     <div v-if="staged.length > 0">
-      <p>Staged activities :</p>
+      <p>{{ $t("Activities awaiting classification") }} :</p>
       <activity
         v-bind:start="new Date(item.start)"
         v-bind:stop="(item.stop == 'null' || item.stop == null) ? null : new Date(item.stop)"

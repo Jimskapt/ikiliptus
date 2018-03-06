@@ -1,27 +1,27 @@
 <template>
   <table>
     <tr v-if="start !== null">
-      <td>From</td>
+      <td>{{ $t("From") }}</td>
       <td>{{start}}</td>
     </tr>
     <tr v-if="stop !== null">
-      <td>To</td>
+      <td>{{ $t("To") }}</td>
       <td>{{stop}}</td>
     </tr>
     <tr>
-      <td>Voluntary</td>
-      <td><span v-if="voluntary">Yes</span><span v-else>No</span></td>
+      <td>{{ $t("Voluntary") }}</td>
+      <td><span v-if="voluntary">{{ $t("Yes") }}</span><span v-else>{{ $t("No") }}</span></td>
     </tr>
     <tr v-if="!voluntary">
-      <td>Medium</td>
+      <td>{{ $t("Medium") }}</td>
       <td>{{medium}}</td>
     </tr>
     <tr v-if="!voluntary">
-      <td>Actor</td>
+      <td>{{ $t("Actor") }}</td>
       <td>{{actor}}</td>
     </tr>
     <tr>
-      <td>Details</td>
+      <td>{{ $t("Details") }}</td>
       <td>{{details}}</td>
     </tr>
   </table>
