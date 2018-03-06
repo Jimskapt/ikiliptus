@@ -1,6 +1,6 @@
 # ikiliptus
 
-> A time tracker
+> An offline and mobile-friendly time tracker (webapp)
 
 ## Build Setup
 

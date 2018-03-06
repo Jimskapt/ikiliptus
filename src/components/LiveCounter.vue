@@ -3,7 +3,7 @@
     <h1>Live Counter</h1>
 
     <div v-if="current !== null">
-      <interval v-bind:start="current.start"></interval>
+      <activity v-bind:start="current.start"></activity>
     </div>
     <p v-else>Counter is not started.</p>
 
@@ -13,18 +13,18 @@
 
     <div v-if="staged.length > 0">
       <p>Staged activities :</p>
-      <interval
+      <activity
         v-bind:start="new Date(item.start)"
         v-bind:stop="(item.stop == 'null' || item.stop == null) ? null : new Date(item.stop)"
         v-for="item in staged"
         v-bind:key="item._id"
-      ></interval>
+      ></activity>
     </div>
   </div>
 </template>
 
 <script>
-import Interval from '@/components/Interval'
+import Activity from '@/components/Activity'
 
 export default {
   name: 'LiveCounter',
@@ -92,7 +92,7 @@ export default {
     this.fetchAllStaged()
   },
   components: {
-    'interval': Interval
+    'activity': Activity
   }
 }
 </script>
