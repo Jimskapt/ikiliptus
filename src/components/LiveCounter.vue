@@ -16,6 +16,10 @@
       <activity
         v-bind:start="new Date(item.start)"
         v-bind:stop="(item.stop == 'null' || item.stop == null) ? null : new Date(item.stop)"
+        v-bind:voluntary="item.voluntary"
+        v-bind:medium="item.medium"
+        v-bind:actor="item.actor"
+        v-bind:details="item.details"
         v-for="item in staged"
         v-bind:key="item._id"
       ></activity>
@@ -41,7 +45,7 @@ export default {
       }
 
       let that = this
-      this.db.staged.post(this.current, {}, function (err, res) {
+      this.db.post(this.current, {}, function (err, res) {
         if (err) {
           alert(err)
         }
@@ -59,7 +63,7 @@ export default {
     },
     stopCounter () {
       this.current.stop = new Date()
-      this.db.staged.put(this.current, function (err, res) {
+      this.db.put(this.current, function (err, res) {
         if (err) {
           alert(err)
         }
@@ -76,7 +80,7 @@ export default {
     fetchAllStaged () {
       let that = this
 
-      this.db.staged.allDocs({include_docs: true}, function (err, doc) {
+      this.db.allDocs({include_docs: true}, function (err, doc) {
         if (err != null) {
           alert(err)
         } else {

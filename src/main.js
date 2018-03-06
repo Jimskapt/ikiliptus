@@ -7,12 +7,9 @@ import PouchDB from 'pouchdb-browser'
 
 Vue.config.productionTip = false
 
-let db = {
-  staged: new PouchDB('staged')
-}
-// let remoteCouch = new PouchDB('http://localhost:5984/lpg11')
+let db = new PouchDB('ikiliptus')
+let remoteCouch = new PouchDB('http://localhost:5984/ikiliptus')
 
-/*
 db
   .sync(remoteCouch, {live: true})
   .on('complete', function () {
@@ -24,7 +21,6 @@ db
   .on('change', function (change) {
     console.log('Sync event : ', change)
   })
-*/
 
 Vue.prototype.db = db
 

@@ -1,10 +1,30 @@
 <template>
-  <div>
-    <p>
-      <span v-if="start !== null">From {{start}}</span>
-      <span v-if="stop !== null"> to {{stop}}</span>
-    </p>
-  </div>
+  <table>
+    <tr v-if="start !== null">
+      <td>From</td>
+      <td>{{start}}</td>
+    </tr>
+    <tr v-if="stop !== null">
+      <td>To</td>
+      <td>{{stop}}</td>
+    </tr>
+    <tr>
+      <td>Voluntary</td>
+      <td><span v-if="voluntary">Yes</span><span v-else>No</span></td>
+    </tr>
+    <tr v-if="!voluntary">
+      <td>Medium</td>
+      <td>{{medium}}</td>
+    </tr>
+    <tr v-if="!voluntary">
+      <td>Actor</td>
+      <td>{{actor}}</td>
+    </tr>
+    <tr>
+      <td>Details</td>
+      <td>{{details}}</td>
+    </tr>
+  </table>
 </template>
 
 <script>
@@ -21,6 +41,34 @@ export default {
       default () {
         return null
       }
+    },
+    details: {
+      type: String,
+      required: false,
+      default () {
+        return ''
+      }
+    },
+    voluntary: {
+      type: Boolean,
+      required: false,
+      default () {
+        return false
+      }
+    },
+    medium: {
+      type: String,
+      required: false,
+      default () {
+        return ''
+      }
+    },
+    actor: {
+      type: String,
+      required: false,
+      default () {
+        return ''
+      }
     }
   },
   data () {
@@ -28,3 +76,15 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+table {
+  border-collapse: collapse;
+  margin: 15px;
+}
+td {
+  border: 1px solid black;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+</style>
