@@ -1,10 +1,15 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
+
+import PouchDB from 'pouchdb-browser'
+import Vuetify from 'vuetify'
+
 import App from './App'
 import router from './router'
-import PouchDB from 'pouchdb-browser'
 import i18n from './locales/index'
+
+import 'vuetify/dist/vuetify.min.css'
 
 Vue.config.productionTip = false
 
@@ -24,6 +29,8 @@ db
   })
 
 Vue.prototype.db = db
+
+Vue.use(Vuetify)
 
 /* eslint-disable no-new */
 new Vue({

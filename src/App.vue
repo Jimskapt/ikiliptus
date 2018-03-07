@@ -1,7 +1,10 @@
 <template>
-  <div id="app">
+  <v-app>
+    <v-toolbar dark color="primary">
+      <v-toolbar-title>Ikiliptus <sup>Alpha</sup></v-toolbar-title>
+    </v-toolbar>
     <router-view/>
-  </div>
+  </v-app>
 </template>
 
 <script>

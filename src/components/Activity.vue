@@ -1,36 +1,64 @@
 <template>
-  <table>
-    <tr v-if="start !== null">
-      <td>{{ $t("From") }}</td>
-      <td>{{start}}</td>
-    </tr>
-    <tr v-if="stop !== null">
-      <td>{{ $t("To") }}</td>
-      <td>{{stop}}</td>
-    </tr>
-    <tr>
-      <td>{{ $t("Voluntary") }}</td>
-      <td><span v-if="voluntary">{{ $t("Yes") }}</span><span v-else>{{ $t("No") }}</span></td>
-    </tr>
-    <tr v-if="!voluntary">
-      <td>{{ $t("Medium") }}</td>
-      <td>{{medium}}</td>
-    </tr>
-    <tr v-if="!voluntary">
-      <td>{{ $t("Actor") }}</td>
-      <td>{{actor}}</td>
-    </tr>
-    <tr>
-      <td>{{ $t("Details") }}</td>
-      <td>{{details}}</td>
-    </tr>
-  </table>
+  <v-form>
+    <v-text-field
+      v-bind:label="$t('From')"
+      v-model="newStart"
+      prepend-icon="play_arrow"
+      v-bind:disabled="locked.includes('from')"
+    ></v-text-field>
+    <v-text-field
+      v-bind:label="$t('To')"
+      v-model="newStop"
+      prepend-icon="stop"
+      v-bind:disabled="locked.includes('to')"
+    ></v-text-field>
+    <v-switch
+      v-bind:label="$t('Voluntary')"
+      v-model="newVoluntary"
+      v-bind:disabled="locked.includes('voluntary')"
+    ></v-switch>
+    <v-text-field
+      v-if="!newVoluntary"
+      v-bind:label="$t('Medium')"
+      v-model="newMedium"
+      prepend-icon="phone"
+      v-bind:disabled="locked.includes('medium')"
+    ></v-text-field>
+    <v-text-field
+      v-if="!newVoluntary"
+      v-bind:label="$t('Actor')"
+      v-model="newActor"
+      prepend-icon="people"
+      v-bind:disabled="locked.includes('actor')"
+    ></v-text-field>
+    <v-text-field
+      v-bind:label="$t('Details')"
+      v-model="newDetails"
+      prepend-icon="comment"
+      v-bind:disabled="locked.includes('details')"
+      multi-line
+    ></v-text-field>
+  </v-form>
 </template>
 
 <script>
 export default {
   name: 'Interval',
   props: {
+    id: {
+      type: String,
+      required: false,
+      default () {
+        return ''
+      }
+    },
+    rev: {
+      type: String,
+      required: false,
+      default () {
+        return ''
+      }
+    },
     start: {
       type: Date,
       required: true
@@ -69,10 +97,24 @@ export default {
       default () {
         return ''
       }
+    },
+    locked: {
+      type: Array,
+      required: false,
+      default () {
+        return []
+      }
     }
   },
   data () {
-    return {}
+    return {
+      newStart: this.start,
+      newStop: this.stop,
+      newVoluntary: this.voluntary,
+      newMedium: this.medium,
+      newActor: this.actor,
+      newDetails: this.details
+    }
   }
 }
 </script>

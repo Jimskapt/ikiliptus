@@ -1,29 +1,80 @@
 <template>
   <div>
-    <h1>{{ $t("Live Counter") }}</h1>
 
-    <div v-if="current !== null">
-      <activity v-bind:start="current.start"></activity>
-    </div>
-    <p v-else>{{ $t("Counter is not started") }}.</p>
+    <v-container>
+      <v-card>
+        <v-card-title primary-title dark color="primary">{{ $t("Live Counter") }}</v-card-title>
 
-    <button v-on:click="startCounter" v-bind:disabled="current !== null">{{ $t("START") }}</button>
-    <button v-on:click="stopCounter" v-bind:disabled="current === null">{{ $t("STOP") }}</button>
-    <button v-on:click="nextCounter" v-bind:disabled="current === null">{{ $t("NEXT") }}</button>
+        <v-container>
+          <div v-if="current !== null">
+            <activity v-bind:start="current.start" v-bind:locked="['from','to']"></activity>
+          </div>
+          <p v-else>{{ $t("Counter is not started") }}.</p>
+        </v-container>
 
-    <div v-if="staged.length > 0">
-      <p>{{ $t("Activities awaiting classification") }} :</p>
-      <activity
-        v-bind:start="new Date(item.start)"
-        v-bind:stop="(item.stop == 'null' || item.stop == null) ? null : new Date(item.stop)"
-        v-bind:voluntary="item.voluntary"
-        v-bind:medium="item.medium"
-        v-bind:actor="item.actor"
-        v-bind:details="item.details"
-        v-for="item in staged"
-        v-bind:key="item._id"
-      ></activity>
-    </div>
+        <v-card-actions>
+          <v-btn v-on:click="startCounter" v-bind:disabled="current !== null" color="green">
+            <span>{{ $t("START") }}</span>
+            <v-icon>play_arrow</v-icon>
+          </v-btn>
+          <v-btn v-on:click="stopCounter" v-bind:disabled="current === null" color="red">
+            <span>{{ $t("STOP") }}</span>
+            <v-icon>stop</v-icon>
+          </v-btn>
+          <v-btn v-on:click="nextCounter" v-bind:disabled="current === null" color="blue">
+            <span>{{ $t("NEXT") }}</span>
+            <v-icon>skip_next</v-icon>
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-container>
+
+    <v-container>
+      <v-card>
+          <div v-if="staged.length > 0">
+            <v-card-title>{{ $t("Activities awaiting classification") }}</v-card-title>
+
+            <v-list v-bind:expand="true" two-line subheader>
+              <v-list-tile v-for="item in staged" v-bind:key="item._id">
+                <v-list-tile-content>
+                  <v-list-tile-title>{{item.start}} > {{item.stop}}</v-list-tile-title>
+                  <v-list-tile-sub-title>
+                    <v-chip small disabled v-if="item.medium && item.medium !== ''">
+                      <v-avatar>
+                        <v-icon>phone</v-icon>
+                      </v-avatar>
+                      <span>{{item.medium}}</span>
+                    </v-chip>
+                    <v-chip small disabled v-if="item.medium && item.actor !== ''">
+                      <v-avatar>
+                        <v-icon>people</v-icon>
+                      </v-avatar>
+                      <span>{{item.actor}}</span>
+                    </v-chip>
+                  </v-list-tile-sub-title>
+                </v-list-tile-content>
+                <v-list-tile-action>
+                  <v-btn icon ripple>
+                    <v-icon>archive</v-icon>
+                  </v-btn>
+                </v-list-tile-action>
+                <!--
+                <activity
+                  v-bind:start="new Date(item.start)"
+                  v-bind:stop="(item.stop == 'null' || item.stop == null) ? null : new Date(item.stop)"
+                  v-bind:voluntary="item.voluntary"
+                  v-bind:medium="item.medium"
+                  v-bind:actor="item.actor"
+                  v-bind:details="item.details"
+                ></activity>
+                -->
+              </v-list-tile>
+            </v-list>
+
+          </div>
+      </v-card>
+    </v-container>
+
   </div>
 </template>
 
