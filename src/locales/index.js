@@ -7,7 +7,7 @@ import frFR from './fr_FR.json'
 Vue.use(VueI18n)
 
 const i18n = new VueI18n({
-  'locale': 'fr_FR',
+  'locale': 'en_US',
   messages: {
     'en_US': enUS,
     'fr_FR': frFR

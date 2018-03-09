@@ -12,5 +12,11 @@
   "Actor": "Actor",
   "Details": "Details",
   "Counter is not started": "Counter is not started",
-  "Activities awaiting classification": "Activities awaiting classification"
+  "Activities awaiting classification": "Activities awaiting classification",
+  "Classify an activity": "Classify an activity",
+  "Subject already existing": "Subject already existing",
+  "Subject": "Subject",
+  "Create a new subject": "Create a new subject",
+  "Abort": "Abort",
+  "OK": "OK"
 }
