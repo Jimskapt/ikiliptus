@@ -160,6 +160,7 @@ export default {
         if (res.ok === true) {
           that.currentID = res.id
           that.runningCounter = true
+          that.fetchAllStaged()
         } else {
           alert('Not OK !', res)
         }
@@ -175,6 +176,7 @@ export default {
         this.startCounter()
         this.nextAction = ''
       }
+      this.fetchAllStaged()
     },
     nextCounter () {
       this.stopCounter()
