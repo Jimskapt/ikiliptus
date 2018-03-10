@@ -47,56 +47,7 @@ export default {
   props: {
     id: {
       type: String,
-      required: false,
-      default () {
-        return ''
-      }
-    },
-    rev: {
-      type: String,
-      required: false,
-      default () {
-        return ''
-      }
-    },
-    start: {
-      type: Date,
       required: true
-    },
-    stop: {
-      type: Date,
-      required: false,
-      default () {
-        return null
-      }
-    },
-    details: {
-      type: String,
-      required: false,
-      default () {
-        return ''
-      }
-    },
-    voluntary: {
-      type: Boolean,
-      required: false,
-      default () {
-        return false
-      }
-    },
-    medium: {
-      type: String,
-      required: false,
-      default () {
-        return ''
-      }
-    },
-    actor: {
-      type: String,
-      required: false,
-      default () {
-        return ''
-      }
     },
     locked: {
       type: Array,
@@ -108,13 +59,95 @@ export default {
   },
   data () {
     return {
-      newStart: this.start,
-      newStop: this.stop,
-      newVoluntary: this.voluntary,
-      newMedium: this.medium,
-      newActor: this.actor,
-      newDetails: this.details
+      rev: '',
+      newStart: '',
+      newStop: '',
+      newVoluntary: '',
+      newMedium: '',
+      newActor: '',
+      newDetails: ''
     }
+  },
+  methods: {
+    setStop (args) {
+      this.newStop = args
+
+      console.log('send to db :', this.newData)
+      let that = this
+      this.db.activities.put(this.newData, function (err, res) {
+        if (err) {
+          alert(err)
+        } else {
+          that.eventBus.$emit('saveconfirm')
+        }
+      })
+    },
+    refreshData () {
+      let that = this
+      this.db.activities.get(this.id, function (err, doc) {
+        if (err) {
+          alert(err)
+        } else {
+          that.rev = doc._rev
+
+          if (doc.start) {
+            that.newStart = doc.start
+          }
+          if (doc.stop) {
+            that.newStop = doc.stop
+          }
+          if (doc.voluntary) {
+            that.newVoluntary = doc.voluntary
+          }
+          if (doc.medium) {
+            that.newMedium = doc.medium
+          }
+          if (doc.actor) {
+            that.newActor = doc.actor
+          }
+          if (doc.details) {
+            that.newDetails = doc.details
+          }
+        }
+      })
+    }
+  },
+  computed: {
+    newData () {
+      let result = {
+        _id: this.id,
+        _rev: this.rev
+      }
+
+      if (this.newStart) {
+        result.start = this.newStart
+      }
+      if (this.newStop) {
+        result.stop = this.newStop
+      }
+      if (this.newVoluntary) {
+        result.voluntary = this.newVoluntary
+      }
+      if (this.newMedium) {
+        result.medium = this.newMedium
+      }
+      if (this.newActor) {
+        result.actor = this.newActor
+      }
+      if (this.newDetails) {
+        result.details = this.newDetails
+      }
+
+      return result
+    }
+  },
+  mounted () {
+    this.eventBus.$on('setStop', this.setStop)
+
+    this.refreshData()
+  },
+  destroyed () {
+    this.eventBus.$off('setStop')
   }
 }
 </script>

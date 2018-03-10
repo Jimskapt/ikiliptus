@@ -13,7 +13,7 @@
         </v-toolbar>
 
         <v-container>
-          <activity v-if="current !== null" v-bind:start="current.start" v-bind:locked="['from','to']"></activity>
+          <activity v-if="runningCounter" v-bind:id="currentID" v-bind:locked="['from','to']"></activity>
           <v-alert v-else color="info" outline icon="info" v-bind:value="true">
             {{ $t("Counter is not started") }}.
           </v-alert>
@@ -21,15 +21,15 @@
         </v-container>
 
         <v-card-actions>
-          <v-btn v-on:click="startCounter" v-bind:disabled="current !== null" color="green">
+          <v-btn v-on:click="startCounter" v-bind:disabled="runningCounter" color="green">
             <v-icon>play_arrow</v-icon>
             <span>{{ $t("START") }}</span>
           </v-btn>
-          <v-btn v-on:click="stopCounter" v-bind:disabled="current === null" color="red">
+          <v-btn v-on:click="stopCounter" v-bind:disabled="!runningCounter" color="red">
             <v-icon>stop</v-icon>
             <span>{{ $t("STOP") }}</span>
           </v-btn>
-          <v-btn v-on:click="nextCounter" v-bind:disabled="current === null" color="blue">
+          <v-btn v-on:click="nextCounter" v-bind:disabled="!runningCounter" color="blue">
             <v-icon>skip_next</v-icon>
             <span>{{ $t("NEXT") }}</span>
           </v-btn>
@@ -53,7 +53,7 @@
               <template v-for="item in staged">
                 <v-list-tile v-bind:key="item._id">
                   <v-list-tile-content>
-                    <v-list-tile-title>{{item.start}} > {{item.stop}}</v-list-tile-title>
+                    <v-list-tile-title><router-link v-bind:to="{name:'Activity', params: {id: item._id}}">{{item.start}} > {{item.stop}}</router-link></v-list-tile-title>
                     <v-list-tile-sub-title>
                       <v-chip small disabled v-if="item.medium && item.medium !== ''">
                         <v-avatar>
@@ -61,7 +61,7 @@
                         </v-avatar>
                         <span>{{item.medium}}</span>
                       </v-chip>
-                      <v-chip small disabled v-if="item.medium && item.actor !== ''">
+                      <v-chip small disabled v-if="item.actor && item.actor !== ''">
                         <v-avatar>
                           <v-icon>people</v-icon>
                         </v-avatar>
@@ -74,16 +74,6 @@
                       <v-icon>archive</v-icon>
                     </v-btn>
                   </v-list-tile-action>
-                  <!--
-                  <activity
-                    v-bind:start="new Date(item.start)"
-                    v-bind:stop="(item.stop == 'null' || item.stop == null) ? null : new Date(item.stop)"
-                    v-bind:voluntary="item.voluntary"
-                    v-bind:medium="item.medium"
-                    v-bind:actor="item.actor"
-                    v-bind:details="item.details"
-                  ></activity>
-                  -->
                 </v-list-tile>
                 <v-divider v-bind:key="'separator-' + item._id"></v-divider>
               </template>
@@ -150,7 +140,9 @@ export default {
   name: 'LiveCounter',
   data () {
     return {
-      current: null,
+      currentID: '',
+      runningCounter: false,
+      nextAction: '',
       staged: [],
       dialog: false,
       subjects_list: [],
@@ -159,48 +151,39 @@ export default {
   },
   methods: {
     startCounter () {
-      this.current = {
-        start: new Date()
-      }
-
       let that = this
-      this.db.post(this.current, {}, function (err, res) {
+      this.db.activities.post({start: new Date()}, {}, function (err, res) {
         if (err) {
           alert(err)
         }
 
         if (res.ok === true) {
-          that.current._id = res.id
-          that.current._rev = res.rev
-
-          that.fetchAllStaged()
+          that.currentID = res.id
+          that.runningCounter = true
         } else {
-          alert('Not OK !')
-          console.log(res)
+          alert('Not OK !', res)
         }
       })
     },
     stopCounter () {
-      this.current.stop = new Date()
-      this.db.put(this.current, function (err, res) {
-        if (err) {
-          alert(err)
-        }
-      })
-
-      this.fetchAllStaged()
-
-      this.current = null
+      this.runningCounter = false
+      this.eventBus.$emit('setStop', new Date())
+    },
+    liveSaveConfirm () {
+      this.currentID = ''
+      if (this.nextAction === 'start') {
+        this.startCounter()
+        this.nextAction = ''
+      }
     },
     nextCounter () {
       this.stopCounter()
-      this.startCounter()
+      this.nextAction = 'start'
     },
     fetchAllStaged () {
       let that = this
-
-      this.db.allDocs({include_docs: true}, function (err, doc) {
-        if (err != null) {
+      this.db.activities.allDocs({include_docs: true}, function (err, doc) {
+        if (err) {
           alert(err)
         } else {
           that.staged = []
@@ -213,6 +196,18 @@ export default {
   },
   mounted () {
     this.fetchAllStaged()
+
+    let that = this
+    this.eventBus
+      .$on('dbupdate', function (data) {
+        that.fetchAllStaged()
+      })
+      .$on('saveconfirm', function (data) {
+        that.liveSaveConfirm()
+      })
+  },
+  destroyed () {
+    this.eventBus.$off(['dbupdate', 'saveconfirm'])
   },
   components: {
     'activity': Activity
