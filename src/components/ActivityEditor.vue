@@ -6,7 +6,7 @@
         <v-toolbar dark color="primary">
           <v-card-title primary-title dark color="primary">
             <v-btn icon>
-              <v-icon>edit</v-icon>
+              <v-icon>alarm</v-icon>
             </v-btn>
             <span>{{ $t("Activity") }}</span>
           </v-card-title>

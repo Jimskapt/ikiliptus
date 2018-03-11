@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import Settings from '@/components/Settings'
 import LiveCounter from '@/components/LiveCounter'
 import ActivityEditor from '@/components/ActivityEditor'
 
@@ -23,6 +24,11 @@ export default new Router({
       name: 'Activity',
       component: ActivityEditor,
       props: true
+    },
+    {
+      path: '/settings',
+      name: 'Settings',
+      component: Settings
     }
   ],
   mode: 'history'

@@ -1,4 +1,6 @@
 {
+  "local_description": "English (US)",
+  "US_locale_description": "English (US)",
   "Live Counter": "Live Counter",
   "START": "START",
   "STOP": "STOP",
@@ -19,5 +21,6 @@
   "Create a new subject": "Create a new subject",
   "Abort": "Abort",
   "OK": "OK",
-  "Activity": "Activity"
+  "Activity": "Activity",
+  "Settings": "Settings"
 }

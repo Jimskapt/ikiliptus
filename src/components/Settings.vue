@@ -1,0 +1,77 @@
+<template>
+  <div>
+    <v-container>
+      <v-card>
+        <v-toolbar dark color="primary">
+          <v-card-title primary-title dark color="primary">
+            <v-btn icon>
+              <v-icon>settings</v-icon>
+            </v-btn>
+            <span>{{ $t("Settings") }}</span>
+          </v-card-title>
+        </v-toolbar>
+
+        <v-container>
+          <v-select
+            v-bind:items="available_locales"
+            item-text="us"
+            item-value="value"
+            v-bind:hint="`${locale.local}`"
+            return-object
+            v-model="locale"
+            label="Locale"
+            autocomplete
+          ></v-select>
+        </v-container>
+
+        <v-card-actions>
+          <v-btn color="red" v-on:click="$router.go(-1)">
+            <v-icon>clear</v-icon>
+            <span>{{ $t("Abort") }}</span>
+          </v-btn>
+          <v-btn color="green" v-on:click="save">
+            <v-icon>done</v-icon>
+            <span>{{ $t("OK") }}</span>
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-container>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'Settings',
+  data () {
+    return {
+      locale: {
+        value: this.$i18n.locale,
+        local: this.$i18n.messages[this.$i18n.locale]['local_description'],
+        us: this.$i18n.messages[this.$i18n.locale]['US_locale_description']
+      }
+    }
+  },
+  computed: {
+    available_locales () {
+      let result = []
+      // eslint-disable-next-line
+      Object.keys(this.$i18n.messages).forEach(m => {
+        let item = {
+          value: m
+        }
+
+        item.local = this.$i18n.messages[m]['local_description']
+        item.us = this.$i18n.messages[m]['US_locale_description']
+
+        result.push(item)
+      })
+      return result
+    }
+  },
+  methods: {
+    save () {
+      this.$i18n.locale = this.locale.value
+    }
+  }
+}
+</script>
