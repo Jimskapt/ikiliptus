@@ -12,11 +12,11 @@
       prepend-icon="stop"
       v-bind:disabled="locked.includes('to')"
     ></v-text-field>
-    <v-switch
+    <v-checkbox
       v-bind:label="$t('Voluntary')"
       v-model="newVoluntary"
       v-bind:disabled="locked.includes('voluntary')"
-    ></v-switch>
+    ></v-checkbox>
     <v-text-field
       v-if="!newVoluntary"
       v-bind:label="$t('Medium')"

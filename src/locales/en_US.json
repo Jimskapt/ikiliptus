@@ -22,5 +22,13 @@
   "Abort": "Abort",
   "OK": "OK",
   "Activity": "Activity",
-  "Settings": "Settings"
+  "Settings": "Settings",
+  "Export your data": "Export your data",
+  "Import your data": "Import your data",
+  "Save": "Save",
+  "Load": "Load",
+  "Go back": "Go back",
+  "In order to save your data, just copy and paste the following data in an text editor (like notepad), and then save it as *.json file": "In order to save your data, just copy and paste the following data in an text editor (like notepad), and then save it as *.json file",
+  "Please paste your data in the following field and click on the LOAD button, in order to load them in this app": "Please paste your data in the following field and click on the LOAD button, in order to load them in this app",
+  "Show it human-readable ?": "Show it human-readable ?"
 }

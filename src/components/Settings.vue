@@ -22,6 +22,28 @@
             label="Locale"
             autocomplete
           ></v-select>
+          <v-layout>
+            <v-flex xs3>
+              <v-subheader>{{ $t('Export your data') }}</v-subheader>
+            </v-flex>
+            <v-flex xs9>
+              <v-btn block color="secondary" v-on:click="$router.push({name:'Save'})">
+                <v-icon>save</v-icon>
+                <span>{{ $t('Save') }}</span>
+              </v-btn>
+            </v-flex>
+          </v-layout>
+          <v-layout>
+            <v-flex xs3>
+              <v-subheader>{{ $t('Import your data') }}</v-subheader>
+            </v-flex>
+            <v-flex xs9>
+              <v-btn block color="secondary" v-on:click="$router.push({name:'Load'})">
+                <v-icon>unarchive</v-icon>
+                <span>{{ $t('Load') }}</span>
+              </v-btn>
+            </v-flex>
+          </v-layout>
         </v-container>
 
         <v-card-actions>
