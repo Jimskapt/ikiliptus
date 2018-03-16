@@ -20,6 +20,7 @@
             return-object
             v-model="locale"
             label="Locale"
+            prepend-icon="language"
             autocomplete
           ></v-select>
           <v-layout>

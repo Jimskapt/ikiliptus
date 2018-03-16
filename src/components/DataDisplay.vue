@@ -49,24 +49,13 @@ export default {
   mounted () {
     let that = this
 
-    this.db.activities.allDocs({include_docs: true}, function (err, doc) {
+    this.db.allDocs({include_docs: true}, function (err, doc) {
       if (err) {
         alert(err)
       } else {
-        that.json.activities = []
+        that.json = []
         doc.rows.forEach(e => {
-          that.json.activities.push(e.doc)
-        })
-      }
-    })
-
-    this.db.subjects.allDocs({include_docs: true}, function (err, doc) {
-      if (err) {
-        alert(err)
-      } else {
-        that.json.subjects = []
-        doc.rows.forEach(e => {
-          that.json.subjects.push(e.doc)
+          that.json.push(e.doc)
         })
       }
     })

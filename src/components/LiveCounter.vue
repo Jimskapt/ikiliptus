@@ -152,7 +152,7 @@ export default {
   methods: {
     startCounter () {
       let that = this
-      this.db.activities.post({start: new Date()}, {}, function (err, res) {
+      this.db.post({start: new Date()}, {}, function (err, res) {
         if (err) {
           alert(err)
         }
@@ -184,16 +184,15 @@ export default {
     },
     fetchAllStaged () {
       let that = this
-      this.db.activities.allDocs({include_docs: true}, function (err, doc) {
-        if (err) {
-          alert(err)
-        } else {
+      this.db
+        .query('all_subjects/all_subjects', {include_docs: true})
+        .then(res => {
           that.staged = []
-          doc.rows.forEach(e => {
+          res.rows.forEach(e => {
             that.staged.push(e.doc)
           })
-        }
-      })
+        })
+        .catch(err => { alert(err) })
     }
   },
   mounted () {

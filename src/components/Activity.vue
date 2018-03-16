@@ -12,6 +12,13 @@
       prepend-icon="stop"
       v-bind:disabled="locked.includes('to')"
     ></v-text-field>
+    <v-select
+      v-bind:label="$t('Subject')"
+      v-bind:items="subjects_list"
+      v-model="newSubject"
+      prepend-icon="label"
+      autocomplete
+    ></v-select>
     <v-checkbox
       v-bind:label="$t('Voluntary')"
       v-model="newVoluntary"
@@ -65,16 +72,19 @@ export default {
       newVoluntary: '',
       newMedium: '',
       newActor: '',
-      newDetails: ''
+      newDetails: '',
+      newSubject: '',
+      subjects_list: []
     }
   },
   methods: {
     setStop (args) {
-      this.newStop = args
+      if (args !== undefined) {
+        this.newStop = args
+      }
 
-      console.log('send to db :', this.newData)
       let that = this
-      this.db.activities.put(this.newData, function (err, res) {
+      this.db.put(this.newData, function (err, res) {
         if (err) {
           alert(err)
         } else {
@@ -84,7 +94,8 @@ export default {
     },
     refreshData () {
       let that = this
-      this.db.activities.get(this.id, function (err, doc) {
+
+      this.db.get(this.id, function (err, doc) {
         if (err) {
           alert(err)
         } else {
@@ -116,7 +127,9 @@ export default {
     newData () {
       let result = {
         _id: this.id,
-        _rev: this.rev
+        _rev: this.rev,
+        data_type: 'subject',
+        data_version: 1
       }
 
       if (this.newStart) {
@@ -137,14 +150,29 @@ export default {
       if (this.newDetails) {
         result.details = this.newDetails
       }
+      if (this.newSubject) {
+        result.subject = this.newSubject
+      }
 
       return result
     }
   },
   mounted () {
     this.eventBus.$on('setStop', this.setStop)
+    this.eventBus.$on('save', this.setStop)
 
     this.refreshData()
+
+    let that = this
+    this.db
+      .query('subjects_powers/subjects_powers', {group: true})
+      .then(res => {
+        that.subjects_list = []
+        res.rows.forEach(e => {
+          that.subjects_list.push(e.key)
+        })
+      })
+      .catch(err => { alert(err) })
   },
   destroyed () {
     this.eventBus.$off('setStop')

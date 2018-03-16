@@ -48,23 +48,11 @@ export default {
       let that = this
       let data = JSON.parse(this.input)
 
-      console.log(data)
+      data.forEach(e => delete e._rev)
 
-      if (data.activities) {
-        data.activities.forEach(e => delete e._rev)
-
-        that.db.activities.bulkDocs(data.activities)
-          .then(res => console.log(res))
-          .catch(err => alert(err))
-      }
-
-      if (data.topics) {
-        data.topics.forEach(e => delete e._rev)
-
-        that.db.topics.bulkDocs(data.topics)
-          .then(res => console.log(res))
-          .catch(err => alert(err))
-      }
+      that.db.bulkDocs(data)
+        .then(res => console.log(res))
+        .catch(err => alert(err))
     }
   }
 }

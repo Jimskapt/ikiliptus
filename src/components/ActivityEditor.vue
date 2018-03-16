@@ -21,7 +21,7 @@
             <v-icon>clear</v-icon>
             <span>{{ $t("Abort") }}</span>
           </v-btn>
-          <v-btn color="green">
+          <v-btn color="green" v-on:click="eventBus.$emit('save')">
             <v-icon>done</v-icon>
             <span>{{ $t("OK") }}</span>
           </v-btn>
