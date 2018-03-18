@@ -93,6 +93,7 @@ export default {
   },
   methods: {
     save () {
+      document.cookie = 'locale=' + this.locale.value
       this.$i18n.locale = this.locale.value
     }
   }
