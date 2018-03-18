@@ -192,7 +192,14 @@ export default {
             that.staged.push(e.doc)
           })
         })
-        .catch(err => { alert(err) })
+        .catch(err => {
+          if (err.status !== 404) {
+            alert(err)
+          } else {
+            // the view has not been created to the moment, retrying later ...
+            setTimeout(that.fetchAllStaged(), 1000)
+          }
+        })
     }
   },
   mounted () {
