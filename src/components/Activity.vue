@@ -12,13 +12,22 @@
       prepend-icon="stop"
       v-bind:disabled="locked.includes('to')"
     ></v-text-field>
-    <v-select
+    <v-text-field
       v-bind:label="$t('Subject')"
-      v-bind:items="subjects_list"
       v-model="newSubject"
       prepend-icon="label"
-      autocomplete
-    ></v-select>
+    ></v-text-field>
+    <v-container v-if="subjects_founds && subjects_founds.length > 0">
+      <v-list dense v-if="subjects_founds">
+        <template v-for="found in subjects_founds">
+          <v-list-tile v-bind:key="'medium_suggest:' + found" v-on:click="newSubject = found">
+            <v-list-tile-action><v-icon>label_outline</v-icon></v-list-tile-action>
+            <v-list-tile-content>{{found}}</v-list-tile-content>
+          </v-list-tile>
+          <v-divider v-bind:key="'separator:' + found"></v-divider>
+        </template>
+      </v-list>
+    </v-container>
     <v-checkbox
       v-bind:label="$t('Voluntary')"
       v-model="newVoluntary"
@@ -31,6 +40,17 @@
       prepend-icon="phone"
       v-bind:disabled="locked.includes('medium')"
     ></v-text-field>
+    <v-container v-if="mediums_founds && mediums_founds.length > 0">
+      <v-list dense>
+        <template v-for="found in mediums_founds">
+          <v-list-tile v-bind:key="'medium_suggest:' + found" v-on:click="newMedium = found">
+            <v-list-tile-action><v-icon>phone</v-icon></v-list-tile-action>
+            <v-list-tile-content>{{found}}</v-list-tile-content>
+          </v-list-tile>
+          <v-divider v-bind:key="'separator:' + found"></v-divider>
+        </template>
+      </v-list>
+    </v-container>
     <v-text-field
       v-if="!newVoluntary"
       v-bind:label="$t('Actor')"
@@ -38,6 +58,17 @@
       prepend-icon="people"
       v-bind:disabled="locked.includes('actor')"
     ></v-text-field>
+    <v-container v-if="actors_founds && actors_founds.length > 0">
+      <v-list dense>
+        <template v-for="found in actors_founds">
+          <v-list-tile v-bind:key="'actor_suggest:' + found" v-on:click="newActor = found">
+            <v-list-tile-action><v-icon>people</v-icon></v-list-tile-action>
+            <v-list-tile-content>{{found}}</v-list-tile-content>
+          </v-list-tile>
+          <v-divider v-bind:key="'separator:' + found"></v-divider>
+        </template>
+      </v-list>
+    </v-container>
     <v-text-field
       v-bind:label="$t('Details')"
       v-model="newDetails"
@@ -74,7 +105,12 @@ export default {
       newActor: '',
       newDetails: '',
       newSubject: '',
-      subjects_list: []
+      subjects_list: [],
+      mediums_list: [],
+      actors_list: [],
+      show_subject_suggestions: false,
+      show_medium_suggestions: false,
+      show_actor_suggestions: false
     }
   },
   methods: {
@@ -107,6 +143,9 @@ export default {
           if (doc.stop) {
             that.newStop = doc.stop
           }
+          if (doc.subject) {
+            that.newSubject = doc.subject
+          }
           if (doc.voluntary) {
             that.newVoluntary = doc.voluntary
           }
@@ -121,6 +160,46 @@ export default {
           }
         }
       })
+    },
+    fetchAutocompleteData () {
+      let that = this
+
+      this.db
+        .query('subjects_powers/subjects_powers', {group: true})
+        .then(res => {
+          that.subjects_list = []
+          res.rows.forEach(e => {
+            that.subjects_list.push(e.key)
+          })
+        })
+        .catch(err => { alert(err) })
+
+      this.db
+        .query('mediums_powers/mediums_powers', {group: true})
+        .then(res => {
+          that.mediums_list = []
+          res.rows.forEach(e => {
+            that.mediums_list.push(e.key)
+          })
+        })
+        .catch(err => { alert(err) })
+
+      this.db
+        .query('actors_powers/actors_powers', {group: true})
+        .then(res => {
+          that.actors_list = []
+          res.rows.forEach(e => {
+            that.actors_list.push(e.key)
+          })
+        })
+        .catch(err => { alert(err) })
+    },
+    find_text (array, value) {
+      if (value.trim() === '' || array === undefined) {
+        return []
+      }
+
+      return array.filter(e => e.toLowerCase().includes(value.trim().toLowerCase()) && e !== value)
     }
   },
   computed: {
@@ -155,6 +234,15 @@ export default {
       }
 
       return result
+    },
+    subjects_founds () {
+      return this.find_text(this.subjects_list, this.newSubject)
+    },
+    mediums_founds () {
+      return this.find_text(this.mediums_list, this.newMedium)
+    },
+    actors_founds () {
+      return this.find_text(this.actors_list, this.newActor)
     }
   },
   mounted () {
@@ -163,16 +251,8 @@ export default {
 
     this.refreshData()
 
-    let that = this
-    this.db
-      .query('subjects_powers/subjects_powers', {group: true})
-      .then(res => {
-        that.subjects_list = []
-        res.rows.forEach(e => {
-          that.subjects_list.push(e.key)
-        })
-      })
-      .catch(err => { alert(err) })
+    // we defer the request because the views could be created, on page load.
+    setTimeout(this.fetchAutocompleteData, 750)
   },
   destroyed () {
     this.eventBus.$off('setStop')

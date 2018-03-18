@@ -193,18 +193,11 @@ export default {
           })
         })
         .catch(err => {
-          if (err.status !== 404) {
-            alert(err)
-          } else {
-            // the view has not been created to the moment, retrying later ...
-            setTimeout(that.fetchAllStaged(), 1000)
-          }
+          alert(err)
         })
     }
   },
   mounted () {
-    this.fetchAllStaged()
-
     let that = this
     this.eventBus
       .$on('dbupdate', function (data) {
@@ -213,6 +206,9 @@ export default {
       .$on('saveconfirm', function (data) {
         that.liveSaveConfirm()
       })
+
+    // we defer the request because the view could be created, on page load.
+    setTimeout(this.fetchAllStaged, 750)
   },
   destroyed () {
     this.eventBus.$off(['dbupdate', 'saveconfirm'])
