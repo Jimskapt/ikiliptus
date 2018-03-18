@@ -26,7 +26,7 @@
               v-bind:label="$t('Show it human-readable ?')"
               v-model="pretify"
             ></v-checkbox>
-            <v-text-field multi-line v-model="jsonText"></v-text-field>
+            <v-text-field multi-line v-model="jsonText" label="Here are your data"></v-text-field>
           </v-form>
         </v-container>
       </v-card>
@@ -39,10 +39,7 @@ export default {
   name: 'DataDisplay',
   data () {
     return {
-      json: {
-        activities: [],
-        subjects: []
-      },
+      json: [],
       pretify: true
     }
   },
@@ -53,10 +50,7 @@ export default {
       if (err) {
         alert(err)
       } else {
-        that.json = []
-        doc.rows.forEach(e => {
-          that.json.push(e.doc)
-        })
+        that.json = doc.rows
       }
     })
   },

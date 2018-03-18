@@ -77,6 +77,7 @@ export default {
   computed: {
     available_locales () {
       let result = []
+
       // eslint-disable-next-line
       Object.keys(this.$i18n.messages).forEach(m => {
         let item = {
@@ -88,6 +89,7 @@ export default {
 
         result.push(item)
       })
+
       return result
     }
   },

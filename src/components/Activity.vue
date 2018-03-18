@@ -1,22 +1,26 @@
 <template>
   <v-form>
+
     <v-text-field
       v-bind:label="$t('From')"
       v-model="newStart"
       prepend-icon="play_arrow"
       v-bind:disabled="locked.includes('from')"
     ></v-text-field>
+
     <v-text-field
       v-bind:label="$t('To')"
       v-model="newStop"
       prepend-icon="stop"
       v-bind:disabled="locked.includes('to')"
     ></v-text-field>
+
     <v-text-field
       v-bind:label="$t('Subject')"
       v-model="newSubject"
       prepend-icon="label"
     ></v-text-field>
+
     <v-container v-if="subjects_founds && subjects_founds.length > 0">
       <v-list dense v-if="subjects_founds">
         <template v-for="found in subjects_founds">
@@ -28,11 +32,13 @@
         </template>
       </v-list>
     </v-container>
+
     <v-checkbox
       v-bind:label="$t('Voluntary')"
       v-model="newVoluntary"
       v-bind:disabled="locked.includes('voluntary')"
     ></v-checkbox>
+
     <v-text-field
       v-if="!newVoluntary"
       v-bind:label="$t('Medium')"
@@ -40,6 +46,7 @@
       prepend-icon="phone"
       v-bind:disabled="locked.includes('medium')"
     ></v-text-field>
+
     <v-container v-if="mediums_founds && mediums_founds.length > 0">
       <v-list dense>
         <template v-for="found in mediums_founds">
@@ -51,6 +58,7 @@
         </template>
       </v-list>
     </v-container>
+
     <v-text-field
       v-if="!newVoluntary"
       v-bind:label="$t('Actor')"
@@ -58,6 +66,7 @@
       prepend-icon="people"
       v-bind:disabled="locked.includes('actor')"
     ></v-text-field>
+
     <v-container v-if="actors_founds && actors_founds.length > 0">
       <v-list dense>
         <template v-for="found in actors_founds">
@@ -69,6 +78,7 @@
         </template>
       </v-list>
     </v-container>
+
     <v-text-field
       v-bind:label="$t('Details')"
       v-model="newDetails"
@@ -107,10 +117,7 @@ export default {
       newSubject: '',
       subjects_list: [],
       mediums_list: [],
-      actors_list: [],
-      show_subject_suggestions: false,
-      show_medium_suggestions: false,
-      show_actor_suggestions: false
+      actors_list: []
     }
   },
   methods: {
@@ -259,15 +266,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-table {
-  border-collapse: collapse;
-  margin: 15px;
-}
-td {
-  border: 1px solid black;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-</style>

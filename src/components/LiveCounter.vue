@@ -83,53 +83,6 @@
       </v-card>
     </v-container>
 
-    <v-dialog v-model="dialog">
-      <v-card>
-        <v-toolbar dark color="primary">
-          <v-card-title><v-btn icon><v-icon>archive</v-icon></v-btn> {{ $t("Classify an activity") }}</v-card-title>
-        </v-toolbar>
-
-        <v-container>
-          <v-expansion-panel>
-            <v-expansion-panel-content v-bind:value="true">
-              <div slot="header">
-                <v-icon>search</v-icon>
-                <span>{{ $t("Subject already existing") }}</span>
-              </div>
-              <v-container>
-                <v-select
-                  v-bind:items="subjects_list"
-                  v-model="dialog_subject"
-                  v-bind:label="$t('Subject')"
-                  autocomplete
-                ></v-select>
-              </v-container>
-            </v-expansion-panel-content>
-            <v-expansion-panel-content>
-              <div slot="header">
-                <v-icon>create</v-icon>
-                <span>{{ $t("Create a new subject") }}</span>
-              </div>
-              <v-container>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab repellendus, modi facilis ullam consectetur esse, labore molestias est, obcaecati blanditiis aliquam nesciunt dolorum? Nesciunt, iure? Dolorum vel tenetur iste consectetur.</p>
-              </v-container>
-            </v-expansion-panel-content>
-          </v-expansion-panel>
-        </v-container>
-
-        <v-card-actions>
-          <v-btn v-on:click="dialog = false" color="red">
-            <v-icon>clear</v-icon>
-            <span>{{ $t("Abort") }}</span>
-          </v-btn>
-          <v-btn v-on:click="dialog = false" color="green">
-            <v-icon>done</v-icon>
-            <span>{{ $t("OK") }}</span>
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
   </div>
 </template>
 
@@ -160,7 +113,7 @@ export default {
         if (res.ok === true) {
           that.currentID = res.id
           that.runningCounter = true
-          that.fetchAllStaged()
+          that.fetchAllSubjects()
         } else {
           alert('Not OK !', res)
         }
@@ -176,13 +129,13 @@ export default {
         this.startCounter()
         this.nextAction = ''
       }
-      this.fetchAllStaged()
+      this.fetchAllSubjects()
     },
     nextCounter () {
       this.stopCounter()
       this.nextAction = 'start'
     },
-    fetchAllStaged () {
+    fetchAllSubjects () {
       let that = this
       this.db
         .query('all_subjects/all_subjects', {include_docs: true})
@@ -201,14 +154,14 @@ export default {
     let that = this
     this.eventBus
       .$on('dbupdate', function (data) {
-        that.fetchAllStaged()
+        that.fetchAllSubjects()
       })
       .$on('saveconfirm', function (data) {
         that.liveSaveConfirm()
       })
 
     // we defer the request because the view could be created, on page load.
-    setTimeout(this.fetchAllStaged, 750)
+    setTimeout(this.fetchAllSubjects, 750)
   },
   destroyed () {
     this.eventBus.$off(['dbupdate', 'saveconfirm'])

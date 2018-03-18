@@ -43,12 +43,6 @@ export default {
       required: true
     }
   },
-  data () {
-    return {}
-  },
-  methods: {},
-  mounted () {},
-  destroyed () {},
   components: {
     'activity': Activity
   }

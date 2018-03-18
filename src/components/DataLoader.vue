@@ -22,7 +22,7 @@
             {{ $t('Please paste your data in the following field and click on the LOAD button, in order to load them in this app') }}.
           </v-alert>
 
-          <v-text-field multi-line v-model="input"></v-text-field>
+          <v-text-field multi-line v-model="input" label="Paste your data here"></v-text-field>
         </v-container>
       </v-card>
     </v-container>

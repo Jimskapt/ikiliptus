@@ -7,143 +7,23 @@ import Vuetify from 'vuetify'
 
 import App from './App'
 import router from './router'
-import i18n from './locales/index'
+import i18n from './locales'
+import DB from './database'
 
 import 'vuetify/dist/vuetify.min.css'
 
 Vue.config.productionTip = false
 
-let db = new PouchDB('ikiliptus')
-
-db
-  .query('all_subjects/all_subjects')
-  .then(res => {})
-  .catch(() => {
-    /* eslint-disable */
-    var ddoc = {
-      _id: '_design/all_subjects',
-      views: {
-        all_subjects: {
-          map: function (doc) {
-  if (doc.data_type) {
-    if (doc.data_type === 'subject') {
-      emit(doc._id, true);
-    }
-  }
-}.toString()
-        }
-      }
-    }
-    /* eslint-enable */
-
-    db
-      .put(ddoc)
-      .then(() => {})
-      .catch(function (err) {
-        alert(err)
-      })
-  })
-
-db
-  .query('subjects_powers/subjects_powers')
-  .then(res => {})
-  .catch(() => {
-    /* eslint-disable */
-    var ddoc = {
-      _id: '_design/subjects_powers',
-      views: {
-        subjects_powers: {
-          map: function (doc) {
-  if(doc.subject) {
-    emit(doc.subject, 1);
-  }
-}.toString(),
-          reduce: function(keys, values, rereduce) {
-  return sum(values);
-}.toString()
-        }
-      }
-    }
-    /* eslint-enable */
-
-    db
-      .put(ddoc)
-      .then(() => {})
-      .catch(function (err) {
-        alert(err)
-      })
-  })
-
-db
-  .query('mediums_powers/mediums_powers')
-  .then(res => {})
-  .catch(() => {
-    /* eslint-disable */
-    var ddoc = {
-      _id: '_design/mediums_powers',
-      views: {
-        mediums_powers: {
-          map: function (doc) {
-  if(doc.medium) {
-    emit(doc.medium, 1);
-  }
-}.toString(),
-          reduce: function(keys, values, rereduce) {
-  return sum(values);
-}.toString()
-        }
-      }
-    }
-    /* eslint-enable */
-
-    db
-      .put(ddoc)
-      .then(() => {})
-      .catch(function (err) {
-        alert(err)
-      })
-  })
-
-db
-  .query('actors_powers/actors_powers')
-  .then(res => {})
-  .catch(() => {
-    /* eslint-disable */
-    var ddoc = {
-      _id: '_design/actors_powers',
-      views: {
-        actors_powers: {
-          map: function (doc) {
-  if(doc.actor) {
-    emit(doc.actor, 1);
-  }
-}.toString(),
-          reduce: function(keys, values, rereduce) {
-  return sum(values);
-}.toString()
-        }
-      }
-    }
-    /* eslint-enable */
-
-    db
-      .put(ddoc)
-      .then(() => {})
-      .catch(function (err) {
-        alert(err)
-      })
-  })
-
-let remoteCouch = new PouchDB('http://localhost:5984/ikiliptus')
+Vue.use(Vuetify)
 
 let eventBus = new Vue()
 
-Vue.use(Vuetify)
-
 Vue.prototype.eventBus = eventBus
-Vue.prototype.db = db
+Vue.prototype.db = DB
 
-db
+let remoteCouch = new PouchDB('http://localhost:5984/ikiliptus')
+
+DB
   .sync(remoteCouch, {live: true})
   .on('complete', function () {
     console.log('Sync on local CouchDB success.')
