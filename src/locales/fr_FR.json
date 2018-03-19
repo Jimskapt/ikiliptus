@@ -1,6 +1,8 @@
 {
   "local_description": "Français (France)",
   "US_locale_description": "French (France)",
+  "date_format": "DD/MM/YYYY",
+  "hour_format": "HH:mm:ss",
   "Live Counter": "Compteur temps réel",
   "START": "DEMARRER",
   "STOP": "ARRETER",

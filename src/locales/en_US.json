@@ -1,6 +1,8 @@
 {
   "local_description": "English (US)",
   "US_locale_description": "English (US)",
+  "date_format": "MM/DD/YYYY",
+  "hour_format": "hh:mm:ssA",
   "Live Counter": "Live Counter",
   "START": "START",
   "STOP": "STOP",

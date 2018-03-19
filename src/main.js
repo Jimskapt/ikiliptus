@@ -4,6 +4,7 @@ import Vue from 'vue'
 
 import PouchDB from 'pouchdb-browser'
 import Vuetify from 'vuetify'
+import VueMoment from 'vue-moment'
 
 import App from './App'
 import router from './router'
@@ -15,6 +16,7 @@ import 'vuetify/dist/vuetify.min.css'
 Vue.config.productionTip = false
 
 Vue.use(Vuetify)
+Vue.use(VueMoment)
 
 let eventBus = new Vue()
 

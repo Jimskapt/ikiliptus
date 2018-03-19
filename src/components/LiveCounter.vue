@@ -53,7 +53,16 @@
               <template v-for="item in staged">
                 <v-list-tile v-bind:key="item._id">
                   <v-list-tile-content>
-                    <v-list-tile-title><router-link v-bind:to="{name:'Activity', params: {id: item._id}}">{{item.start}} > {{item.stop}}</router-link></v-list-tile-title>
+                    <v-list-tile-title>
+                      <router-link v-bind:to="{name:'Activity', params: {id: item._id}}">
+                        <span>
+                          {{$t('From')}}
+                          {{ item.start | moment($t('date_format')) }} {{ item.start | moment($t('hour_format')) }}
+                          {{$t('To').toLowerCase()}}
+                          {{ item.stop | moment($t('date_format')) }} {{ item.stop | moment($t('hour_format')) }}
+                        </span>
+                      </router-link>
+                    </v-list-tile-title>
                     <v-list-tile-sub-title>
                       <v-chip small disabled v-if="item.medium && item.medium !== ''">
                         <v-avatar>

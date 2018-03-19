@@ -145,10 +145,10 @@ export default {
           that.rev = doc._rev
 
           if (doc.start) {
-            that.newStart = doc.start
+            that.newStart = that.$moment(doc.start).format(that.$t('date_format')) + ' ' + that.$moment(doc.start).format(that.$t('hour_format'))
           }
           if (doc.stop) {
-            that.newStop = doc.stop
+            that.newStop = that.$moment(doc.stop).format(that.$t('date_format')) + ' ' + that.$moment(doc.stop).format(that.$t('hour_format'))
           }
           if (doc.subject) {
             that.newSubject = doc.subject
