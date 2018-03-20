@@ -55,7 +55,10 @@
                   <v-list-tile-content>
                     <v-list-tile-title>
                       <router-link v-bind:to="{name:'Activity', params: {id: item._id}}">
-                        <span>
+                        <span v-if="item.subject">
+                          {{item.subject}}
+                        </span>
+                        <span v-else>
                           {{$t('From')}}
                           {{ item.start | moment($t('date_format')) }} {{ item.start | moment($t('hour_format')) }}
                           {{$t('To').toLowerCase()}}
@@ -78,11 +81,6 @@
                       </v-chip>
                     </v-list-tile-sub-title>
                   </v-list-tile-content>
-                  <v-list-tile-action>
-                    <v-btn icon ripple v-on:click="dialog = true">
-                      <v-icon>archive</v-icon>
-                    </v-btn>
-                  </v-list-tile-action>
                 </v-list-tile>
                 <v-divider v-bind:key="'separator-' + item._id"></v-divider>
               </template>
