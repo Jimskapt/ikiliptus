@@ -121,4 +121,36 @@ db
       })
   })
 
+db
+  .query('categories_powers/categories_powers')
+  .then(res => {})
+  .catch(() => {
+    /* eslint-disable */
+    var ddoc = {
+      _id: '_design/categories_powers',
+      views: {
+        categories_powers: {
+          map: function (doc) {
+  if(doc.categories) {
+    doc.categories.forEach(e => {
+      emit(e, 1);
+    });
+  }
+}.toString(),
+          reduce: function(keys, values, rereduce) {
+  return sum(values);
+}.toString()
+        }
+      }
+    }
+    /* eslint-enable */
+
+    db
+      .put(ddoc)
+      .then(() => {})
+      .catch(function (err) {
+        alert(err)
+      })
+  })
+
 export default db

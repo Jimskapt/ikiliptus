@@ -22,10 +22,37 @@
     ></v-text-field>
 
     <v-container v-if="subjects_founds && subjects_founds.length > 0">
-      <v-list dense v-if="subjects_founds">
+      <v-list dense>
         <template v-for="found in subjects_founds">
-          <v-list-tile v-bind:key="'medium_suggest:' + found" v-on:click="newSubject = found">
+          <v-list-tile v-bind:key="'subject_suggest:' + found" v-on:click="newSubject = found">
             <v-list-tile-action><v-icon>label_outline</v-icon></v-list-tile-action>
+            <v-list-tile-content>{{found}}</v-list-tile-content>
+          </v-list-tile>
+          <v-divider v-bind:key="'separator:' + found"></v-divider>
+        </template>
+      </v-list>
+    </v-container>
+
+    <v-select
+      v-bind:label="$t('Categories')"
+      v-model="newCategories"
+      prepend-icon="move_to_inbox"
+      chips
+      tags
+      clearable
+    >
+      <template slot="selection" slot-scope="data">
+        <v-chip close v-on:input="removeCategory(data.item)">
+          <strong>{{data.item}}</strong>
+        </v-chip>
+      </template>
+    </v-select>
+
+    <v-container v-if="categories_list && categories_list.length > 0">
+      <v-list dense>
+        <template v-for="found in categories_founds">
+          <v-list-tile v-bind:key="'categories_suggest:' + found" v-on:click="newCategories.push(found)">
+            <v-list-tile-action><v-icon>move_to_inbox</v-icon></v-list-tile-action>
             <v-list-tile-content>{{found}}</v-list-tile-content>
           </v-list-tile>
           <v-divider v-bind:key="'separator:' + found"></v-divider>
@@ -115,9 +142,11 @@ export default {
       newActor: '',
       newDetails: '',
       newSubject: '',
+      newCategories: [],
       subjects_list: [],
       mediums_list: [],
-      actors_list: []
+      actors_list: [],
+      categories_list: []
     }
   },
   methods: {
@@ -152,6 +181,9 @@ export default {
           }
           if (doc.subject) {
             that.newSubject = doc.subject
+          }
+          if (doc.categories) {
+            that.newCategories = doc.categories
           }
           if (doc.voluntary) {
             that.newVoluntary = doc.voluntary
@@ -200,6 +232,16 @@ export default {
           })
         })
         .catch(err => { alert(err) })
+
+      this.db
+        .query('categories_powers/categories_powers', {group: true})
+        .then(res => {
+          that.categories_list = []
+          res.rows.forEach(e => {
+            that.categories_list.push(e.key)
+          })
+        })
+        .catch(err => { alert(err) })
     },
     find_text (array, value) {
       if (value.trim() === '' || array === undefined) {
@@ -207,6 +249,9 @@ export default {
       }
 
       return array.filter(e => e.toLowerCase().includes(value.trim().toLowerCase()) && e !== value)
+    },
+    removeCategory (value) {
+      this.newCategories.splice(this.newCategories.indexOf(value), 1)
     }
   },
   computed: {
@@ -224,6 +269,12 @@ export default {
       if (this.newStop) {
         result.stop = this.newStop
       }
+      if (this.newSubject) {
+        result.subject = this.newSubject
+      }
+      if (this.newCategories) {
+        result.categories = this.newCategories
+      }
       if (this.newVoluntary) {
         result.voluntary = this.newVoluntary
       }
@@ -236,9 +287,6 @@ export default {
       if (this.newDetails) {
         result.details = this.newDetails
       }
-      if (this.newSubject) {
-        result.subject = this.newSubject
-      }
 
       return result
     },
@@ -250,6 +298,9 @@ export default {
     },
     actors_founds () {
       return this.find_text(this.actors_list, this.newActor)
+    },
+    categories_founds () {
+      return this.categories_list.filter(e => !this.newCategories.includes(e))
     }
   },
   mounted () {
