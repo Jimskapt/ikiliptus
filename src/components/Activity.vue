@@ -7,93 +7,137 @@
 
     <v-layout row wrap>
       <v-flex xs6>
-        <v-menu
-          ref="startDateMenu"
-          v-bind:close-on-content-click="false"
-          v-model="startDateMenu"
-          v-bind:return-value.sync="startDateMenu"
-          full-width
-        >
+        <span v-if="!locked.includes('start_date')">
+          <v-menu
+            ref="startDateMenu"
+            v-bind:close-on-content-click="false"
+            v-model="startDateMenu"
+            v-bind:return-value.sync="startDateMenu"
+            full-width
+          >
+            <v-text-field
+              v-bind:label="$t('From')"
+              v-model="newStartDateDisplay"
+              prepend-icon="event"
+              slot="activator"
+              readonly
+            ></v-text-field>
+            <v-date-picker v-model="newStartDate" no-title scrollable full-width>
+              <v-spacer></v-spacer>
+              <v-btn color="error" v-on:click="startDateMenu = false">{{$t('Abort')}}</v-btn>
+              <v-btn color="success" v-on:click="$refs.startDateMenu.save(newStartDate)">{{$t('OK')}}</v-btn>
+            </v-date-picker>
+          </v-menu>
+        </span>
+        <span v-else>
           <v-text-field
             v-bind:label="$t('From')"
             v-model="newStartDateDisplay"
             prepend-icon="event"
-            slot="activator"
+            disabled
             readonly
           ></v-text-field>
-          <v-date-picker v-model="newStartDate" no-title scrollable full-width>
-            <v-spacer></v-spacer>
-            <v-btn color="error" v-on:click="startDateMenu = false">{{$t('Abort')}}</v-btn>
-            <v-btn color="success" v-on:click="$refs.startDateMenu.save(newStartDate)">{{$t('OK')}}</v-btn>
-          </v-date-picker>
-        </v-menu>
+        </span>
       </v-flex>
       <v-flex xs6>
-        <v-menu
-          ref="startHourMenu"
-          v-bind:close-on-content-click="false"
-          v-model="startHourMenu"
-          v-bind:return-value.sync="startHourMenu"
-          full-width
-        >
+        <span v-if="!locked.includes('start_hour')">
+          <v-menu
+            ref="startHourMenu"
+            v-bind:close-on-content-click="false"
+            v-model="startHourMenu"
+            v-bind:return-value.sync="startHourMenu"
+            full-width
+          >
+            <v-text-field
+              v-bind:label="$t('From')"
+              v-model="newStartHourDisplay"
+              prepend-icon="schedule"
+              slot="activator"
+              readonly
+            ></v-text-field>
+            <v-time-picker scrollable full-width
+              v-model="newStartHour"
+              v-on:change="$refs.startHourMenu.save(newStartHour)"
+            ></v-time-picker>
+          </v-menu>
+        </span>
+        <span v-else>
           <v-text-field
             v-bind:label="$t('From')"
             v-model="newStartHourDisplay"
             prepend-icon="schedule"
-            slot="activator"
+            disabled
             readonly
           ></v-text-field>
-          <v-time-picker scrollable full-width
-            v-model="newStartHour"
-            v-on:change="$refs.startHourMenu.save(newStartHour)"
-          ></v-time-picker>
-        </v-menu>
+        </span>
       </v-flex>
     </v-layout>
 
     <v-layout row wrap>
       <v-flex xs6>
-        <v-menu
-          ref="stopDateMenu"
-          v-bind:close-on-content-click="false"
-          v-model="stopDateMenu"
-          v-bind:return-value.sync="stopDateMenu"
-          full-width
-        >
+        <span v-if="!locked.includes('stop_date')">
+          <v-menu
+            ref="stopDateMenu"
+            v-bind:close-on-content-click="false"
+            v-model="stopDateMenu"
+            v-bind:return-value.sync="stopDateMenu"
+            full-width
+          >
+            <v-text-field
+              v-bind:label="$t('To')"
+              v-model="newStopDateDisplay"
+              prepend-icon="event"
+              slot="activator"
+              readonly
+            ></v-text-field>
+            <v-date-picker v-model="newStopDate" no-title scrollable full-width>
+              <v-spacer></v-spacer>
+              <v-btn color="error" v-on:click="stopDateMenu = false">{{$t('Abort')}}</v-btn>
+              <v-btn color="success" v-on:click="$refs.stopDateMenu.save(newStopDate)">{{$t('OK')}}</v-btn>
+            </v-date-picker>
+          </v-menu>
+        </span>
+        <span v-else>
           <v-text-field
             v-bind:label="$t('To')"
             v-model="newStopDateDisplay"
             prepend-icon="event"
-            slot="activator"
+            disabled
             readonly
           ></v-text-field>
-          <v-date-picker v-model="newStopDate" no-title scrollable full-width>
-            <v-spacer></v-spacer>
-            <v-btn color="error" v-on:click="stopDateMenu = false">{{$t('Abort')}}</v-btn>
-            <v-btn color="success" v-on:click="$refs.stopDateMenu.save(newStopDate)">{{$t('OK')}}</v-btn>
-          </v-date-picker>
-        </v-menu>
+        </span>
       </v-flex>
       <v-flex xs6>
-        <v-menu
-          ref="stopHourMenu"
-          v-bind:close-on-content-click="false"
-          v-model="stopHourMenu"
-          v-bind:return-value.sync="stopHourMenu"
-          full-width
-        >
+        <span v-if="!locked.includes('stop_hour')">
+          <v-menu
+            ref="stopHourMenu"
+            v-bind:close-on-content-click="false"
+            v-model="stopHourMenu"
+            v-bind:return-value.sync="stopHourMenu"
+            full-width
+          >
+            <v-text-field
+              v-bind:label="$t('To')"
+              v-model="newStopHourDisplay"
+              prepend-icon="schedule"
+              slot="activator"
+              readonly
+            ></v-text-field>
+            <v-time-picker scrollable full-width
+              v-model="newStopHour"
+              v-on:change="$refs.stopHourMenu.save(newStopHour)"
+            ></v-time-picker>
+          </v-menu>
+        </span>
+        <span v-else>
           <v-text-field
             v-bind:label="$t('To')"
             v-model="newStopHourDisplay"
             prepend-icon="schedule"
-            slot="activator"
+            disabled
             readonly
           ></v-text-field>
-          <v-time-picker scrollable full-width
-            v-model="newStopHour"
-            v-on:change="$refs.stopHourMenu.save(newStopHour)"
-          ></v-time-picker>
-        </v-menu>
+        </span>
       </v-flex>
     </v-layout>
 

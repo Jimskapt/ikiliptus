@@ -13,7 +13,7 @@
         </v-toolbar>
 
         <v-container>
-          <activity v-if="runningCounter" v-bind:id="currentID" v-bind:locked="['from','to']" v-bind:showCounter="true"></activity>
+          <activity v-if="runningCounter" v-bind:id="currentID" v-bind:locked="['start_date','start_hour','stop_date','stop_hour']" v-bind:showCounter="true"></activity>
           <v-alert v-else color="info" outline icon="info" v-bind:value="true">
             {{ $t("Counter is not started") }}.
           </v-alert>
