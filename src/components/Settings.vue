@@ -19,10 +19,15 @@
             v-bind:hint="`${locale.local}`"
             return-object
             v-model="locale"
-            label="Locale"
+            v-bind:label="$t('Locale') + ' (locale)'"
             prepend-icon="language"
             autocomplete
           ></v-select>
+          <v-text-field
+            v-bind:label="$t('Your couchDB URI')"
+            v-model="remoteCouch"
+            prepend-icon="storage"
+          ></v-text-field>
           <v-layout>
             <v-flex xs3>
               <v-subheader>{{ $t('Export your data') }}</v-subheader>
@@ -68,10 +73,11 @@ export default {
   data () {
     return {
       locale: {
-        value: this.$i18n.locale,
-        local: this.$i18n.messages[this.$i18n.locale]['local_description'],
-        us: this.$i18n.messages[this.$i18n.locale]['US_locale_description']
-      }
+        value: this.$settings.locale.get(),
+        local: this.$i18n.messages[this.$settings.locale.get()]['local_description'],
+        us: this.$i18n.messages[this.$settings.locale.get()]['US_locale_description']
+      },
+      remoteCouch: this.$settings.remoteCouch.get()
     }
   },
   computed: {
@@ -95,8 +101,10 @@ export default {
   },
   methods: {
     save () {
-      document.cookie = 'locale=' + this.locale.value
-      this.$i18n.locale = this.locale.value
+      // http://localhost:5984/ikiliptus
+
+      this.$settings.locale.set(this.locale.value)
+      this.$settings.remoteCouch.set(this.remoteCouch)
     }
   }
 }

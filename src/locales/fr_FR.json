@@ -31,5 +31,7 @@
   "Please paste your data in the following field and click on the LOAD button, in order to load them in this app": "Veuillez coller vos données dans le champ suivant et clicker sur le bouton CHARGER pour les importer dans cette application",
   "Show it human-readable ?": "Les présenter de manière lisible par l'homme ?",
   "Categories": "Catégories",
-  "Confirm the delete": "Confirm the delete"
+  "Confirm the delete": "Confirmer la suppression",
+  "Your couchDB URI": "L'adresse URI de votre couchDB",
+  "Locale": "Localisation"
 }
