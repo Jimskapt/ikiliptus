@@ -93,7 +93,7 @@
                     </v-list-tile-sub-title>
                   </v-list-tile-content>
                   <v-list-tile-action>
-                    <v-btn flat icon v-on:click="nextCounter(item)">
+                    <v-btn flat icon v-on:click="nextCounter(item)" v-bind:disabled="runningCounter">
                       <v-icon>content_copy</v-icon>
                     </v-btn>
                     <v-btn flat icon v-on:click="ask_delete_activity(item)">
