@@ -45,7 +45,7 @@
                 <v-btn icon>
                   <v-icon>inbox</v-icon>
                 </v-btn>
-                <span>{{ $t("Activities awaiting classification") }}</span>
+                <span>{{ $t("Last activities") }}</span>
               </v-card-title>
             </v-toolbar>
 

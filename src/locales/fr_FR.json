@@ -16,7 +16,7 @@
   "Actor": "Acteur",
   "Details": "Details",
   "Counter is not started": "Le compteur n'a pas été démarré",
-  "Activities awaiting classification": "Activités en attente de classification",
+  "Last activities": "Les dernières activités",
   "Subject": "Sujet",
   "Abort": "Annuler",
   "OK": "OK",
@@ -30,5 +30,6 @@
   "In order to save your data, just copy and paste the following data in an text editor (like notepad), and then save it as *.json file": "Pour sauvegarder vos données, copiez et collez simplement les données dans un éditeur de texte (comme le bloc-notes) et enregistrez le ensuite comme un fichier *.json",
   "Please paste your data in the following field and click on the LOAD button, in order to load them in this app": "Veuillez coller vos données dans le champ suivant et clicker sur le bouton CHARGER pour les importer dans cette application",
   "Show it human-readable ?": "Les présenter de manière lisible par l'homme ?",
-  "Categories": "Catégories"
+  "Categories": "Catégories",
+  "Confirm the delete": "Confirm the delete"
 }
