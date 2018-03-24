@@ -1,6 +1,10 @@
 <template>
   <v-form>
 
+    <p style="font-size:48px;text-align:center;" v-if="showCounter">
+      {{ timeAgo }}
+    </p>
+
     <v-layout row wrap>
       <v-flex xs6>
         <v-menu
@@ -208,6 +212,13 @@ export default {
       default () {
         return []
       }
+    },
+    showCounter: {
+      type: Boolean,
+      required: false,
+      default () {
+        return false
+      }
     }
   },
   data () {
@@ -232,7 +243,8 @@ export default {
       subjects_list: [],
       mediums_list: [],
       actors_list: [],
-      categories_list: []
+      categories_list: [],
+      timeAgo: ''
     }
   },
   methods: {
@@ -357,6 +369,15 @@ export default {
     },
     removeCategory (value) {
       this.newCategories.splice(this.newCategories.indexOf(value), 1)
+    },
+    refreshCounter () {
+      if (this.newStartDate && this.newStartHour && this.newStartSeconds) {
+        let now = new Date()
+        let delta = now
+        delta -= this.$moment(this.newStartDate + ' ' + this.newStartHour + ':' + this.newStartSeconds, 'YYYY-MM-DD HH:mm:ss').toDate()
+        delta += now.getTimezoneOffset() * 60 * 1000
+        this.timeAgo = this.$moment(delta).format('HH:mm:ss')
+      }
     }
   },
   computed: {
@@ -453,6 +474,10 @@ export default {
     this.eventBus.$on('save', this.save)
 
     this.refreshData()
+
+    if (this.showCounter) {
+      setInterval(this.refreshCounter, 1000)
+    }
 
     // we defer the request because the views could be created, on page load.
     setTimeout(this.fetchAutocompleteData, 750)
