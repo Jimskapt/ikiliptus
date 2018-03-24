@@ -371,7 +371,7 @@ export default {
       this.newCategories.splice(this.newCategories.indexOf(value), 1)
     },
     refreshCounter () {
-      if (this.newStartDate && this.newStartHour && this.newStartSeconds) {
+      if (this.newStartDate !== undefined && this.newStartHour !== undefined && this.newStartSeconds !== undefined) {
         let now = new Date()
         let delta = now
         delta -= this.$moment(this.newStartDate + ' ' + this.newStartHour + ':' + this.newStartSeconds, 'YYYY-MM-DD HH:mm:ss').toDate()
@@ -382,6 +382,9 @@ export default {
   },
   computed: {
     newData () {
+      // TODO : import DB static data, instead recreate it !
+      // otherwise, we'll losing data if forgotten in this code !
+
       let result = {
         _id: this.id,
         _rev: this.rev,

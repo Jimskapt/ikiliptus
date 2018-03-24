@@ -157,6 +157,12 @@ export default {
       document.start_seconds = now.getSeconds()
       delete document.stop_date
       delete document.stop_hour
+      if (!document.data_type) {
+        document.data_type = 'subject'
+      }
+      if (!document.data_version) {
+        document.data_version = 1
+      }
 
       this.db.post(document, {}, function (err, res) {
         if (err) {
@@ -240,7 +246,21 @@ export default {
       })
 
     // we defer the request because the view could be created, on page load.
-    setTimeout(this.fetchAllSubjects, 750)
+    setTimeout(function () {
+      that.fetchAllSubjects()
+
+      // searching unstopped activities, and using the first of them in the live counter
+      that.db
+        .query('all_subjects/all_subjects', {include_docs: true})
+        .then(res => {
+          let unstoppedList = res.rows.filter(e => e.doc.stop_date === undefined || e.doc.stop_hour === undefined)
+          if (unstoppedList.length > 0) {
+            that.currentID = unstoppedList[0].doc._id
+            that.runningCounter = true
+          }
+        })
+        .catch(err => alert(err))
+    }, 750)
   },
   destroyed () {
     this.eventBus.$off(['dbupdate', 'saveconfirm'])
