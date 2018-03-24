@@ -186,9 +186,12 @@ export default {
         .query('all_subjects/all_subjects', {include_docs: true})
         .then(res => {
           that.staged = []
-          res.rows.forEach(e => {
-            that.staged.push(e.doc)
-          })
+          res.rows
+            .filter(e => e.doc.stop !== undefined)
+            .sort((a, b) => new Date(b.doc.stop) - new Date(a.doc.stop))
+            .forEach(e => {
+              that.staged.push(e.doc)
+            })
         })
         .catch(err => alert(err))
     },
