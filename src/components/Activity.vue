@@ -267,7 +267,6 @@ export default {
   },
   data () {
     return {
-      rev: '',
       startDateMenu: false,
       newStartDate: null,
       startHourMenu: false,
@@ -288,7 +287,8 @@ export default {
       mediums_list: [],
       actors_list: [],
       categories_list: [],
-      timeAgo: ''
+      timeAgo: '',
+      dbData: {}
     }
   },
   methods: {
@@ -299,6 +299,7 @@ export default {
           alert(err)
         } else {
           that.eventBus.$emit('saveconfirm')
+          that.refreshData()
         }
       })
     },
@@ -320,7 +321,7 @@ export default {
         if (err) {
           alert(err)
         } else {
-          that.rev = doc._rev
+          that.dbData = doc
 
           if (doc.start_date) {
             that.newStartDate = doc.start_date
@@ -426,15 +427,7 @@ export default {
   },
   computed: {
     newData () {
-      // TODO : import DB static data, instead recreate it !
-      // otherwise, we'll losing data if forgotten in this code !
-
-      let result = {
-        _id: this.id,
-        _rev: this.rev,
-        data_type: 'subject',
-        data_version: 1
-      }
+      let result = this.dbData
 
       if (this.newStartDate) {
         result.start_date = this.newStartDate
@@ -531,6 +524,7 @@ export default {
   },
   destroyed () {
     this.eventBus.$off('setStop')
+    this.eventBus.$off('save')
   }
 }
 </script>

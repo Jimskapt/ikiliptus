@@ -29,7 +29,7 @@ let settings = {
       return this.path
     },
     set (value) {
-      if (value !== '' && value !== this.value) {
+      if (value !== this.value) {
         if (this.value !== null) {
           this.value.cancel()
         }
