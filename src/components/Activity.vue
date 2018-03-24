@@ -1,19 +1,97 @@
 <template>
   <v-form>
 
-    <v-text-field
-      v-bind:label="$t('From')"
-      v-model="newStart"
-      prepend-icon="play_arrow"
-      v-bind:disabled="locked.includes('from')"
-    ></v-text-field>
+    <v-layout row wrap>
+      <v-flex xs6>
+        <v-menu
+          ref="startDateMenu"
+          v-bind:close-on-content-click="false"
+          v-model="startDateMenu"
+          v-bind:return-value.sync="startDateMenu"
+          full-width
+        >
+          <v-text-field
+            v-bind:label="$t('From')"
+            v-model="newStartDateDisplay"
+            prepend-icon="event"
+            slot="activator"
+            readonly
+          ></v-text-field>
+          <v-date-picker v-model="newStartDate" no-title scrollable full-width>
+            <v-spacer></v-spacer>
+            <v-btn color="red" v-on:click="startDateMenu = false">{{$t('Abort')}}</v-btn>
+            <v-btn color="green" v-on:click="$refs.startDateMenu.save(newStartDate)">{{$t('OK')}}</v-btn>
+          </v-date-picker>
+        </v-menu>
+      </v-flex>
+      <v-flex xs6>
+        <v-menu
+          ref="startHourMenu"
+          v-bind:close-on-content-click="false"
+          v-model="startHourMenu"
+          v-bind:return-value.sync="startHourMenu"
+          full-width
+        >
+          <v-text-field
+            v-bind:label="$t('From')"
+            v-model="newStartHourDisplay"
+            prepend-icon="schedule"
+            slot="activator"
+            readonly
+          ></v-text-field>
+          <v-time-picker scrollable full-width
+            v-model="newStartHour"
+            v-on:change="$refs.startHourMenu.save(newStartHour)"
+          ></v-time-picker>
+        </v-menu>
+      </v-flex>
+    </v-layout>
 
-    <v-text-field
-      v-bind:label="$t('To')"
-      v-model="newStop"
-      prepend-icon="stop"
-      v-bind:disabled="locked.includes('to')"
-    ></v-text-field>
+    <v-layout row wrap>
+      <v-flex xs6>
+        <v-menu
+          ref="stopDateMenu"
+          v-bind:close-on-content-click="false"
+          v-model="stopDateMenu"
+          v-bind:return-value.sync="stopDateMenu"
+          full-width
+        >
+          <v-text-field
+            v-bind:label="$t('To')"
+            v-model="newStopDateDisplay"
+            prepend-icon="event"
+            slot="activator"
+            readonly
+          ></v-text-field>
+          <v-date-picker v-model="newStopDate" no-title scrollable full-width>
+            <v-spacer></v-spacer>
+            <v-btn color="red" v-on:click="stopDateMenu = false">{{$t('Abort')}}</v-btn>
+            <v-btn color="green" v-on:click="$refs.stopDateMenu.save(newStopDate)">{{$t('OK')}}</v-btn>
+          </v-date-picker>
+        </v-menu>
+      </v-flex>
+      <v-flex xs6>
+        <v-menu
+          ref="stopHourMenu"
+          v-bind:close-on-content-click="false"
+          v-model="stopHourMenu"
+          v-bind:return-value.sync="stopHourMenu"
+          full-width
+        >
+          <v-text-field
+            v-bind:label="$t('To')"
+            v-model="newStopHourDisplay"
+            prepend-icon="schedule"
+            slot="activator"
+            readonly
+          ></v-text-field>
+          <v-time-picker scrollable full-width
+            v-model="newStopHour"
+            v-on:change="$refs.stopHourMenu.save(newStopHour)"
+          ></v-time-picker>
+        </v-menu>
+      </v-flex>
+    </v-layout>
 
     <v-text-field
       v-bind:label="$t('Subject')"
@@ -135,8 +213,16 @@ export default {
   data () {
     return {
       rev: '',
-      newStart: '',
-      newStop: '',
+      startDateMenu: false,
+      newStartDate: null,
+      startHourMenu: false,
+      newStartHour: null,
+      stopDateMenu: false,
+      newStartSeconds: null,
+      newStopDate: null,
+      stopHourMenu: false,
+      newStopHour: null,
+      newStopSeconds: null,
       newVoluntary: '',
       newMedium: '',
       newActor: '',
@@ -150,11 +236,7 @@ export default {
     }
   },
   methods: {
-    setStop (args) {
-      if (args !== undefined) {
-        this.newStop = args
-      }
-
+    save () {
       let that = this
       this.db.put(this.newData, function (err, res) {
         if (err) {
@@ -163,6 +245,17 @@ export default {
           that.eventBus.$emit('saveconfirm')
         }
       })
+    },
+    setStop (args) {
+      if (args === undefined) {
+        args = new Date()
+      }
+
+      this.newStopDate = this.$moment(args).format('YYYY-MM-DD')
+      this.newStopHour = this.$moment(args).format('HH:mm')
+      this.newStopSeconds = args.getSeconds()
+
+      this.save()
     },
     refreshData () {
       let that = this
@@ -173,11 +266,23 @@ export default {
         } else {
           that.rev = doc._rev
 
-          if (doc.start) {
-            that.newStart = that.$moment(doc.start).format(that.$t('date_format')) + ' ' + that.$moment(doc.start).format(that.$t('hour_format'))
+          if (doc.start_date) {
+            that.newStartDate = doc.start_date
           }
-          if (doc.stop) {
-            that.newStop = that.$moment(doc.stop).format(that.$t('date_format')) + ' ' + that.$moment(doc.stop).format(that.$t('hour_format'))
+          if (doc.start_hour) {
+            that.newStartHour = doc.start_hour
+          }
+          if (doc.start_seconds) {
+            that.newStartSeconds = doc.start_seconds
+          }
+          if (doc.stop_date) {
+            that.newStopDate = doc.stop_date
+          }
+          if (doc.stop_hour) {
+            that.newStopHour = doc.stop_hour
+          }
+          if (doc.stop_seconds) {
+            that.newStopSeconds = doc.stop_seconds
           }
           if (doc.subject) {
             that.newSubject = doc.subject
@@ -263,11 +368,23 @@ export default {
         data_version: 1
       }
 
-      if (this.newStart) {
-        result.start = this.newStart
+      if (this.newStartDate) {
+        result.start_date = this.newStartDate
       }
-      if (this.newStop) {
-        result.stop = this.newStop
+      if (this.newStartHour) {
+        result.start_hour = this.newStartHour
+      }
+      if (this.newStartSeconds) {
+        result.start_seconds = this.newStartSeconds
+      }
+      if (this.newStopDate) {
+        result.stop_date = this.newStopDate
+      }
+      if (this.newStopHour) {
+        result.stop_hour = this.newStopHour
+      }
+      if (this.newStopSeconds) {
+        result.stop_seconds = this.newStopSeconds
       }
       if (this.newSubject) {
         result.subject = this.newSubject
@@ -301,11 +418,39 @@ export default {
     },
     categories_founds () {
       return this.categories_list.filter(e => !this.newCategories.includes(e))
+    },
+    newStartDateDisplay () {
+      if (this.newStartDate && this.newStartDate != null) {
+        return this.$moment(this.newStartDate, 'YYYY-MM-DD').format(this.$t('date_format'))
+      }
+
+      return ''
+    },
+    newStartHourDisplay () {
+      if (this.newStartHour && this.newStartHour != null) {
+        return this.$moment(this.newStartHour + ':' + this.newStartSeconds, 'HH:mm:ss').format(this.$t('hour_format'))
+      }
+
+      return ''
+    },
+    newStopDateDisplay () {
+      if (this.newStopDate && this.newStopDate != null) {
+        return this.$moment(this.newStopDate, 'YYYY-MM-DD').format(this.$t('date_format'))
+      }
+
+      return ''
+    },
+    newStopHourDisplay () {
+      if (this.newStopHour && this.newStopHour != null) {
+        return this.$moment(this.newStopHour + ':' + this.newStopSeconds, 'HH:mm:ss').format(this.$t('hour_format'))
+      }
+
+      return ''
     }
   },
   mounted () {
     this.eventBus.$on('setStop', this.setStop)
-    this.eventBus.$on('save', this.setStop)
+    this.eventBus.$on('save', this.save)
 
     this.refreshData()
 

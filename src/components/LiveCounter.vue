@@ -59,10 +59,21 @@
                           {{item.subject}}
                         </span>
                         <span v-else>
+                          <span v-if="item.start_date != item.stop_date">
                           {{$t('From')}}
-                          {{ item.start | moment($t('date_format')) }} {{ item.start | moment($t('hour_format')) }}
+                          {{ $moment(item.start_date, 'YYYY-MM-DD').format($t('date_format')) }}
+                          {{ $moment(item.start_hour + ':' + item.start_seconds, 'HH:mm:ss', 'HH:mm:ss').format($t('hour_format')) }}
                           {{$t('To').toLowerCase()}}
-                          {{ item.stop | moment($t('date_format')) }} {{ item.stop | moment($t('hour_format')) }}
+                          {{ $moment(item.stop_date, 'YYYY-MM-DD').format($t('date_format')) }}
+                          {{ $moment(item.stop_hour + ':' + item.stop_seconds, 'HH:mm:ss').format($t('hour_format')) }}
+                          </span>
+                          <span v-else>
+                            {{ $moment(item.start_date, 'YYYY-MM-DD').format($t('date_format')) }} :
+                            {{$t('From').toLowerCase()}}
+                            {{ $moment(item.start_hour + ':' + item.start_seconds, 'HH:mm:ss', 'HH:mm:ss').format($t('hour_format')) }}
+                            {{$t('To').toLowerCase()}}
+                            {{ $moment(item.stop_hour + ':' + item.stop_seconds, 'HH:mm:ss').format($t('hour_format')) }}
+                          </span>
                         </span>
                       </router-link>
                     </v-list-tile-title>
@@ -140,8 +151,12 @@ export default {
 
       delete document._id
       delete document._rev
-      document.start = new Date()
-      delete document.stop
+      let now = new Date()
+      document.start_date = this.$moment(now).format('YYYY-MM-DD')
+      document.start_hour = this.$moment(now).format('HH:mm')
+      document.start_seconds = now.getSeconds()
+      delete document.stop_date
+      delete document.stop_hour
 
       this.db.post(document, {}, function (err, res) {
         if (err) {
@@ -187,8 +202,13 @@ export default {
         .then(res => {
           that.staged = []
           res.rows
-            .filter(e => e.doc.stop !== undefined)
-            .sort((a, b) => new Date(b.doc.stop) - new Date(a.doc.stop))
+            .filter(e => e.doc.stop_date !== undefined && e.doc.stop_hour !== undefined)
+            .sort((a, b) => {
+              let bTime = that.$moment(b.doc.stop_date + ' ' + b.doc.stop_hour + ':' + b.doc.stop_seconds, 'YYYY-MM-DD HH:mm:ss').toDate()
+              let aTime = that.$moment(a.doc.stop_date + ' ' + a.doc.stop_hour + ':' + a.doc.stop_seconds, 'YYYY-MM-DD HH:mm:ss').toDate()
+
+              return bTime - aTime
+            })
             .forEach(e => {
               that.staged.push(e.doc)
             })

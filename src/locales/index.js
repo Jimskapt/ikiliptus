@@ -18,8 +18,6 @@ document.cookie
     cookies[e[0]] = e[1]
   })
 
-console.log('cookies: ', cookies)
-
 if (cookies['locale'] === undefined) {
   cookies['locale'] = 'en_US'
   let oneYearFromNow = new Date()

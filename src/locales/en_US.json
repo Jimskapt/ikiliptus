@@ -2,7 +2,7 @@
   "local_description": "English (US)",
   "US_locale_description": "English (US)",
   "date_format": "MM/DD/YYYY",
-  "hour_format": "hh:mm:ssA",
+  "hour_format": "hh:mm:ss A",
   "Live Counter": "Live Counter",
   "START": "START",
   "STOP": "STOP",
