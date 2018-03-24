@@ -81,6 +81,14 @@
                       </v-chip>
                     </v-list-tile-sub-title>
                   </v-list-tile-content>
+                  <v-list-tile-action>
+                    <v-btn flat icon v-on:click="nextCounter(item)">
+                      <v-icon>content_copy</v-icon>
+                    </v-btn>
+                    <v-btn flat icon v-on:click="ask_delete_activity(item)">
+                      <v-icon>delete</v-icon>
+                    </v-btn>
+                  </v-list-tile-action>
                 </v-list-tile>
                 <v-divider v-bind:key="'separator-' + item._id"></v-divider>
               </template>
@@ -89,6 +97,17 @@
           </div>
       </v-card>
     </v-container>
+
+    <v-dialog v-model="asked_delete" max-width="290">
+      <v-card>
+        <v-card-title class="headline">{{$t('Confirm the delete')}}</v-card-title>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="green" v-on:click="asked_delete_document=null;asked_delete=false;">{{$t('Abort')}}</v-btn>
+          <v-btn color="red" v-on:click="confirm_delete_activity">{{$t('OK')}}</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
   </div>
 </template>
@@ -106,13 +125,25 @@ export default {
       staged: [],
       dialog: false,
       subjects_list: [],
-      dialog_subject: ''
+      dialog_subject: '',
+      asked_delete: false,
+      asked_delete_document: null
     }
   },
   methods: {
-    startCounter () {
+    startCounter (document) {
       let that = this
-      this.db.post({start: new Date()}, {}, function (err, res) {
+
+      if (document === undefined) {
+        document = {}
+      }
+
+      delete document._id
+      delete document._rev
+      document.start = new Date()
+      delete document.stop
+
+      this.db.post(document, {}, function (err, res) {
         if (err) {
           alert(err)
         }
@@ -133,14 +164,21 @@ export default {
     liveSaveConfirm () {
       this.currentID = ''
       if (this.nextAction === 'start') {
-        this.startCounter()
+        this.startCounter(this.nextActionDocument)
         this.nextAction = ''
+        this.nextActionDocument = undefined
       }
       this.fetchAllSubjects()
     },
-    nextCounter () {
-      this.stopCounter()
+    nextCounter (document) {
       this.nextAction = 'start'
+      this.nextActionDocument = document
+
+      if (this.runningCounter) {
+        this.stopCounter(document)
+      } else {
+        this.liveSaveConfirm()
+      }
     },
     fetchAllSubjects () {
       let that = this
@@ -152,9 +190,20 @@ export default {
             that.staged.push(e.doc)
           })
         })
-        .catch(err => {
-          alert(err)
+        .catch(err => alert(err))
+    },
+    ask_delete_activity (document) {
+      this.asked_delete = true
+      this.asked_delete_document = document
+    },
+    confirm_delete_activity () {
+      this.db
+        .remove(this.asked_delete_document)
+        .then(() => {
+          this.asked_delete = false
+          this.asked_delete_document = null
         })
+        .catch(err => alert(err))
     }
   },
   mounted () {

@@ -46,13 +46,15 @@ export default {
   mounted () {
     let that = this
 
-    this.db.allDocs({include_docs: true}, function (err, doc) {
-      if (err) {
-        alert(err)
-      } else {
-        that.json = doc.rows
-      }
-    })
+    this.db
+      .allDocs({include_docs: true}, function (err, doc) {
+        if (err) {
+          alert(err)
+        } else {
+          that.json = doc.rows
+        }
+      })
+      .catch(err => alert(err))
   },
   computed: {
     jsonText () {
