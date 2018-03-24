@@ -48,11 +48,11 @@
         </v-container>
 
         <v-card-actions>
-          <v-btn color="red" v-on:click="$router.go(-1)">
+          <v-btn color="error" v-on:click="$router.go(-1)">
             <v-icon>clear</v-icon>
             <span>{{ $t("Abort") }}</span>
           </v-btn>
-          <v-btn color="green" v-on:click="save">
+          <v-btn color="success" v-on:click="save">
             <v-icon>done</v-icon>
             <span>{{ $t("OK") }}</span>
           </v-btn>

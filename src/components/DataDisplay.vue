@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-container>
-      <v-btn large block v-on:click="$router.go(-1)" color="red">
+      <v-btn large block v-on:click="$router.go(-1)" color="warning">
         <v-icon>keyboard_arrow_left</v-icon>
         <span>{{ $t('Go back') }}</span>
       </v-btn>

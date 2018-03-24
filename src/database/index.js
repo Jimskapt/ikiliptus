@@ -3,14 +3,14 @@ import PouchDB from 'pouchdb-browser'
 let db = new PouchDB('ikiliptus')
 
 db
-  .query('all_subjects/all_subjects')
+  .query('all_activities/all_activities')
   .then(res => {})
   .catch(() => {
     /* eslint-disable */
     var ddoc = {
-      _id: '_design/all_subjects',
+      _id: '_design/all_activities',
       views: {
-        all_subjects: {
+        all_activities: {
           map: function (doc) {
   if (doc.data_type) {
     if (doc.data_type === 'subject') {

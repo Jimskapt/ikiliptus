@@ -2,7 +2,7 @@
   <v-app>
     <v-toolbar dark color="primary">
       <v-toolbar-title>
-        <span>Ikiliptus <sup>Alpha</sup></span>
+        <span>Ikiliptus</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
         <v-btn icon v-bind:to="{name: 'LiveCounter'}">

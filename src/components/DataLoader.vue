@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-container>
-      <v-btn large block v-on:click="$router.go(-1)" color="red">
+      <v-btn large block v-on:click="$router.go(-1)" color="error">
         <v-icon>keyboard_arrow_left</v-icon>
         <span>{{ $t('Go back') }}</span>
       </v-btn>
@@ -27,7 +27,7 @@
       </v-card>
     </v-container>
     <v-container>
-      <v-btn large block v-on:click="save" color="green">
+      <v-btn large block v-on:click="save" color="success">
         <v-icon>unarchive</v-icon>
         <span>{{ $t('Load') }}</span>
       </v-btn>

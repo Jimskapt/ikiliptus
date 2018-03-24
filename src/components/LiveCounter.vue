@@ -21,15 +21,15 @@
         </v-container>
 
         <v-card-actions>
-          <v-btn v-on:click="startCounter" v-bind:disabled="runningCounter" color="green">
+          <v-btn v-on:click="startCounter" v-bind:disabled="runningCounter" color="success">
             <v-icon>play_arrow</v-icon>
             <span>{{ $t("START") }}</span>
           </v-btn>
-          <v-btn v-on:click="stopCounter" v-bind:disabled="!runningCounter" color="red">
+          <v-btn v-on:click="stopCounter" v-bind:disabled="!runningCounter" color="error">
             <v-icon>stop</v-icon>
             <span>{{ $t("STOP") }}</span>
           </v-btn>
-          <v-btn v-on:click="nextCounter" v-bind:disabled="!runningCounter" color="blue">
+          <v-btn v-on:click="nextCounter" v-bind:disabled="!runningCounter" color="warning">
             <v-icon>skip_next</v-icon>
             <span>{{ $t("NEXT") }}</span>
           </v-btn>
@@ -39,7 +39,7 @@
 
     <v-container>
       <v-card>
-          <div v-if="staged.length > 0">
+          <div v-if="activities.length > 0">
             <v-toolbar dark color="secondary">
               <v-card-title>
                 <v-btn icon>
@@ -50,7 +50,7 @@
             </v-toolbar>
 
             <v-list v-bind:expand="true" two-line subheader>
-              <template v-for="item in staged">
+              <template v-for="item in activities">
                 <v-list-tile v-bind:key="item._id">
                   <v-list-tile-content>
                     <v-list-tile-title>
@@ -114,8 +114,8 @@
         <v-card-title class="headline">{{$t('Confirm the delete')}}</v-card-title>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="green" v-on:click="asked_delete_document=null;asked_delete=false;">{{$t('Abort')}}</v-btn>
-          <v-btn color="red" v-on:click="confirm_delete_activity">{{$t('OK')}}</v-btn>
+          <v-btn color="success" v-on:click="asked_delete_document=null;asked_delete=false;">{{$t('Abort')}}</v-btn>
+          <v-btn color="error" v-on:click="confirm_delete_activity">{{$t('OK')}}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -133,7 +133,7 @@ export default {
       currentID: '',
       runningCounter: false,
       nextAction: '',
-      staged: [],
+      activities: [],
       dialog: false,
       subjects_list: [],
       dialog_subject: '',
@@ -204,9 +204,9 @@ export default {
     fetchAllSubjects () {
       let that = this
       this.db
-        .query('all_subjects/all_subjects', {include_docs: true})
+        .query('all_activities/all_activities', {include_docs: true})
         .then(res => {
-          that.staged = []
+          that.activities = []
           res.rows
             .filter(e => e.doc.stop_date !== undefined && e.doc.stop_hour !== undefined)
             .sort((a, b) => {
@@ -216,7 +216,7 @@ export default {
               return bTime - aTime
             })
             .forEach(e => {
-              that.staged.push(e.doc)
+              that.activities.push(e.doc)
             })
         })
         .catch(err => alert(err))
@@ -251,7 +251,7 @@ export default {
 
       // searching unstopped activities, and using the first of them in the live counter
       that.db
-        .query('all_subjects/all_subjects', {include_docs: true})
+        .query('all_activities/all_activities', {include_docs: true})
         .then(res => {
           let unstoppedList = res.rows.filter(e => e.doc.stop_date === undefined || e.doc.stop_hour === undefined)
           if (unstoppedList.length > 0) {

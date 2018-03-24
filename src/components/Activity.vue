@@ -23,8 +23,8 @@
           ></v-text-field>
           <v-date-picker v-model="newStartDate" no-title scrollable full-width>
             <v-spacer></v-spacer>
-            <v-btn color="red" v-on:click="startDateMenu = false">{{$t('Abort')}}</v-btn>
-            <v-btn color="green" v-on:click="$refs.startDateMenu.save(newStartDate)">{{$t('OK')}}</v-btn>
+            <v-btn color="error" v-on:click="startDateMenu = false">{{$t('Abort')}}</v-btn>
+            <v-btn color="success" v-on:click="$refs.startDateMenu.save(newStartDate)">{{$t('OK')}}</v-btn>
           </v-date-picker>
         </v-menu>
       </v-flex>
@@ -69,8 +69,8 @@
           ></v-text-field>
           <v-date-picker v-model="newStopDate" no-title scrollable full-width>
             <v-spacer></v-spacer>
-            <v-btn color="red" v-on:click="stopDateMenu = false">{{$t('Abort')}}</v-btn>
-            <v-btn color="green" v-on:click="$refs.stopDateMenu.save(newStopDate)">{{$t('OK')}}</v-btn>
+            <v-btn color="error" v-on:click="stopDateMenu = false">{{$t('Abort')}}</v-btn>
+            <v-btn color="success" v-on:click="$refs.stopDateMenu.save(newStopDate)">{{$t('OK')}}</v-btn>
           </v-date-picker>
         </v-menu>
       </v-flex>
