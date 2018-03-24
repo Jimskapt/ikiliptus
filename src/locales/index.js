@@ -18,9 +18,14 @@ document.cookie
     cookies[e[0]] = e[1]
   })
 
+console.log('cookies: ', cookies)
+
 if (cookies['locale'] === undefined) {
   cookies['locale'] = 'en_US'
-  document.cookie = 'locale=' + cookies['locale']
+  let oneYearFromNow = new Date()
+  oneYearFromNow.setTime(oneYearFromNow.getTime() + 365 * 24 * 60 * 60 * 1000)
+  let cookieData = 'locale=' + cookies['locale'] + '; expires=' + oneYearFromNow.toUTCString()
+  document.cookie = cookieData
 }
 
 const i18n = new VueI18n({
