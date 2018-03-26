@@ -43,5 +43,6 @@ export default new Router({
       component: DataLoader
     }
   ],
-  mode: 'history'
+  mode: 'hash',
+  base: __dirname
 })
