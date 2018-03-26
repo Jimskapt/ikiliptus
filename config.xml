@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.github.jimskapt.ikiliptus" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Ikiliptus</name>
+    <name>ikiliptus</name>
     <description>
         An offline and mobile-friendly time tracker (webapp).
     </description>
     <author email="rami.programmer@gmail.com" href="https://github.com/Jimskapt/ikiliptus">
         Thomas RAMIREZ
     </author>
-    <content src="dist/index.html#/live_counter" />
+    <content src="dist/index.html" />
     <plugin name="cordova-plugin-whitelist" spec="1" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
@@ -23,7 +23,6 @@
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
     </platform>
-    <plugin name="cordova-plugin-advanced-http2" spec="~1.6.1" />
     <engine name="android" spec="^7.0.0" />
     <engine name="browser" spec="^5.0.3" />
 </widget>
