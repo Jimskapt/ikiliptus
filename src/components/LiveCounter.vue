@@ -13,11 +13,19 @@
         </v-toolbar>
 
         <v-container>
-          <activity v-if="runningCounter" v-bind:id="currentID" v-bind:locked="['start_date','start_hour','stop_date','stop_hour']" v-bind:showCounter="true"></activity>
+          <div v-if="runningCounter">
+            <v-layout row>
+              <v-spacer></v-spacer>
+              <v-btn v-on:click="eventBus.$emit('save', new Date())" color="primary">
+                <v-icon>save</v-icon>
+                <span>{{ $t("Save") }}</span>
+              </v-btn>
+            </v-layout>
+            <activity v-bind:id="currentID" v-bind:locked="['stop_date','stop_hour']" v-bind:showCounter="true"></activity>
+          </div>
           <v-alert v-else color="info" outline icon="info" v-bind:value="true">
             {{ $t("Counter is not started") }}.
           </v-alert>
-
         </v-container>
 
         <v-card-actions>
@@ -157,6 +165,7 @@ export default {
       document.start_seconds = now.getSeconds()
       delete document.stop_date
       delete document.stop_hour
+      delete document.stop_seconds
       if (!document.data_type) {
         document.data_type = 'subject'
       }
@@ -231,6 +240,8 @@ export default {
         .then(() => {
           this.asked_delete = false
           this.asked_delete_document = null
+
+          this.fetchAllSubjects()
         })
         .catch(err => alert(err))
     }

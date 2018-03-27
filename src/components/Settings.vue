@@ -50,6 +50,13 @@
               </v-btn>
             </v-flex>
           </v-layout>
+
+          <v-container>
+            <v-btn dark block color="red" v-on:click="forceRefresh">
+              <v-icon>refresh</v-icon>
+              <span>{{ $t('Debug : force refresh page') }}</span>
+            </v-btn>
+          </v-container>
         </v-container>
 
         <v-card-actions>
@@ -105,6 +112,11 @@ export default {
 
       this.$settings.locale.set(this.locale.value)
       this.$settings.remoteCouch.set(this.remoteCouch)
+
+      this.$router.go(-1)
+    },
+    forceRefresh () {
+      location.reload()
     }
   }
 }

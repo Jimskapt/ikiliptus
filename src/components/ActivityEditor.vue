@@ -45,6 +45,13 @@ export default {
   },
   components: {
     'activity': Activity
+  },
+  mounted () {
+    let that = this
+    this.eventBus.$on('saveconfirm', () => that.$router.go(-1))
+  },
+  destroyed () {
+    this.eventBus.$off('saveconfirm')
   }
 }
 </script>
