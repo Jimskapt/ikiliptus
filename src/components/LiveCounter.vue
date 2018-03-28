@@ -173,19 +173,21 @@ export default {
         document.data_version = 1
       }
 
-      this.db.post(document, {}, function (err, res) {
-        if (err) {
-          alert(err)
-        }
+      this.db.kernel
+        .post(document, {}, function (err, res) {
+          if (err) {
+            alert(err)
+          }
 
-        if (res.ok === true) {
-          that.currentID = res.id
-          that.runningCounter = true
-          that.fetchAllSubjects()
-        } else {
-          alert('Not OK !', res)
-        }
-      })
+          if (res.ok === true) {
+            that.currentID = res.id
+            that.runningCounter = true
+            that.fetchAllSubjects()
+          } else {
+            alert('Not OK !', res)
+          }
+        })
+        .catch(err => alert(err))
     },
     stopCounter () {
       this.runningCounter = false
@@ -212,21 +214,26 @@ export default {
     },
     fetchAllSubjects () {
       let that = this
-      this.db
-        .query('all_activities/all_activities', {include_docs: true})
-        .then(res => {
-          that.activities = []
-          res.rows
-            .filter(e => e.doc.stop_date !== undefined && e.doc.stop_hour !== undefined)
-            .sort((a, b) => {
-              let bTime = that.$moment(b.doc.stop_date + ' ' + b.doc.stop_hour + ':' + b.doc.stop_seconds, 'YYYY-MM-DD HH:mm:ss').toDate()
-              let aTime = that.$moment(a.doc.stop_date + ' ' + a.doc.stop_hour + ':' + a.doc.stop_seconds, 'YYYY-MM-DD HH:mm:ss').toDate()
 
-              return bTime - aTime
+      this.db.checkAndCreateViews()
+        .then(() => {
+          that.db.kernel
+            .query('all_activities/all_activities', {include_docs: true})
+            .then(res => {
+              that.activities = []
+              res.rows
+                .filter(e => e.doc.stop_date !== undefined && e.doc.stop_hour !== undefined)
+                .sort((a, b) => {
+                  let bTime = that.$moment(b.doc.stop_date + ' ' + b.doc.stop_hour + ':' + b.doc.stop_seconds, 'YYYY-MM-DD HH:mm:ss').toDate()
+                  let aTime = that.$moment(a.doc.stop_date + ' ' + a.doc.stop_hour + ':' + a.doc.stop_seconds, 'YYYY-MM-DD HH:mm:ss').toDate()
+
+                  return bTime - aTime
+                })
+                .forEach(e => {
+                  that.activities.push(e.doc)
+                })
             })
-            .forEach(e => {
-              that.activities.push(e.doc)
-            })
+            .catch(err => alert(err))
         })
         .catch(err => alert(err))
     },
@@ -235,7 +242,7 @@ export default {
       this.asked_delete_document = document
     },
     confirm_delete_activity () {
-      this.db
+      this.db.kernel
         .remove(this.asked_delete_document)
         .then(() => {
           this.asked_delete = false
@@ -248,7 +255,7 @@ export default {
   },
   mounted () {
     let that = this
-    this.eventBus
+    that.eventBus
       .$on('dbupdate', function (data) {
         that.fetchAllSubjects()
       })
@@ -256,22 +263,19 @@ export default {
         that.liveSaveConfirm()
       })
 
-    // we defer the request because the view could be created, on page load.
-    setTimeout(function () {
-      that.fetchAllSubjects()
+    that.fetchAllSubjects()
 
-      // searching unstopped activities, and using the first of them in the live counter
-      that.db
-        .query('all_activities/all_activities', {include_docs: true})
-        .then(res => {
-          let unstoppedList = res.rows.filter(e => e.doc.stop_date === undefined || e.doc.stop_hour === undefined)
-          if (unstoppedList.length > 0) {
-            that.currentID = unstoppedList[0].doc._id
-            that.runningCounter = true
-          }
-        })
-        .catch(err => alert(err))
-    }, 750)
+    // searching unstopped activities, and using the first of them in the live counter
+    that.db.kernel
+      .query('all_activities/all_activities', {include_docs: true})
+      .then(res => {
+        let unstoppedList = res.rows.filter(e => e.doc.stop_date === undefined || e.doc.stop_hour === undefined)
+        if (unstoppedList.length > 0) {
+          that.currentID = unstoppedList[0].doc._id
+          that.runningCounter = true
+        }
+      })
+      .catch(err => alert(err))
   },
   destroyed () {
     this.eventBus.$off(['dbupdate', 'saveconfirm'])

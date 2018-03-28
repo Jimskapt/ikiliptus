@@ -46,7 +46,7 @@ export default {
   mounted () {
     let that = this
 
-    this.db
+    this.db.kernel
       .allDocs({include_docs: true}, function (err, doc) {
         if (err) {
           alert(err)

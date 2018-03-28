@@ -40,7 +40,7 @@ let settings = {
         document.cookie = 'remote_couch=' + value + '; expires=' + oneYearFromNow.toUTCString()
 
         this.path = value
-        this.value = settings.DB.sync(new PouchDB(this.path), {live: true})
+        this.value = settings.DB.kernel.sync(new PouchDB(this.path), {live: true})
 
         this.value
           .on('complete', function () {

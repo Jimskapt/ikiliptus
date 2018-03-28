@@ -296,6 +296,14 @@
       append-icon="close"
       v-bind:append-icon-cb="() => {newDetails=''}"
     ></v-text-field>
+
+    <v-snackbar v-bind:timeout="1000" top v-model="saveConfirmed" color="success">
+      <v-icon dark>done</v-icon>
+      {{ $t('Save confirmed') }}
+      <v-btn flat v-on:click="saveConfirmed = false">
+        <v-icon>close</v-icon>
+      </v-btn>
+    </v-snackbar>
   </v-form>
 </template>
 
@@ -349,20 +357,23 @@ export default {
       actors_list: [],
       categories_list: [],
       timeAgo: '00:00:00',
-      dbData: {}
+      dbData: {},
+      saveConfirmed: false
     }
   },
   methods: {
     save () {
       let that = this
-      this.db.put(this.newData, function (err, res) {
-        if (err) {
-          alert(err)
-        } else {
-          that.eventBus.$emit('saveconfirm')
-          that.refreshData()
-        }
-      })
+      this.db.kernel
+        .put(this.newData, function (err, res) {
+          if (err) {
+            alert(err)
+          } else {
+            that.eventBus.$emit('saveconfirm')
+            that.refreshData()
+          }
+        })
+        .catch(err => { alert(err) })
     },
     setStop (args) {
       if (args === undefined) {
@@ -378,55 +389,57 @@ export default {
     refreshData () {
       let that = this
 
-      this.db.get(this.id, function (err, doc) {
-        if (err) {
-          alert(err)
-        } else {
-          that.dbData = doc
+      this.db.kernel
+        .get(this.id, function (err, doc) {
+          if (err) {
+            alert(err)
+          } else {
+            that.dbData = doc
 
-          if (doc.start_date) {
-            that.newStartDate = doc.start_date
+            if (doc.start_date) {
+              that.newStartDate = doc.start_date
+            }
+            if (doc.start_hour) {
+              that.newStartHour = doc.start_hour
+            }
+            if (doc.start_seconds) {
+              that.newStartSeconds = doc.start_seconds
+            }
+            if (doc.stop_date) {
+              that.newStopDate = doc.stop_date
+            }
+            if (doc.stop_hour) {
+              that.newStopHour = doc.stop_hour
+            }
+            if (doc.stop_seconds) {
+              that.newStopSeconds = doc.stop_seconds
+            }
+            if (doc.subject) {
+              that.newSubject = doc.subject
+            }
+            if (doc.categories) {
+              that.newCategories = doc.categories
+            }
+            if (doc.voluntary) {
+              that.newVoluntary = doc.voluntary
+            }
+            if (doc.medium) {
+              that.newMedium = doc.medium
+            }
+            if (doc.actor) {
+              that.newActor = doc.actor
+            }
+            if (doc.details) {
+              that.newDetails = doc.details
+            }
           }
-          if (doc.start_hour) {
-            that.newStartHour = doc.start_hour
-          }
-          if (doc.start_seconds) {
-            that.newStartSeconds = doc.start_seconds
-          }
-          if (doc.stop_date) {
-            that.newStopDate = doc.stop_date
-          }
-          if (doc.stop_hour) {
-            that.newStopHour = doc.stop_hour
-          }
-          if (doc.stop_seconds) {
-            that.newStopSeconds = doc.stop_seconds
-          }
-          if (doc.subject) {
-            that.newSubject = doc.subject
-          }
-          if (doc.categories) {
-            that.newCategories = doc.categories
-          }
-          if (doc.voluntary) {
-            that.newVoluntary = doc.voluntary
-          }
-          if (doc.medium) {
-            that.newMedium = doc.medium
-          }
-          if (doc.actor) {
-            that.newActor = doc.actor
-          }
-          if (doc.details) {
-            that.newDetails = doc.details
-          }
-        }
-      })
+        })
+        .catch(err => { alert(err) })
     },
     fetchAutocompleteData () {
       let that = this
 
-      this.db
+      this.db.kernel
         .query('subjects_powers/subjects_powers', {group: true})
         .then(res => {
           that.subjects_list = []
@@ -436,7 +449,7 @@ export default {
         })
         .catch(err => { alert(err) })
 
-      this.db
+      this.db.kernel
         .query('mediums_powers/mediums_powers', {group: true})
         .then(res => {
           that.mediums_list = []
@@ -446,7 +459,7 @@ export default {
         })
         .catch(err => { alert(err) })
 
-      this.db
+      this.db.kernel
         .query('actors_powers/actors_powers', {group: true})
         .then(res => {
           that.actors_list = []
@@ -456,7 +469,7 @@ export default {
         })
         .catch(err => { alert(err) })
 
-      this.db
+      this.db.kernel
         .query('categories_powers/categories_powers', {group: true})
         .then(res => {
           that.categories_list = []
@@ -487,6 +500,9 @@ export default {
         // delta -= now.getTimezoneOffset() * 60 * 1000
         this.timeAgo = this.$moment(delta).format('HH:mm:ss')
       }
+    },
+    saveconfirmed () {
+      this.saveConfirmed = true
     }
   },
   computed: {
@@ -576,6 +592,7 @@ export default {
   mounted () {
     this.eventBus.$on('setStop', this.setStop)
     this.eventBus.$on('save', this.save)
+    this.eventBus.$on('saveconfirm', this.saveconfirmed)
 
     this.refreshData()
 
@@ -594,6 +611,7 @@ export default {
   destroyed () {
     this.eventBus.$off('setStop')
     this.eventBus.$off('save')
+    this.eventBus.$off('saveconfirm')
   }
 }
 </script>

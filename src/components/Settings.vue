@@ -33,7 +33,7 @@
               <v-subheader>{{ $t('Export your data') }}</v-subheader>
             </v-flex>
             <v-flex xs6>
-              <v-btn small block color="secondary" v-on:click="$router.push({name:'Save'})">
+              <v-btn block color="secondary" v-on:click="$router.push({name:'Save'})">
                 <v-icon>save</v-icon>
                 <span>{{ $t('Save') }}</span>
               </v-btn>
@@ -44,7 +44,7 @@
               <v-subheader>{{ $t('Import your data') }}</v-subheader>
             </v-flex>
             <v-flex xs6>
-              <v-btn small block color="secondary" v-on:click="$router.push({name:'Load'})">
+              <v-btn block color="secondary" v-on:click="$router.push({name:'Load'})">
                 <v-icon>unarchive</v-icon>
                 <span>{{ $t('Load') }}</span>
               </v-btn>
@@ -52,9 +52,9 @@
           </v-layout>
 
           <v-container>
-            <v-btn dark block color="red" v-on:click="forceRefresh">
+            <v-btn dark block color="error" v-on:click="forceRefresh">
               <v-icon>refresh</v-icon>
-              <span>{{ $t('Debug : force refresh page') }}</span>
+              <span>{{ $t('Debug : refresh page') }}</span>
             </v-btn>
           </v-container>
         </v-container>

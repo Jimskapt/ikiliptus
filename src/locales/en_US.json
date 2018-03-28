@@ -31,7 +31,10 @@
   "Please paste your data in the following field and click on the LOAD button, in order to load them in this app": "Please paste your data in the following field and click on the LOAD button, in order to load them in this app",
   "Show it human-readable ?": "Show it human-readable ?",
   "Categories": "Categories",
+  "Paste your data here": "Paste your data here",
   "Confirm the delete": "Confirm the delete",
   "Your couchDB URI": "Your couchDB URI",
-  "Locale": "Locale"
+  "Locale": "Locale",
+  "Debug : refresh page": "Debug : refresh page",
+  "Save confirmed": "Save confirmed"
 }

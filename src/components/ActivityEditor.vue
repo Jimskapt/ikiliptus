@@ -48,7 +48,7 @@ export default {
   },
   mounted () {
     let that = this
-    this.eventBus.$on('saveconfirm', () => that.$router.go(-1))
+    this.eventBus.$on('saveconfirm', () => setTimeout(function () { that.$router.go(-1) }, 1000))
   },
   destroyed () {
     this.eventBus.$off('saveconfirm')
