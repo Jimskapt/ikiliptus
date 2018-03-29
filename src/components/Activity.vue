@@ -220,32 +220,16 @@
       v-bind:disabled="locked.includes('voluntary')"
     ></v-checkbox>
 
-    <v-layout row>
-      <v-flex xs6>
-        <v-text-field
-          v-if="!newVoluntary"
-          v-bind:label="$t('Medium')"
-          v-model="newMedium"
-          prepend-icon="phone"
-          v-bind:disabled="locked.includes('medium')"
-          v-on:input="showMediums = true"
-          append-icon="close"
-          v-bind:append-icon-cb="() => {newMedium=''}"
-        ></v-text-field>
-      </v-flex>
-      <v-flex xs6>
-        <v-text-field
-          v-if="!newVoluntary"
-          v-bind:label="$t('Actor')"
-          v-model="newActor"
-          prepend-icon="people"
-          v-bind:disabled="locked.includes('actor')"
-          v-on:input="showActors = true"
-          append-icon="close"
-          v-bind:append-icon-cb="() => {newActor=''}"
-        ></v-text-field>
-      </v-flex>
-    </v-layout>
+    <v-text-field
+      v-if="!newVoluntary"
+      v-bind:label="$t('Medium')"
+      v-model="newMedium"
+      prepend-icon="phone"
+      v-bind:disabled="locked.includes('medium')"
+      v-on:input="showMediums = true"
+      append-icon="close"
+      v-bind:append-icon-cb="() => {newMedium=''}"
+    ></v-text-field>
 
     <v-card v-if="showMediums && mediums_founds && mediums_founds.length > 0">
       <v-toolbar dark dense color="secondary">
@@ -266,6 +250,17 @@
         </template>
       </v-list>
     </v-card>
+
+    <v-text-field
+      v-if="!newVoluntary"
+      v-bind:label="$t('Actor')"
+      v-model="newActor"
+      prepend-icon="people"
+      v-bind:disabled="locked.includes('actor')"
+      v-on:input="showActors = true"
+      append-icon="close"
+      v-bind:append-icon-cb="() => {newActor=''}"
+    ></v-text-field>
 
     <v-container v-if="showActors && actors_founds && actors_founds.length > 0">
       <v-toolbar dark dense color="secondary">
