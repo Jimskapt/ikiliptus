@@ -57,8 +57,14 @@
               </v-card-title>
             </v-toolbar>
 
+            <v-container class="text-xs-center">
+              <v-pagination v-bind:length="pagesCount" v-model="lastActivitiesPage"></v-pagination>
+            </v-container>
+
+            <v-divider></v-divider>
+
             <v-list v-bind:expand="true" two-line subheader>
-              <template v-for="item in activities">
+              <template v-for="item in paginatedActivies">
                 <v-list-tile v-bind:key="item._id">
                   <v-list-tile-content>
                     <v-list-tile-title>
@@ -146,7 +152,9 @@ export default {
       subjects_list: [],
       dialog_subject: '',
       asked_delete: false,
-      asked_delete_document: null
+      asked_delete_document: null,
+      lastActivitiesPage: 1,
+      activitiesPerPage: 10
     }
   },
   methods: {
@@ -251,6 +259,28 @@ export default {
           this.fetchAllSubjects()
         })
         .catch(err => alert(err))
+    }
+  },
+  computed: {
+    paginatedActivies () {
+      let result = []
+
+      if (this.activities === undefined || this.activities === null || this.activities === []) {
+        return result
+      }
+
+      for (let i = 0; i < this.activitiesPerPage && ((this.lastActivitiesPage - 1) * this.activitiesPerPage + i) < this.activities.length; i++) {
+        result.push(this.activities[(this.lastActivitiesPage - 1) * this.activitiesPerPage + i])
+      }
+
+      return result
+    },
+    pagesCount () {
+      if (this.activities === undefined || this.activities === null || this.activities === []) {
+        return 1
+      }
+
+      return parseInt(Math.ceil(this.activities.length / this.activitiesPerPage))
     }
   },
   mounted () {
