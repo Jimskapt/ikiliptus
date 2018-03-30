@@ -262,7 +262,7 @@ export default {
     }
   },
   computed: {
-    paginatedActivies () {
+    paginatedActivities () {
       let result = []
 
       if (this.activities === undefined || this.activities === null || this.activities === []) {

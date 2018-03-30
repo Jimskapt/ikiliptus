@@ -5,6 +5,7 @@ import DataLoader from '@/components/DataLoader'
 import LiveCounter from '@/components/LiveCounter'
 import DataDisplay from '@/components/DataDisplay'
 import ActivityEditor from '@/components/ActivityEditor'
+import DataUpgrade from '@/components/DataUpgrade'
 
 Vue.use(Router)
 
@@ -41,6 +42,11 @@ export default new Router({
       path: '/load',
       name: 'Load',
       component: DataLoader
+    },
+    {
+      path: '/data_upgrade',
+      name: 'DataUpgrade',
+      component: DataUpgrade
     }
   ],
   mode: 'hash',
