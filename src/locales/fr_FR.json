@@ -36,5 +36,6 @@
   "Your couchDB URI": "L'adresse URI de votre couchDB",
   "Locale": "Localisation",
   "Debug : refresh page": "Debug : rafraîchir page",
-  "Save confirmed": "Enregistrement confirmé"
+  "Save confirmed": "Enregistrement confirmé",
+  "Search": "Rechercher"
 }

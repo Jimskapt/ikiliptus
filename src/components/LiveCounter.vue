@@ -47,79 +47,89 @@
 
     <v-container>
       <v-card>
-          <div v-if="paginatedActivities.length > 0">
-            <v-toolbar dark color="secondary">
-              <v-card-title>
-                <v-btn icon>
-                  <v-icon>inbox</v-icon>
-                </v-btn>
-                <span>{{ $t("Last activities") }}</span>
-              </v-card-title>
-            </v-toolbar>
+        <v-toolbar dark color="secondary">
+          <v-card-title>
+            <v-btn icon>
+              <v-icon>inbox</v-icon>
+            </v-btn>
+            <span>{{ $t("Last activities") }}</span>
+          </v-card-title>
+        </v-toolbar>
 
-            <v-container class="text-xs-center">
-              <v-pagination v-bind:length="pagesCount" v-model="lastActivitiesPage"></v-pagination>
-            </v-container>
+        <v-container class="text-xs-center">
+          <v-text-field
+            v-bind:label="$t('Search')"
+            v-model="activitiesSearch"
+            prepend-icon="search"
+            append-icon="close"
+            v-bind:append-icon-cb="() => {activitiesSearch=''}"
+          ></v-text-field>
+          <v-pagination v-bind:length="pagesCount" v-model="lastActivitiesPage" v-if="searchedActivities.length > 0"></v-pagination>
+        </v-container>
 
-            <v-divider></v-divider>
+        <v-divider></v-divider>
 
-            <v-list v-bind:expand="true" two-line subheader>
-              <template v-for="item in paginatedActivities">
-                <v-list-tile v-bind:key="item._id">
-                  <v-list-tile-content>
-                    <v-list-tile-title>
-                      <router-link v-bind:to="{name:'Activity', params: {id: item._id}}">
-                        <span v-if="item.subject">
-                          {{item.subject}}
-                        </span>
-                        <span v-else>
-                          <span v-if="item.start_date != item.stop_date">
-                          {{$t('From')}}
-                          {{ $moment(item.start_date, 'YYYY-MM-DD').format($t('date_format')) }}
-                          {{ $moment(item.start_hour + ':' + item.start_seconds, 'HH:mm:ss', 'HH:mm:ss').format($t('hour_format')) }}
-                          {{$t('To').toLowerCase()}}
-                          {{ $moment(item.stop_date, 'YYYY-MM-DD').format($t('date_format')) }}
-                          {{ $moment(item.stop_hour + ':' + item.stop_seconds, 'HH:mm:ss').format($t('hour_format')) }}
-                          </span>
-                          <span v-else>
-                            {{ $moment(item.start_date, 'YYYY-MM-DD').format($t('date_format')) }} :
-                            {{$t('From').toLowerCase()}}
-                            {{ $moment(item.start_hour + ':' + item.start_seconds, 'HH:mm:ss', 'HH:mm:ss').format($t('hour_format')) }}
-                            {{$t('To').toLowerCase()}}
-                            {{ $moment(item.stop_hour + ':' + item.stop_seconds, 'HH:mm:ss').format($t('hour_format')) }}
-                          </span>
-                        </span>
-                      </router-link>
-                    </v-list-tile-title>
-                    <v-list-tile-sub-title>
-                      <v-chip small disabled v-if="item.medium && item.medium !== ''">
-                        <v-avatar>
-                          <v-icon>phone</v-icon>
-                        </v-avatar>
-                        <span>{{item.medium}}</span>
-                      </v-chip>
-                      <v-chip small disabled v-if="item.actor && item.actor !== ''">
-                        <v-avatar>
-                          <v-icon>people</v-icon>
-                        </v-avatar>
-                        <span>{{item.actor}}</span>
-                      </v-chip>
-                    </v-list-tile-sub-title>
-                  </v-list-tile-content>
-                  <v-list-tile-action>
+        <v-list v-bind:expand="true" dense two-line subheader>
+          <template v-for="item in paginatedActivities">
+            <v-list-tile v-bind:key="item._id">
+              <v-list-tile-content>
+                <v-list-tile-title>
+                  <router-link v-bind:to="{name:'Activity', params: {id: item._id}}">
+                    <span v-if="item.subject">
+                      {{item.subject}}
+                    </span>
+                    <span v-else>
+                      <span v-if="item.start_date != item.stop_date">
+                      {{$t('From')}}
+                      {{ $moment(item.start_date, 'YYYY-MM-DD').format($t('date_format')) }}
+                      {{ $moment(item.start_hour + ':' + item.start_seconds, 'HH:mm:ss', 'HH:mm:ss').format($t('hour_format')) }}
+                      {{$t('To').toLowerCase()}}
+                      {{ $moment(item.stop_date, 'YYYY-MM-DD').format($t('date_format')) }}
+                      {{ $moment(item.stop_hour + ':' + item.stop_seconds, 'HH:mm:ss').format($t('hour_format')) }}
+                      </span>
+                      <span v-else>
+                        {{ $moment(item.start_date, 'YYYY-MM-DD').format($t('date_format')) }} :
+                        {{$t('From').toLowerCase()}}
+                        {{ $moment(item.start_hour + ':' + item.start_seconds, 'HH:mm:ss', 'HH:mm:ss').format($t('hour_format')) }}
+                        {{$t('To').toLowerCase()}}
+                        {{ $moment(item.stop_hour + ':' + item.stop_seconds, 'HH:mm:ss').format($t('hour_format')) }}
+                      </span>
+                    </span>
+                  </router-link>
+                </v-list-tile-title>
+                <v-list-tile-sub-title>
+                  <v-chip small disabled v-if="item.medium && item.medium !== ''">
+                    <v-avatar>
+                      <v-icon>phone</v-icon>
+                    </v-avatar>
+                    <span>{{item.medium}}</span>
+                  </v-chip>
+                  <v-chip small disabled v-if="item.actor && item.actor !== ''">
+                    <v-avatar>
+                      <v-icon>people</v-icon>
+                    </v-avatar>
+                    <span>{{item.actor}}</span>
+                  </v-chip>
+                </v-list-tile-sub-title>
+              </v-list-tile-content>
+              <v-list-tile-action>
+                <v-layout row>
+                  <v-flex xs6>
                     <v-btn flat icon v-on:click="nextCounter(item)" v-bind:disabled="runningCounter">
                       <v-icon>content_copy</v-icon>
                     </v-btn>
+                  </v-flex>
+                  <v-flex xs6>
                     <v-btn flat icon v-on:click="ask_delete_activity(item)">
                       <v-icon>delete</v-icon>
                     </v-btn>
-                  </v-list-tile-action>
-                </v-list-tile>
-                <v-divider v-bind:key="'separator-' + item._id"></v-divider>
-              </template>
-            </v-list>
-
-          </div>
+                  </v-flex>
+                </v-layout>
+              </v-list-tile-action>
+            </v-list-tile>
+            <v-divider v-bind:key="'separator-' + item._id"></v-divider>
+          </template>
+        </v-list>
       </v-card>
     </v-container>
 
@@ -154,7 +164,8 @@ export default {
       asked_delete: false,
       asked_delete_document: null,
       lastActivitiesPage: 1,
-      activitiesPerPage: 10
+      activitiesPerPage: 10,
+      activitiesSearch: ''
     }
   },
   methods: {
@@ -223,11 +234,6 @@ export default {
     fetchAllSubjects () {
       let that = this
 
-      this.db.kernel
-        .query('all_activities/all_activities', {include_docs: true})
-        .then(res => console.log(res.rows))
-        .catch(err => alert(err))
-
       this.db.checkAndCreateViews()
         .then(() => {
           that.db.kernel
@@ -267,25 +273,32 @@ export default {
     }
   },
   computed: {
+    searchedActivities () {
+      if (this.activities === undefined || this.activities === null || this.activities === []) {
+        return []
+      }
+
+      return this.activities.filter(e => e.subject.includes(this.activitiesSearch))
+    },
     paginatedActivities () {
       let result = []
 
-      if (this.activities === undefined || this.activities === null || this.activities === []) {
+      if (this.searchedActivities === undefined || this.searchedActivities === null || this.searchedActivities === []) {
         return result
       }
 
-      for (let i = 0; i < this.activitiesPerPage && ((this.lastActivitiesPage - 1) * this.activitiesPerPage + i) < this.activities.length; i++) {
-        result.push(this.activities[(this.lastActivitiesPage - 1) * this.activitiesPerPage + i])
+      for (let i = 0; i < this.activitiesPerPage && ((this.lastActivitiesPage - 1) * this.activitiesPerPage + i) < this.searchedActivities.length; i++) {
+        result.push(this.searchedActivities[(this.lastActivitiesPage - 1) * this.activitiesPerPage + i])
       }
 
       return result
     },
     pagesCount () {
-      if (this.activities === undefined || this.activities === null || this.activities === []) {
+      if (this.searchedActivities === undefined || this.searchedActivities === null || this.searchedActivities === []) {
         return 1
       }
 
-      return parseInt(Math.ceil(this.activities.length / this.activitiesPerPage))
+      return parseInt(Math.ceil(this.searchedActivities.length / this.activitiesPerPage))
     }
   },
   mounted () {
