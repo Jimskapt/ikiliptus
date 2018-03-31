@@ -492,7 +492,16 @@ export default {
         }
         let delta = now
         delta -= this.$moment(this.newStartDate + ' ' + this.newStartHour + ':' + this.newStartSeconds, 'YYYY-MM-DD HH:mm:ss').toDate()
-        // delta -= now.getTimezoneOffset() * 60 * 1000
+
+        let way = +1
+        let offset = new Date().getTimezoneOffset() / 60
+        if (offset < 0) {
+          way = -1
+          offset *= -1
+        }
+
+        delta += way * this.$moment('1990-01-01 ' + offset + ':00:00', 'YYYY-MM-DD HH:mm:ss').toDate()
+
         this.timeAgo = this.$moment(delta).format('HH:mm:ss')
       }
     },

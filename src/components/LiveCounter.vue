@@ -98,6 +98,12 @@
                   </router-link>
                 </v-list-tile-title>
                 <v-list-tile-sub-title>
+                  <v-chip small disabled>
+                    <v-avatar>
+                      <v-icon>alarm</v-icon>
+                    </v-avatar>
+                    <span>{{ deltaTime(item) }}</span>
+                  </v-chip>
                   <v-chip small disabled v-if="item.medium && item.medium !== ''">
                     <v-avatar>
                       <v-icon>phone</v-icon>
@@ -270,6 +276,25 @@ export default {
           this.fetchAllSubjects()
         })
         .catch(err => alert(err))
+    },
+    deltaTime (activity) {
+      let delta = this.$moment(activity.stop_date + ' ' + activity.stop_hour + ':' + activity.stop_seconds, 'YYYY-MM-DD HH:mm:ss').toDate()
+      delta -= this.$moment(activity.start_date + ' ' + activity.start_hour + ':' + activity.start_seconds, 'YYYY-MM-DD HH:mm:ss').toDate()
+
+      let way = +1
+      let offset = new Date().getTimezoneOffset() / 60
+      if (offset < 0) {
+        way = -1
+        offset *= -1
+      }
+
+      delta += way * this.$moment('1990-01-01 ' + offset + ':00:00', 'YYYY-MM-DD HH:mm:ss').toDate()
+
+      if (this.$moment(delta).format('HH') === '00') {
+        return this.$moment(delta).format('mm:ss')
+      } else {
+        return this.$moment(delta).format('HH:mm:ss')
+      }
     }
   },
   computed: {
