@@ -51,7 +51,8 @@ export default {
         if (err) {
           alert(err)
         } else {
-          that.json = doc.rows
+          that.json = []
+          doc.rows.forEach(e => that.json.push(e.doc))
         }
       })
       .catch(err => alert(err))

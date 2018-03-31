@@ -47,7 +47,7 @@
 
     <v-container>
       <v-card>
-          <div v-if="activities.length > 0">
+          <div v-if="paginatedActivities.length > 0">
             <v-toolbar dark color="secondary">
               <v-card-title>
                 <v-btn icon>
@@ -64,7 +64,7 @@
             <v-divider></v-divider>
 
             <v-list v-bind:expand="true" two-line subheader>
-              <template v-for="item in paginatedActivies">
+              <template v-for="item in paginatedActivities">
                 <v-list-tile v-bind:key="item._id">
                   <v-list-tile-content>
                     <v-list-tile-title>
@@ -222,6 +222,11 @@ export default {
     },
     fetchAllSubjects () {
       let that = this
+
+      this.db.kernel
+        .query('all_activities/all_activities', {include_docs: true})
+        .then(res => console.log(res.rows))
+        .catch(err => alert(err))
 
       this.db.checkAndCreateViews()
         .then(() => {
