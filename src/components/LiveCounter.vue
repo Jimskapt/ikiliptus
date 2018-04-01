@@ -13,22 +13,25 @@
         </v-toolbar>
 
         <v-container>
-          <div v-if="runningCounter">
-            <v-layout row>
-              <v-spacer></v-spacer>
-              <v-btn v-on:click="eventBus.$emit('save', new Date())" color="primary">
-                <v-icon>save</v-icon>
-                <span>{{ $t("Save") }}</span>
-              </v-btn>
-            </v-layout>
-            <activity v-bind:id="currentID" v-bind:locked="['stop_date','stop_hour']" v-bind:showCounter="true"></activity>
+          <v-progress-linear v-bind:indeterminate="true" v-if="!loaded"></v-progress-linear>
+          <div v-else>
+            <div v-if="runningCounter">
+              <v-layout row>
+                <v-spacer></v-spacer>
+                <v-btn v-on:click="eventBus.$emit('save', new Date())" color="primary">
+                  <v-icon>save</v-icon>
+                  <span>{{ $t("Save") }}</span>
+                </v-btn>
+              </v-layout>
+              <activity v-bind:id="currentID" v-bind:locked="['stop_date','stop_hour']" v-bind:showCounter="true"></activity>
+            </div>
+            <v-alert v-else color="info" outline icon="info" v-bind:value="true">
+              {{ $t("Counter is not started") }}.
+            </v-alert>
           </div>
-          <v-alert v-else color="info" outline icon="info" v-bind:value="true">
-            {{ $t("Counter is not started") }}.
-          </v-alert>
         </v-container>
 
-        <v-card-actions>
+        <v-card-actions v-if="loaded">
           <v-btn v-on:click="startCounter" v-bind:disabled="runningCounter" color="success">
             <v-icon>play_arrow</v-icon>
             <span>{{ $t("START") }}</span>
@@ -56,20 +59,24 @@
           </v-card-title>
         </v-toolbar>
 
-        <v-container class="text-xs-center">
-          <v-text-field
-            v-bind:label="$t('Search')"
-            v-model="activitiesSearch"
-            prepend-icon="search"
-            append-icon="close"
-            v-bind:append-icon-cb="() => {activitiesSearch=''}"
-          ></v-text-field>
-          <v-pagination v-bind:length="pagesCount" v-model="lastActivitiesPage" v-if="searchedActivities.length > 0"></v-pagination>
+        <v-container v-if="!loaded">
+          <v-progress-linear v-bind:indeterminate="true"></v-progress-linear>
         </v-container>
+        <v-list dense two-line subheader v-else>
 
-        <v-divider></v-divider>
+          <v-container class="text-xs-center">
+            <v-text-field
+              v-bind:label="$t('Search')"
+              v-model="activitiesSearch"
+              prepend-icon="search"
+              append-icon="close"
+              v-bind:append-icon-cb="() => {activitiesSearch=''}"
+            ></v-text-field>
+            <v-pagination v-bind:length="pagesCount" v-model="lastActivitiesPage" v-if="searchedActivities.length > 0"></v-pagination>
+          </v-container>
 
-        <v-list v-bind:expand="true" dense two-line subheader>
+          <v-divider></v-divider>
+
           <template v-for="item in paginatedActivities">
             <v-list-tile v-bind:key="item._id">
               <v-list-tile-content>
@@ -171,7 +178,8 @@ export default {
       asked_delete_document: null,
       lastActivitiesPage: 1,
       activitiesPerPage: 10,
-      activitiesSearch: ''
+      activitiesSearch: '',
+      loaded: false
     }
   },
   methods: {
@@ -240,13 +248,16 @@ export default {
     fetchAllSubjects () {
       let that = this
 
-      this.db.checkAndCreateViews()
+      that.loaded = false
+
+      that.db.checkAndCreateViews()
         .then(() => {
           that.db.kernel
             .query('all_activities/all_activities', {include_docs: true})
             .then(res => {
               that.activities = []
-              res.rows
+
+              let sorted = res.rows
                 .filter(e => e.doc.stop_date !== undefined && e.doc.stop_hour !== undefined)
                 .sort((a, b) => {
                   let bTime = that.$moment(b.doc.stop_date + ' ' + b.doc.stop_hour + ':' + b.doc.stop_seconds, 'YYYY-MM-DD HH:mm:ss').toDate()
@@ -254,9 +265,12 @@ export default {
 
                   return bTime - aTime
                 })
-                .forEach(e => {
-                  that.activities.push(e.doc)
-                })
+
+              for (let i = 0; i < sorted.length; i++) {
+                that.activities.push(sorted[i].doc)
+              }
+
+              that.loaded = true
             })
             .catch(err => alert(err))
         })
