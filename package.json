@@ -1,7 +1,7 @@
 {
   "name": "ikiliptus",
   "displayName": "ikiliptus",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A time tracker",
   "main": "index.js",
   "author": "Jimskapt <rami.programmer@gmail.com>",
