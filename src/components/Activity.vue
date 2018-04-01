@@ -178,21 +178,25 @@
       </v-list>
     </v-card>
 
-    <v-select
-      v-bind:label="$t('Categories')"
-      v-on:input="showCategories = true"
-      v-model="newCategories"
-      prepend-icon="move_to_inbox"
-      chips
-      tags
-      clearable
-    >
-      <template slot="selection" slot-scope="data">
-        <v-chip small close v-on:input="removeCategory(data.item)">
-          <strong>{{data.item}}</strong>
-        </v-chip>
-      </template>
-    </v-select>
+    <v-layout>
+      <v-btn icon v-on:click="showCategories = true">
+        <v-icon>move_to_inbox</v-icon>
+      </v-btn>
+      <v-select
+        v-bind:label="$t('Categories')"
+        v-on:input="showCategories = true"
+        v-model="newCategories"
+        chips
+        tags
+        clearable
+      >
+        <template slot="selection" slot-scope="data">
+          <v-chip small close v-on:input="removeCategory(data.item)">
+            <strong>{{data.item}}</strong>
+          </v-chip>
+        </template>
+      </v-select>
+    </v-layout>
 
     <v-card v-if="showCategories && categories_list && categories_list.length > 0">
       <v-toolbar dark dense color="secondary">
