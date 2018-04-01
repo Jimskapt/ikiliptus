@@ -11,6 +11,9 @@
         <v-btn icon v-bind:to="{name: 'Settings'}">
           <v-icon>settings</v-icon>
         </v-btn>
+        <v-btn icon v-on:click="openGithub">
+          <v-icon>help_outline</v-icon>
+        </v-btn>
     </v-toolbar>
     <router-view/>
   </v-app>
@@ -28,6 +31,11 @@ export default {
   },
   mounted () {
     this.release = Package.version
+  },
+  methods: {
+    openGithub () {
+      window.open('https://github.com/jimskapt/ikiliptus', '_blank')
+    }
   }
 }
 </script>
