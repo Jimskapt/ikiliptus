@@ -128,7 +128,7 @@
               <v-list-tile-action>
                 <v-layout row>
                   <v-flex xs6>
-                    <v-btn flat icon v-on:click="nextCounter(item)" v-bind:disabled="runningCounter">
+                    <v-btn flat icon v-on:click="nextCounter(item);goToTop();" v-bind:disabled="runningCounter">
                       <v-icon>content_copy</v-icon>
                     </v-btn>
                   </v-flex>
@@ -177,7 +177,7 @@ export default {
       asked_delete: false,
       asked_delete_document: null,
       lastActivitiesPage: 1,
-      activitiesPerPage: 10,
+      activitiesPerPage: 30,
       activitiesSearch: '',
       loaded: false
     }
@@ -309,6 +309,9 @@ export default {
       } else {
         return this.$moment(delta).format('HH:mm:ss')
       }
+    },
+    goToTop () {
+      window.scrollTo(0, 0)
     }
   },
   computed: {
