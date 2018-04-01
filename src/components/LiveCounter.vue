@@ -177,7 +177,7 @@ export default {
       asked_delete: false,
       asked_delete_document: null,
       lastActivitiesPage: 1,
-      activitiesPerPage: 30,
+      activitiesPerPage: 10,
       activitiesSearch: '',
       loaded: false
     }

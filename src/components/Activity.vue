@@ -1,6 +1,5 @@
 <template>
   <v-form>
-
     <p style="font-size:48px;text-align:center;">
       {{ timeAgo }}
     </p>
@@ -369,7 +368,6 @@ export default {
             alert(err)
           } else {
             that.eventBus.$emit('saveconfirm')
-            that.refreshData()
           }
         })
         .catch(err => { alert(err) })
