@@ -8,6 +8,9 @@
         <v-btn icon v-bind:to="{name: 'LiveCounter'}">
           <v-icon>alarm</v-icon>
         </v-btn>
+        <v-btn icon v-bind:to="{name: 'Analytics'}">
+          <v-icon>trending_up</v-icon>
+        </v-btn>
         <v-btn icon v-bind:to="{name: 'Settings'}">
           <v-icon>settings</v-icon>
         </v-btn>

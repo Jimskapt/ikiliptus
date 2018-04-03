@@ -6,6 +6,7 @@ import LiveCounter from '@/components/LiveCounter'
 import DataDisplay from '@/components/DataDisplay'
 import ActivityEditor from '@/components/ActivityEditor'
 import DataUpgrade from '@/components/DataUpgrade'
+import Analytics from '@/components/Analytics'
 
 Vue.use(Router)
 
@@ -47,6 +48,11 @@ export default new Router({
       path: '/data_upgrade',
       name: 'DataUpgrade',
       component: DataUpgrade
+    },
+    {
+      path: '/analytics',
+      name: 'Analytics',
+      component: Analytics
     }
   ],
   mode: 'hash',
