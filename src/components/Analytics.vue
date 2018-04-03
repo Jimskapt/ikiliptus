@@ -133,7 +133,13 @@
             </v-flex>
           </v-layout>
 
+          <v-btn icon v-on:click="randomize">
+            <v-icon>shuffle</v-icon>
+          </v-btn>
+
           <v-divider></v-divider>
+
+          <commit-chart v-bind:chart-data="dataCollection"></commit-chart>
         </v-container>
       </v-card>
     </v-container>
@@ -142,6 +148,9 @@
 </template>
 
 <script>
+import { Bar, mixins } from 'vue-chartjs'
+const { reactiveProp } = mixins
+
 export default {
   name: 'Analytics',
   data () {
@@ -155,7 +164,15 @@ export default {
       toDateMenu: false,
       toHourMenu: false,
       toDate: '1990-01-01',
-      toHour: '00:00'
+      toHour: '00:00',
+      randomizedData: [],
+      randomizedData2: []
+    }
+  },
+  methods: {
+    randomize () {
+      this.randomizedData.push(Math.floor(Math.random() * 40))
+      this.randomizedData2.push(Math.floor(Math.random() * 20))
     }
   },
   computed: {
@@ -186,6 +203,40 @@ export default {
       }
 
       return ''
+    },
+    dataCollection () {
+      let labels = []
+      for (let i = 1; i <= this.randomizedData.length; i++) {
+        labels.push(i)
+      }
+
+      let that = this
+
+      return {
+        labels: labels,
+        datasets: [
+          {
+            label: 'alpha',
+            backgroundColor: '#0000FF',
+            data: that.randomizedData
+          },
+          {
+            label: 'beta',
+            backgroundColor: '#00FFFF',
+            data: that.randomizedData2
+          }
+        ]
+      }
+    }
+  },
+  components: {
+    commitChart: {
+      extends: Bar,
+      mixins: [reactiveProp],
+      props: ['options'],
+      mounted () {
+        this.renderChart(this.chartData, this.options)
+      }
     }
   }
 }
