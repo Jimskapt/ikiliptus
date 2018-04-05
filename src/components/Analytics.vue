@@ -139,7 +139,8 @@
 
           <v-divider></v-divider>
 
-          <commit-chart v-bind:chart-data="dataCollection"></commit-chart>
+          <bar-chart v-bind:chart-data="activitiesCollection" v-bind:height="100"></bar-chart>
+          <bar-chart v-bind:chart-data="durationsCollection" v-bind:height="100" v-bind:options="hoursOptions"></bar-chart>
         </v-container>
       </v-card>
     </v-container>
@@ -148,12 +149,15 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import { Bar, mixins } from 'vue-chartjs'
 const { reactiveProp } = mixins
 
 export default {
   name: 'Analytics',
   data () {
+    let that = this
+
     return {
       from: false,
       to: false,
@@ -165,14 +169,65 @@ export default {
       toHourMenu: false,
       toDate: '1990-01-01',
       toHour: '00:00',
-      randomizedData: [],
-      randomizedData2: []
+      randomizedData: {},
+      hoursOptions: {
+        scales: {
+          yAxes: [
+            {
+              ticks: {
+                beginAtZero: true,
+                callback (value, index, values) {
+                  return that.secondsDurationToFormatedHours(value)
+                }
+              }
+            }
+          ]
+        },
+        tooltips: {
+          callbacks: {
+            label (tooltipItem, data) {
+              return that.secondsDurationToFormatedHours(tooltipItem.yLabel)
+            }
+          }
+        }
+      }
     }
   },
   methods: {
     randomize () {
-      this.randomizedData.push(Math.floor(Math.random() * 40))
-      this.randomizedData2.push(Math.floor(Math.random() * 20))
+      let date = (2000 + Math.floor(Math.random() * 18)) + '-' + Math.floor(Math.random() * 12) + '-' + Math.floor(Math.random() * 28)
+      let hours = Math.floor(Math.random() * 800)
+      let minutes = Math.floor(Math.random() * 59)
+      let seconds = Math.floor(Math.random() * 59)
+      let duration = hours * 3600 + minutes * 60 + seconds
+      let result = {
+        count: (Math.floor(Math.random() * 40) + 1),
+        duration: duration
+      }
+      Vue.set(this.randomizedData, date, result)
+    },
+    secondsDurationToFormatedHours (value) {
+      let hours = Math.floor(this.$moment.duration(value, 'seconds').asHours())
+      let minutes = Math.floor(this.$moment.duration(value - hours * 3600, 'seconds').asMinutes())
+      let seconds = Math.floor(this.$moment.duration(value - hours * 3600 - minutes * 60, 'seconds').asSeconds())
+
+      let result = ''
+      if (hours < 10) {
+        result += '00'
+      } else if (hours < 100) {
+        result += '0'
+      }
+      result += hours + ':'
+      if (minutes < 10) {
+        result += '0'
+      }
+      result += minutes + ':'
+      if (seconds < 10) {
+        result += '0'
+      }
+      result += seconds
+
+      return result
     }
   },
   computed: {
@@ -204,33 +259,55 @@ export default {
 
       return ''
     },
-    dataCollection () {
+    activitiesCollection () {
       let labels = []
-      for (let i = 1; i <= this.randomizedData.length; i++) {
-        labels.push(i)
-      }
+      Object.keys(this.randomizedData).forEach(key => {
+        labels.push(key)
+      })
+      labels.sort()
 
-      let that = this
+      let counts = []
+      labels.forEach(key => {
+        counts.push(this.randomizedData[key].count)
+      })
 
       return {
         labels: labels,
         datasets: [
           {
-            label: 'alpha',
+            label: 'activities',
             backgroundColor: '#0000FF',
-            data: that.randomizedData
-          },
+            data: counts
+          }
+        ]
+      }
+    },
+    durationsCollection () {
+      let labels = []
+      Object.keys(this.randomizedData).forEach(key => {
+        labels.push(key)
+      })
+      labels.sort()
+
+      let durations = []
+      labels.forEach(key => {
+        durations.push(this.randomizedData[key].duration)
+      })
+
+      return {
+        labels: labels,
+        datasets: [
           {
-            label: 'beta',
-            backgroundColor: '#00FFFF',
-            data: that.randomizedData2
+            label: 'durations',
+            backgroundColor: '#00FF00',
+            data: durations
           }
         ]
       }
     }
   },
   components: {
-    commitChart: {
+    barChart: {
       extends: Bar,
       mixins: [reactiveProp],
       props: ['options'],
@@ -238,6 +315,11 @@ export default {
         this.renderChart(this.chartData, this.options)
       }
     }
+  },
+  mounted () {
+    this.randomize()
+    this.randomize()
+    this.randomize()
   }
 }
 </script>
