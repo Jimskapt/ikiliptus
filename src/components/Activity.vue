@@ -360,17 +360,21 @@ export default {
     }
   },
   methods: {
-    save () {
+    save (payload) {
       let that = this
       this.db.kernel
         .put(this.newData, function (err, res) {
           if (err) {
-            alert(err)
+            alert('IKE0001:\n' + err)
           } else {
-            that.eventBus.$emit('saveconfirm')
+            if (payload !== undefined) {
+              that.eventBus.$emit('saveconfirm', payload.origin)
+            } else {
+              that.eventBus.$emit('saveconfirm')
+            }
           }
         })
-        .catch(err => { alert(err) })
+        .catch(err => { alert('IKE0002:\n' + err) })
     },
     setStop (args) {
       if (args === undefined) {
@@ -381,15 +385,14 @@ export default {
       this.newStopHour = this.$moment(args).format('HH:mm')
       this.newStopSeconds = args.getSeconds()
 
-      this.save()
+      this.save({origin: 'stop'})
     },
-    refreshData () {
+    refreshData (relaunchCounter) {
       let that = this
-
       this.db.kernel
         .get(this.id, function (err, doc) {
           if (err) {
-            alert(err)
+            alert('IKE0003:\n' + err)
           } else {
             that.dbData = doc
 
@@ -431,7 +434,7 @@ export default {
             }
           }
         })
-        .catch(err => { alert(err) })
+        .catch(err => { alert('IKE0004:\n' + err) })
     },
     fetchAutocompleteData () {
       let that = this
@@ -444,7 +447,7 @@ export default {
             that.subjects_list.push(e.key)
           })
         })
-        .catch(err => { alert(err) })
+        .catch(err => { alert('IKE0005:\n' + err) })
 
       this.db.kernel
         .query('mediums_powers/mediums_powers', {group: true})
@@ -454,7 +457,7 @@ export default {
             that.mediums_list.push(e.key)
           })
         })
-        .catch(err => { alert(err) })
+        .catch(err => { alert('IKE0006:\n' + err) })
 
       this.db.kernel
         .query('actors_powers/actors_powers', {group: true})
@@ -464,7 +467,7 @@ export default {
             that.actors_list.push(e.key)
           })
         })
-        .catch(err => { alert(err) })
+        .catch(err => { alert('IKE0007:\n' + err) })
 
       this.db.kernel
         .query('categories_powers/categories_powers', {group: true})
@@ -474,7 +477,7 @@ export default {
             that.categories_list.push(e.key)
           })
         })
-        .catch(err => { alert(err) })
+        .catch(err => { alert('IKE0008:\n' + err) })
     },
     find_text (array, value) {
       if (value.trim() === '' || array === undefined) {
@@ -615,9 +618,10 @@ export default {
     setTimeout(this.fetchAutocompleteData, 750)
   },
   destroyed () {
-    this.eventBus.$off('setStop')
-    this.eventBus.$off('save')
-    this.eventBus.$off('saveconfirm')
+    this.eventBus
+      .$off('setStop', this.setStop)
+      .$off('save', this.save)
+      .$off('saveconfirm', this.saveconfirmed)
   }
 }
 </script>

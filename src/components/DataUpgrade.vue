@@ -31,7 +31,7 @@ export default {
       .then(res => {
         that.result = res
       })
-      .catch(err => alert(err))
+      .catch(err => alert('IKE0012:\n' + err))
     */
   }
 }

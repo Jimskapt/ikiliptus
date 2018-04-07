@@ -43,15 +43,22 @@ export default {
       required: true
     }
   },
+  methods: {
+    routerGoBack () {
+      let that = this
+      setTimeout(() => {
+        that.$router.go(-1)
+      }, 1000)
+    }
+  },
   components: {
     'activity': Activity
   },
   mounted () {
-    let that = this
-    this.eventBus.$on('saveconfirm', () => setTimeout(function () { that.$router.go(-1) }, 1000))
+    this.eventBus.$on('saveconfirm', this.routerGoBack)
   },
   destroyed () {
-    this.eventBus.$off('saveconfirm')
+    this.eventBus.$off('saveconfirm', this.routerGoBack)
   }
 }
 </script>
