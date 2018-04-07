@@ -21,6 +21,7 @@
   "Abort": "Annuler",
   "OK": "OK",
   "Activity": "Activité",
+  "Activities": "Activités",
   "Settings": "Réglages",
   "Export your data": "Exportez vos données",
   "Import your data": "Importez vos données",
@@ -40,5 +41,7 @@
   "Search": "Rechercher",
   "Analytics": "Statistiques",
   "Total durations per day": "Durée totale par jour",
-  "Total activities per day": "Nombre d'activités par jour"
+  "Total activities per day": "Nombre d'activités par jour",
+  "Total duration per category": "Durée totale par catégorie",
+  "Categories per day": "Catégories par jour"
 }

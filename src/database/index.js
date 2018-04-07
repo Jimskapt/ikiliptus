@@ -239,6 +239,61 @@ function checkAndCreateViews () {
       })
   })
 
+  let durationPerCategoryAndDayPromise = new Promise((resolve, reject) => {
+    db
+      .query('duration_per_category_and_day/duration_per_category_and_day')
+      .then(res => { resolve() })
+      .catch(() => {
+        /* eslint-disable */
+        var ddoc = {
+          _id: '_design/duration_per_category_and_day',
+          views: {
+            duration_per_category_and_day: {
+              map: function (doc) {
+  if(doc.categories && doc.start_date && doc.stop_date) {
+    if(doc.categories.length > 0) {
+      if(doc.start_date == doc.stop_date) {
+        let stop = doc.stop_hour.split(':')
+        let start = doc.start_hour.split(':')
+
+        let stop_seconds = 0
+        if(doc.stop_seconds) {
+          stop_seconds = doc.stop_seconds
+        }
+        stop_seconds += parseInt(stop[1]) * 60
+        stop_seconds += parseInt(stop[0]) * 3600
+
+        let start_seconds = 0
+        if(doc.start_seconds) {
+          start_seconds = doc.start_seconds
+        }
+        start_seconds += parseInt(start[1]) * 60
+        start_seconds += parseInt(start[0]) * 3600
+
+        let delta = stop_seconds - start_seconds
+
+        for(let i = 0; i < doc.categories.length; i++) {
+          emit([doc.categories[i], doc.start_date], delta)
+        }
+      } // else TODO !
+    }
+  }
+}.toString(),
+              reduce: function(keys, values, rereduce) {
+  return sum(values)
+}.toString()
+            }
+          }
+        }
+        /* eslint-enable */
+
+        db
+          .put(ddoc)
+          .then(() => { resolve() })
+          .catch(function (err) { throw new Error(err) })
+      })
+  })
+
   return Promise.all([
     allActivitiesPromise,
     subjectsPointsPromise,
@@ -246,7 +301,8 @@ function checkAndCreateViews () {
     actorsPointsPromise,
     categoriesPointsPromise,
     activitiesPerDayPromise,
-    durationPerDayPromise
+    durationPerDayPromise,
+    durationPerCategoryAndDayPromise
   ])
 }
 
