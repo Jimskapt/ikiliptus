@@ -49,13 +49,13 @@ export default {
     this.db.kernel
       .allDocs({include_docs: true}, function (err, doc) {
         if (err) {
-          alert(err)
+          alert('IKE0009:\n' + err)
         } else {
           that.json = []
           doc.rows.forEach(e => that.json.push(e.doc))
         }
       })
-      .catch(err => alert(err))
+      .catch(err => alert('IKE0010:\n' + err))
   },
   computed: {
     jsonText () {

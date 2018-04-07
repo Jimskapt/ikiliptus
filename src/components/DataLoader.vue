@@ -53,7 +53,7 @@ export default {
       that.db.kernel
         .bulkDocs(data)
         .then(res => console.log(res))
-        .catch(err => alert(err))
+        .catch(err => alert('IKE0011:\n' + err))
     }
   }
 }

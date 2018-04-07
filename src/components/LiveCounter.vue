@@ -18,7 +18,7 @@
             <div v-if="runningCounter">
               <v-layout row>
                 <v-spacer></v-spacer>
-                <v-btn v-on:click="eventBus.$emit('save', new Date())" color="primary">
+                <v-btn v-on:click="eventBus.$emit('save', {origin: 'save', time: new Date()})" color="primary">
                   <v-icon>save</v-icon>
                   <span>{{ $t("Save") }}</span>
                 </v-btn>
@@ -32,7 +32,7 @@
         </v-container>
 
         <v-card-actions v-if="loaded">
-          <v-btn v-on:click="startCounter" v-bind:disabled="runningCounter" color="success">
+          <v-btn v-on:click="startCounter(undefined, new Date())" v-bind:disabled="runningCounter" color="success">
             <v-icon>play_arrow</v-icon>
             <span>{{ $t("START") }}</span>
           </v-btn>
@@ -183,7 +183,7 @@ export default {
     }
   },
   methods: {
-    startCounter (document) {
+    startCounter (document, now) {
       let that = this
 
       if (document === undefined) {
@@ -192,7 +192,9 @@ export default {
 
       delete document._id
       delete document._rev
-      let now = new Date()
+      if (now === undefined || now === null) {
+        now = new Date()
+      }
       document.start_date = this.$moment(now).format('YYYY-MM-DD')
       document.start_hour = this.$moment(now).format('HH:mm')
       document.start_seconds = now.getSeconds()
@@ -209,7 +211,7 @@ export default {
       this.db.kernel
         .post(document, {}, function (err, res) {
           if (err) {
-            alert(err)
+            alert('IKE0013:\n' + err)
           }
 
           if (res.ok === true) {
@@ -217,19 +219,23 @@ export default {
             that.runningCounter = true
             that.fetchAllSubjects()
           } else {
-            alert('Not OK !', res)
+            alert('IKE0014:\n' + res)
           }
         })
-        .catch(err => alert(err))
+        .catch(err => alert('IKE0015:\n' + err))
     },
     stopCounter () {
       this.runningCounter = false
       this.eventBus.$emit('setStop', new Date())
     },
-    liveSaveConfirm () {
-      this.currentID = ''
+    liveSaveConfirm (payload) {
+      if (payload !== undefined) {
+        if (payload.origin === 'stop') {
+          this.currentID = ''
+        }
+      }
       if (this.nextAction === 'start') {
-        this.startCounter(this.nextActionDocument)
+        this.startCounter(this.nextActionDocument, new Date())
         this.nextAction = ''
         this.nextActionDocument = undefined
       }
@@ -272,24 +278,26 @@ export default {
 
               that.loaded = true
             })
-            .catch(err => alert(err))
+            .catch(err => alert('IKE0016:\n' + err))
         })
-        .catch(err => alert(err))
+        .catch(err => alert('IKE0017:\n' + err))
     },
     ask_delete_activity (document) {
       this.asked_delete = true
       this.asked_delete_document = document
     },
     confirm_delete_activity () {
+      let that = this
+
       this.db.kernel
         .remove(this.asked_delete_document)
         .then(() => {
-          this.asked_delete = false
-          this.asked_delete_document = null
+          that.asked_delete = false
+          that.asked_delete_document = null
 
-          this.fetchAllSubjects()
+          that.fetchAllSubjects()
         })
-        .catch(err => alert(err))
+        .catch(err => alert('IKE0018:\n' + err))
     },
     deltaTime (activity) {
       let delta = this.$moment(activity.stop_date + ' ' + activity.stop_hour + ':' + activity.stop_seconds, 'YYYY-MM-DD HH:mm:ss').toDate()
@@ -344,19 +352,15 @@ export default {
     }
   },
   mounted () {
-    let that = this
-    that.eventBus
-      .$on('dbupdate', function (data) {
-        that.fetchAllSubjects()
-      })
-      .$on('saveconfirm', function (data) {
-        that.liveSaveConfirm()
-      })
+    this.eventBus
+      .$on('saveconfirm', this.liveSaveConfirm)
+      .$on('dbupdate', this.fetchAllSubjects)
 
-    that.fetchAllSubjects()
+    this.fetchAllSubjects()
 
     // searching unstopped activities, and using the first of them in the live counter
-    that.db.kernel
+    let that = this
+    this.db.kernel
       .query('all_activities/all_activities', {include_docs: true})
       .then(res => {
         let unstoppedList = res.rows.filter(e => e.doc.stop_date === undefined || e.doc.stop_hour === undefined)
@@ -365,10 +369,12 @@ export default {
           that.runningCounter = true
         }
       })
-      .catch(err => alert(err))
+      .catch(err => alert('IKE0019:\n' + err))
   },
   destroyed () {
-    this.eventBus.$off(['dbupdate', 'saveconfirm'])
+    this.eventBus
+      .$off('saveconfirm', this.saveConfirmation)
+      .$off('dbupdate', this.fetchAllSubjects)
   },
   components: {
     'activity': Activity
