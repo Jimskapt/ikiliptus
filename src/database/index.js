@@ -154,12 +154,99 @@ function checkAndCreateViews () {
       })
   })
 
+  let activitiesPerDayPromise = new Promise((resolve, reject) => {
+    db
+      .query('activities_per_day/activities_per_day')
+      .then(res => { resolve() })
+      .catch(() => {
+        /* eslint-disable */
+        var ddoc = {
+          _id: '_design/activities_per_day',
+          views: {
+            activities_per_day: {
+              map: function (doc) {
+  if(doc.start_date && doc.stop_date) {
+    if(doc.start_date == doc.stop_date) {
+      emit(doc.start_date, 1);
+    }
+  } // else TODO !
+}.toString(),
+              reduce: function(keys, values, rereduce) {
+  return sum(values);
+}.toString()
+            }
+          }
+        }
+        /* eslint-enable */
+
+        db
+          .put(ddoc)
+          .then(() => { resolve() })
+          .catch(function (err) { throw new Error(err) })
+      })
+  })
+
+  let durationPerDayPromise = new Promise((resolve, reject) => {
+    db
+      .query('duration_per_day/duration_per_day')
+      .then(res => { resolve() })
+      .catch(() => {
+        /* eslint-disable */
+        var ddoc = {
+          _id: '_design/duration_per_day',
+          views: {
+            duration_per_day: {
+              map: function (doc) {
+  if(doc.start_date && doc.stop_date) {
+    if(doc.start_date == doc.stop_date) {
+      if(doc.start_hour && doc.stop_hour) {
+        let stop = doc.stop_hour.split(':')
+        let start = doc.start_hour.split(':')
+
+        let stop_seconds = 0
+        if(doc.stop_seconds) {
+          stop_seconds = doc.stop_seconds
+        }
+        stop_seconds += parseInt(stop[1]) * 60
+        stop_seconds += parseInt(stop[0]) * 3600
+
+        let start_seconds = 0
+        if(doc.start_seconds) {
+          start_seconds = doc.start_seconds
+        }
+        start_seconds += parseInt(start[1]) * 60
+        start_seconds += parseInt(start[0]) * 3600
+
+        let delta = stop_seconds - start_seconds
+
+        emit(doc.start_date, delta);
+      }
+    }
+  } // else TODO !
+}.toString(),
+              reduce: function(keys, values, rereduce) {
+  return sum(values);
+}.toString()
+            }
+          }
+        }
+        /* eslint-enable */
+
+        db
+          .put(ddoc)
+          .then(() => { resolve() })
+          .catch(function (err) { throw new Error(err) })
+      })
+  })
+
   return Promise.all([
     allActivitiesPromise,
     subjectsPointsPromise,
     mediumsPointsPromise,
     actorsPointsPromise,
-    categoriesPointsPromise
+    categoriesPointsPromise,
+    activitiesPerDayPromise,
+    durationPerDayPromise
   ])
 }
 

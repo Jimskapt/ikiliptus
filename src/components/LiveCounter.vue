@@ -360,16 +360,19 @@ export default {
 
     // searching unstopped activities, and using the first of them in the live counter
     let that = this
-    this.db.kernel
-      .query('all_activities/all_activities', {include_docs: true})
-      .then(res => {
-        let unstoppedList = res.rows.filter(e => e.doc.stop_date === undefined || e.doc.stop_hour === undefined)
-        if (unstoppedList.length > 0) {
-          that.currentID = unstoppedList[0].doc._id
-          that.runningCounter = true
-        }
+    this.db.checkAndCreateViews()
+      .then(() => {
+        that.db.kernel
+          .query('all_activities/all_activities', {include_docs: true})
+          .then(res => {
+            let unstoppedList = res.rows.filter(e => e.doc.stop_date === undefined || e.doc.stop_hour === undefined)
+            if (unstoppedList.length > 0) {
+              that.currentID = unstoppedList[0].doc._id
+              that.runningCounter = true
+            }
+          })
+          .catch(err => alert('IKE0019:\n' + err))
       })
-      .catch(err => alert('IKE0019:\n' + err))
   },
   destroyed () {
     this.eventBus

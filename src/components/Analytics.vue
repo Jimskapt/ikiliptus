@@ -15,132 +15,58 @@
         <v-container>
           <v-layout row>
             <v-flex>
-              <v-switch v-bind:label="$t('From')" v-model="from"></v-switch>
+              <v-menu
+                ref="fromDateMenu"
+                v-bind:close-on-content-click="false"
+                v-model="fromDateMenu"
+                v-bind:return-value.sync="fromDateMenu"
+                full-width
+              >
+                <v-text-field
+                  v-bind:label="$t('From')"
+                  v-model="fromDateDisplay"
+                  prepend-icon="event"
+                  slot="activator"
+                  readonly
+                  append-icon="close"
+                  v-bind:append-icon-cb="() => {fromDate=null}"
+                ></v-text-field>
+                <v-date-picker v-model="fromDate" no-title scrollable full-width>
+                  <v-spacer></v-spacer>
+                  <v-btn color="error" v-on:click="fromDateMenu = false">{{$t('Abort')}}</v-btn>
+                  <v-btn color="success" v-on:click="$refs.fromDateMenu.save(fromDate)">{{$t('OK')}}</v-btn>
+                </v-date-picker>
+              </v-menu>
             </v-flex>
             <v-flex>
-              <span v-if="from">
-                <v-layout row>
-                  <v-flex xs6>
-                    <v-menu
-                      ref="fromDateMenu"
-                      v-bind:close-on-content-click="false"
-                      v-model="fromDateMenu"
-                      v-bind:return-value.sync="fromDateMenu"
-                      full-width
-                    >
-                      <v-text-field
-                        v-bind:label="$t('From')"
-                        v-model="fromDateDisplay"
-                        prepend-icon="event"
-                        slot="activator"
-                        readonly
-                        append-icon="close"
-                        v-bind:append-icon-cb="() => {fromDate=null}"
-                      ></v-text-field>
-                      <v-date-picker v-model="fromDate" no-title scrollable full-width>
-                        <v-spacer></v-spacer>
-                        <v-btn color="error" v-on:click="fromDateMenu = false">{{$t('Abort')}}</v-btn>
-                        <v-btn color="success" v-on:click="$refs.fromDateMenu.save(fromDate)">{{$t('OK')}}</v-btn>
-                      </v-date-picker>
-                    </v-menu>
-                  </v-flex>
-                  <v-flex xs6>
-                    <v-menu
-                      ref="fromHourMenu"
-                      v-bind:close-on-content-click="false"
-                      v-model="fromHourMenu"
-                      v-bind:return-value.sync="fromHourMenu"
-                      full-width
-                    >
-                      <v-text-field
-                        v-bind:label="$t('From')"
-                        v-model="fromHourDisplay"
-                        prepend-icon="schedule"
-                        slot="activator"
-                        readonly
-                        append-icon="close"
-                        v-bind:append-icon-cb="() => {fromHour=null}"
-                      ></v-text-field>
-                      <v-time-picker scrollable full-width
-                        v-model="fromHour"
-                        v-on:change="$refs.fromHourMenu.save(fromHour)"
-                      ></v-time-picker>
-                    </v-menu>
-                  </v-flex>
-                </v-layout>
-              </span>
-              <span v-else>{{ $t('anytime') }}</span>
+              <v-menu
+                ref="toDateMenu"
+                v-bind:close-on-content-click="false"
+                v-model="toDateMenu"
+                v-bind:return-value.sync="toDateMenu"
+                full-width
+              >
+                <v-text-field
+                  v-bind:label="$t('To')"
+                  v-model="toDateDisplay"
+                  prepend-icon="event"
+                  slot="activator"
+                  readonly
+                  append-icon="close"
+                  v-bind:append-icon-cb="() => {toDate=null}"
+                ></v-text-field>
+                <v-date-picker v-model="toDate" no-title scrollable full-width>
+                  <v-spacer></v-spacer>
+                  <v-btn color="error" v-on:click="toDateMenu = false">{{$t('Abort')}}</v-btn>
+                  <v-btn color="success" v-on:click="$refs.toDateMenu.save(toDate)">{{$t('OK')}}</v-btn>
+                </v-date-picker>
+              </v-menu>
             </v-flex>
           </v-layout>
-
-          <v-layout row>
-            <v-flex>
-              <v-switch v-bind:label="$t('To')" v-model="to"></v-switch>
-            </v-flex>
-            <v-flex>
-              <span v-if="to">
-                <v-layout row>
-                  <v-flex xs6>
-                    <v-menu
-                      ref="toDateMenu"
-                      v-bind:close-on-content-click="false"
-                      v-model="toDateMenu"
-                      v-bind:return-value.sync="toDateMenu"
-                      full-width
-                    >
-                      <v-text-field
-                        v-bind:label="$t('To')"
-                        v-model="toDateDisplay"
-                        prepend-icon="event"
-                        slot="activator"
-                        readonly
-                        append-icon="close"
-                        v-bind:append-icon-cb="() => {toDate=null}"
-                      ></v-text-field>
-                      <v-date-picker v-model="toDate" no-title scrollable full-width>
-                        <v-spacer></v-spacer>
-                        <v-btn color="error" v-on:click="toDateMenu = false">{{$t('Abort')}}</v-btn>
-                        <v-btn color="success" v-on:click="$refs.toDateMenu.save(toDate)">{{$t('OK')}}</v-btn>
-                      </v-date-picker>
-                    </v-menu>
-                  </v-flex>
-                  <v-flex xs6>
-                    <v-menu
-                      ref="toHourMenu"
-                      v-bind:close-on-content-click="false"
-                      v-model="toHourMenu"
-                      v-bind:return-value.sync="toHourMenu"
-                      full-width
-                    >
-                      <v-text-field
-                        v-bind:label="$t('To')"
-                        v-model="toHourDisplay"
-                        prepend-icon="schedule"
-                        slot="activator"
-                        readonly
-                        append-icon="close"
-                        v-bind:append-icon-cb="() => {toHour=null}"
-                      ></v-text-field>
-                      <v-time-picker scrollable full-width
-                        v-model="toHour"
-                        v-on:change="$refs.toHourMenu.save(toHour)"
-                      ></v-time-picker>
-                    </v-menu>
-                  </v-flex>
-                </v-layout>
-              </span>
-              <span v-else>{{ $t('anytime') }}</span>
-            </v-flex>
-          </v-layout>
-
-          <v-btn icon v-on:click="randomize">
-            <v-icon>shuffle</v-icon>
-          </v-btn>
 
           <v-divider></v-divider>
 
-          <bar-chart v-bind:chart-data="activitiesCollection" v-bind:height="100"></bar-chart>
-          <bar-chart v-bind:chart-data="durationsCollection" v-bind:height="100" v-bind:options="hoursOptions"></bar-chart>
+          <line-chart v-bind:chart-data="activitiesCollection" v-bind:height="150" v-bind:options="activitiesOptions"></line-chart>
         </v-container>
       </v-card>
     </v-container>
@@ -150,7 +76,7 @@
 
 <script>
 import Vue from 'vue'
-import { Bar, mixins } from 'vue-chartjs'
+import { Line, mixins } from 'vue-chartjs'
 const { reactiveProp } = mixins
 
 export default {
@@ -162,23 +88,29 @@ export default {
       from: false,
       to: false,
       fromDateMenu: false,
-      fromHourMenu: false,
-      fromDate: '1990-01-01',
-      fromHour: '00:00',
+      fromDate: null,
       toDateMenu: false,
-      toHourMenu: false,
-      toDate: '1990-01-01',
-      toHour: '00:00',
-      randomizedData: {},
-      hoursOptions: {
+      toDate: null,
+      activitiesOptions: {
         scales: {
           yAxes: [
             {
+              id: 'time-axis',
+              type: 'linear',
+              position: 'left',
               ticks: {
                 beginAtZero: true,
                 callback (value, index, values) {
                   return that.secondsDurationToFormatedHours(value)
                 }
+              }
+            },
+            {
+              id: 'counter-axis',
+              type: 'linear',
+              position: 'right',
+              ticks: {
+                beginAtZero: true
               }
             }
           ]
@@ -186,26 +118,20 @@ export default {
         tooltips: {
           callbacks: {
             label (tooltipItem, data) {
-              return that.secondsDurationToFormatedHours(tooltipItem.yLabel)
+              if (tooltipItem.datasetIndex === 0) {
+                return that.secondsDurationToFormatedHours(tooltipItem.yLabel)
+              } else {
+                return tooltipItem.yLabel
+              }
             }
           }
         }
-      }
+      },
+      activitiesPerDay: {},
+      durationsPerDay: {}
     }
   },
   methods: {
-    randomize () {
-      let date = (2000 + Math.floor(Math.random() * 18)) + '-' + Math.floor(Math.random() * 12) + '-' + Math.floor(Math.random() * 28)
-      let hours = Math.floor(Math.random() * 800)
-      let minutes = Math.floor(Math.random() * 59)
-      let seconds = Math.floor(Math.random() * 59)
-      let duration = hours * 3600 + minutes * 60 + seconds
-      let result = {
-        count: (Math.floor(Math.random() * 40) + 1),
-        duration: duration
-      }
-      Vue.set(this.randomizedData, date, result)
-    },
     secondsDurationToFormatedHours (value) {
       let hours = Math.floor(this.$moment.duration(value, 'seconds').asHours())
       let minutes = Math.floor(this.$moment.duration(value - hours * 3600, 'seconds').asMinutes())
@@ -238,13 +164,6 @@ export default {
 
       return ''
     },
-    fromHourDisplay () {
-      if (this.fromHour && this.fromHour != null) {
-        return this.$moment(this.fromHour + ':00', 'HH:mm:ss').format(this.$t('hour_format'))
-      }
-
-      return ''
-    },
     toDateDisplay () {
       if (this.toDate && this.toDate != null) {
         return this.$moment(this.toDate, 'YYYY-MM-DD').format(this.$t('date_format'))
@@ -252,63 +171,70 @@ export default {
 
       return ''
     },
-    toHourDisplay () {
-      if (this.toHour && this.toHour != null) {
-        return this.$moment(this.toHour + ':00', 'HH:mm:ss').format(this.$t('hour_format'))
-      }
-
-      return ''
-    },
     activitiesCollection () {
+      let that = this
+
       let labels = []
-      Object.keys(this.randomizedData).forEach(key => {
-        labels.push(key)
-      })
-      labels.sort()
+      Object.keys(this.activitiesPerDay).forEach(dateString => {
+        let date = that.$moment(dateString, 'YYYY-MM-DD')
+        let inject = true
 
-      let counts = []
-      labels.forEach(key => {
-        counts.push(this.randomizedData[key].count)
-      })
-
-      return {
-        labels: labels,
-        datasets: [
-          {
-            label: 'activities',
-            backgroundColor: '#0000FF',
-            data: counts
+        if (that.from && that.fromDate !== null && that.fromDate !== undefined) {
+          if (date < that.$moment(that.fromDate, 'YYYY-MM-DD')) {
+            inject = false
           }
-        ]
-      }
-    },
-    durationsCollection () {
-      let labels = []
-      Object.keys(this.randomizedData).forEach(key => {
-        labels.push(key)
-      })
-      labels.sort()
+        }
+        if (that.to && that.toDate !== null && that.toDate !== undefined) {
+          if (date > that.$moment(that.toDate, 'YYYY-MM-DD')) {
+            inject = false
+          }
+        }
 
+        if (inject) {
+          labels.push(dateString)
+        }
+      })
       let durations = []
-      labels.forEach(key => {
-        durations.push(this.randomizedData[key].duration)
+      let counter = []
+
+      labels.forEach(label => {
+        if (that.durationsPerDay[label] === undefined) {
+          durations.push(0)
+        } else {
+          durations.push(that.durationsPerDay[label])
+        }
+
+        if (that.activitiesPerDay[label] === undefined) {
+          counter.push(0)
+        } else {
+          counter.push(that.activitiesPerDay[label])
+        }
       })
 
       return {
         labels: labels,
         datasets: [
           {
-            label: 'durations',
-            backgroundColor: '#00FF00',
+            label: that.$t('Total durations per day'),
+            borderColor: '#0000FF',
+            fill: false,
+            yAxisID: 'time-axis',
             data: durations
+          },
+          {
+            label: that.$t('Total activities per day'),
+            borderColor: '#00FFFF',
+            fill: false,
+            yAxisID: 'counter-axis',
+            data: counter
           }
         ]
       }
     }
   },
   components: {
-    barChart: {
-      extends: Bar,
+    lineChart: {
+      extends: Line,
       mixins: [reactiveProp],
       props: ['options'],
       mounted () {
@@ -317,9 +243,28 @@ export default {
     }
   },
   mounted () {
-    this.randomize()
-    this.randomize()
-    this.randomize()
+    let that = this
+    this.db.checkAndCreateViews()
+      .then(() => {
+        that.db.kernel
+          .query('activities_per_day/activities_per_day', {group: true})
+          .then(res => {
+            that.activitiesPerDay = {}
+            res.rows.forEach(e => {
+              Vue.set(that.activitiesPerDay, e.key, e.value)
+            })
+          })
+      })
+      .then(() => {
+        that.db.kernel
+          .query('duration_per_day/duration_per_day', {group: true})
+          .then(res => {
+            that.durationsPerDay = {}
+            res.rows.forEach(e => {
+              Vue.set(that.durationsPerDay, e.key, e.value)
+            })
+          })
+      })
   }
 }
 </script>
