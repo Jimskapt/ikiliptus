@@ -7,6 +7,8 @@ import DataDisplay from '@/components/DataDisplay'
 import ActivityEditor from '@/components/ActivityEditor'
 import DataUpgrade from '@/components/DataUpgrade'
 import Analytics from '@/components/Analytics'
+import SessionManager from '@/components/SessionManager'
+import SessionEditor from '@/components/SessionEditor'
 
 Vue.use(Router)
 
@@ -53,6 +55,17 @@ export default new Router({
       path: '/analytics',
       name: 'Analytics',
       component: Analytics
+    },
+    {
+      path: '/session_manager',
+      name: 'SessionManager',
+      component: SessionManager
+    },
+    {
+      path: '/session_editor/:id',
+      name: 'SessionEditor',
+      component: SessionEditor,
+      props: true
     }
   ],
   mode: 'hash',

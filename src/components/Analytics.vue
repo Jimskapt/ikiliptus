@@ -88,6 +88,7 @@
 
 <script>
 import Vue from 'vue'
+import tools from '../tools/index.js'
 import { Line, Pie, Bar, mixins } from 'vue-chartjs'
 const { reactiveProp } = mixins
 
@@ -214,20 +215,6 @@ export default {
       result += seconds
 
       return result
-    },
-    computeColorFromText (text) {
-      let value = 0
-      for (let i = 0; i < text.length; i++) {
-        value = text.charCodeAt(i) + ((value << 5) - value)
-      }
-
-      let result = '#'
-      for (let i = 0; i < 3; i++) {
-        let current = (value >> (i * 8)) & 0xFF
-        result += ('00' + current.toString(16)).substr(-2)
-      }
-
-      return result
     }
   },
   computed: {
@@ -253,7 +240,7 @@ export default {
         let obj = {
           value: 0,
           category: category,
-          color: that.computeColorFromText(category)
+          color: tools.computeColorFromText(category)
         }
 
         Object.keys(this.durationsPerCategoryAndDay[category]).forEach(day => {
@@ -332,7 +319,7 @@ export default {
       Object.keys(this.durationsPerCategoryAndDay).forEach(category => {
         let obj = {
           label: category,
-          backgroundColor: that.computeColorFromText(category),
+          backgroundColor: tools.computeColorFromText(category),
           borderColor: '#555',
           borderWidth: 1,
           stack: 'Stack 0',
@@ -403,14 +390,14 @@ export default {
         datasets: [
           {
             label: that.$t('Total durations per day'),
-            borderColor: '#0000FF',
+            borderColor: that.$vuetify.theme.primary,
             fill: false,
             yAxisID: 'time-axis',
             data: durations
           },
           {
             label: that.$t('Total activities per day'),
-            borderColor: '#00FFFF',
+            borderColor: that.$vuetify.theme.secondary,
             fill: false,
             yAxisID: 'counter-axis',
             data: counter
@@ -449,7 +436,7 @@ export default {
     let that = this
     this.db.checkAndCreateViews()
       .then(() => {
-        that.db.kernel
+        that.db.current.db
           .query('activities_per_day/activities_per_day', {group: true})
           .then(res => {
             that.activitiesPerDay = {}
@@ -458,7 +445,7 @@ export default {
             })
           })
 
-        that.db.kernel
+        that.db.current.db
           .query('duration_per_day/duration_per_day', {group: true})
           .then(res => {
             that.durationsPerDay = {}
@@ -467,7 +454,7 @@ export default {
             })
           })
 
-        that.db.kernel
+        that.db.current.db
           .query('duration_per_category_and_day/duration_per_category_and_day', {group: true})
           .then(res => {
             that.durationsPerCategoryAndDay = {}
@@ -485,7 +472,7 @@ export default {
               })
           })
 
-        that.db.kernel
+        that.db.current.db
           .query('categories_powers/categories_powers', {group: true})
           .then(res => {
             that.categoriesPowers = {}

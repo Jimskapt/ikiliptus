@@ -1,9 +1,10 @@
-import PouchDB from 'pouchdb-browser'
+import tools from '../tools/index.js'
 
 let settings = {
   i18n: null,
   eventBus: null,
   DB: null,
+  vuetify: null,
   locale: {
     value: 'en_US',
     get () {
@@ -11,49 +12,11 @@ let settings = {
     },
     set (value) {
       if (value !== '' && value !== this.value) {
-        let oneYearFromNow = new Date()
-        oneYearFromNow.setTime(oneYearFromNow.getTime() + 365 * 24 * 60 * 60 * 1000)
-
-        document.cookie = 'locale=' + value + '; expires=' + oneYearFromNow.toUTCString()
+        tools.setCookie('locale', value)
 
         this.value = value
 
         settings.i18n.locale = this.value
-      }
-    }
-  },
-  remoteCouch: {
-    path: '',
-    value: null,
-    get () {
-      return this.path
-    },
-    set (value) {
-      if (value !== this.value) {
-        if (this.value !== null) {
-          this.value.cancel()
-        }
-
-        let oneYearFromNow = new Date()
-        oneYearFromNow.setTime(oneYearFromNow.getTime() + 365 * 24 * 60 * 60 * 1000)
-
-        document.cookie = 'remote_couch=' + value + '; expires=' + oneYearFromNow.toUTCString()
-
-        this.path = value
-        this.value = settings.DB.kernel.sync(new PouchDB(this.path), {live: true})
-
-        this.value
-          .on('complete', function () {
-            console.log('Sync on local CouchDB success.')
-            settings.eventBus.$emit('dbupdate')
-          })
-          .on('error', function (err) {
-            console.log('ERROR while sync on local couchDB :', err)
-          })
-          .on('change', function (change) {
-            console.log('Sync event : ', change)
-            settings.eventBus.$emit('dbupdate', change)
-          })
       }
     }
   },
@@ -70,12 +33,21 @@ let settings = {
         cookies[e[0]] = e[1]
       })
 
-    if (cookies.remote_couch !== undefined) {
-      this.remoteCouch.set(cookies.remote_couch)
-    }
-
     if (cookies.locale !== undefined) {
       this.locale.set(cookies.locale)
+    }
+
+    if (cookies.last_session !== undefined) {
+      let that = this
+      this.DB
+        .refresh()
+        .then(() => {
+          that.DB.available.forEach(e => {
+            if (e._id === cookies.last_session) {
+              that.DB.setCurrent(e, that.vuetify)
+            }
+          })
+        })
     }
   }
 }

@@ -172,7 +172,7 @@
             <v-list-tile-action><v-icon>label_outline</v-icon></v-list-tile-action>
             <v-list-tile-content>{{found}}</v-list-tile-content>
           </v-list-tile>
-          <v-divider v-bind:key="'separator:' + found"></v-divider>
+          <v-divider v-bind:key="'divider:' + found"></v-divider>
         </template>
       </v-list>
     </v-card>
@@ -212,7 +212,7 @@
             <v-list-tile-action><v-icon>move_to_inbox</v-icon></v-list-tile-action>
             <v-list-tile-content>{{found}}</v-list-tile-content>
           </v-list-tile>
-          <v-divider v-bind:key="'separator:' + found"></v-divider>
+          <v-divider v-bind:key="'divider:' + found"></v-divider>
         </template>
       </v-list>
     </v-card>
@@ -249,7 +249,7 @@
             <v-list-tile-action><v-icon>phone</v-icon></v-list-tile-action>
             <v-list-tile-content>{{found}}</v-list-tile-content>
           </v-list-tile>
-          <v-divider v-bind:key="'separator:' + found"></v-divider>
+          <v-divider v-bind:key="'divider:' + found"></v-divider>
         </template>
       </v-list>
     </v-card>
@@ -280,7 +280,7 @@
             <v-list-tile-action><v-icon>people</v-icon></v-list-tile-action>
             <v-list-tile-content>{{found}}</v-list-tile-content>
           </v-list-tile>
-          <v-divider v-bind:key="'separator:' + found"></v-divider>
+          <v-divider v-bind:key="'divider:' + found"></v-divider>
         </template>
       </v-list>
     </v-container>
@@ -362,7 +362,7 @@ export default {
   methods: {
     save (payload) {
       let that = this
-      this.db.kernel
+      this.db.current.db
         .put(this.newData, function (err, res) {
           if (err) {
             alert('IKE0001:\n' + err)
@@ -389,7 +389,7 @@ export default {
     },
     refreshData (relaunchCounter) {
       let that = this
-      this.db.kernel
+      this.db.current.db
         .get(this.id, function (err, doc) {
           if (err) {
             alert('IKE0003:\n' + err)
@@ -439,7 +439,7 @@ export default {
     fetchAutocompleteData () {
       let that = this
 
-      this.db.kernel
+      this.db.current.db
         .query('subjects_powers/subjects_powers', {group: true})
         .then(res => {
           that.subjects_list = []
@@ -449,7 +449,7 @@ export default {
         })
         .catch(err => { alert('IKE0005:\n' + err) })
 
-      this.db.kernel
+      this.db.current.db
         .query('mediums_powers/mediums_powers', {group: true})
         .then(res => {
           that.mediums_list = []
@@ -459,7 +459,7 @@ export default {
         })
         .catch(err => { alert('IKE0006:\n' + err) })
 
-      this.db.kernel
+      this.db.current.db
         .query('actors_powers/actors_powers', {group: true})
         .then(res => {
           that.actors_list = []
@@ -469,7 +469,7 @@ export default {
         })
         .catch(err => { alert('IKE0007:\n' + err) })
 
-      this.db.kernel
+      this.db.current.db
         .query('categories_powers/categories_powers', {group: true})
         .then(res => {
           that.categories_list = []

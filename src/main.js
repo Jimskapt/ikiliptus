@@ -22,6 +22,7 @@ let eventBus = new Vue()
 
 Vue.prototype.eventBus = eventBus
 Vue.prototype.db = DB
+Vue.prototype.db.eventBus = eventBus
 Vue.prototype.$settings = Settings
 Vue.prototype.$settings.DB = Vue.prototype.db
 Vue.prototype.$settings.eventBus = Vue.prototype.eventBus
@@ -36,3 +37,5 @@ let VM = new Vue({
   components: { App },
   template: '<App/>'
 })
+
+Vue.prototype.$settings.vuetify = VM.$vuetify

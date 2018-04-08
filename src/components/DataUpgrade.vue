@@ -14,7 +14,7 @@ export default {
     /*
       let that = this
 
-      that.db.kernel
+      that.db.current.db
         .query('all_activities/all_activities', {include_docs: true})
         .then(res => {
           return res.rows
@@ -23,7 +23,7 @@ export default {
             })
         })
         .then(res => {
-          that.db.kernel.bulkDocs(res)
+          that.db.current.db.bulkDocs(res)
         })
         .then(res => {
           that.result = res

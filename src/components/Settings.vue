@@ -23,11 +23,6 @@
             prepend-icon="language"
             autocomplete
           ></v-select>
-          <v-text-field
-            v-bind:label="$t('Your couchDB URI')"
-            v-model="remoteCouch"
-            prepend-icon="storage"
-          ></v-text-field>
           <v-layout>
             <v-flex xs6>
               <v-subheader>{{ $t('Export your data') }}</v-subheader>
@@ -83,8 +78,7 @@ export default {
         value: this.$settings.locale.get(),
         local: this.$i18n.messages[this.$settings.locale.get()]['local_description'],
         us: this.$i18n.messages[this.$settings.locale.get()]['US_locale_description']
-      },
-      remoteCouch: this.$settings.remoteCouch.get()
+      }
     }
   },
   computed: {
@@ -108,11 +102,7 @@ export default {
   },
   methods: {
     save () {
-      // http://localhost:5984/ikiliptus
-
       this.$settings.locale.set(this.locale.value)
-      this.$settings.remoteCouch.set(this.remoteCouch)
-
       this.$router.go(-1)
     },
     forceRefresh () {

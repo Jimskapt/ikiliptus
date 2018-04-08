@@ -43,5 +43,19 @@
   "Total durations per day": "Durée totale par jour",
   "Total activities per day": "Nombre d'activités par jour",
   "Total duration per category": "Durée totale par catégorie",
-  "Categories per day": "Catégories par jour"
+  "Categories per day": "Catégories par jour",
+  "Available sessions": "Sessions disponibles",
+  "Session manager": "Gestionnaire de sessions",
+  "Create a new session": "Créer une nouvelle session",
+  "Edit a session": "Modifier une session",
+  "Name": "Nom",
+  "Server URI of CouchDB": "URI du serveur CouchDB",
+  "Please confirm the delete of this activity": "Veuillez confirmer la suppression de cette activité",
+  "Please type the name of the session in the following field in order to confirm the delete": "Veuillez écrire le nom de cette session dans le champ suivant pour confirmer la suppression",
+  "Session name": "Nom de la session",
+  "Deleting X session": "Supprimer la session {0}",
+  "Color": "Couleur",
+  "This is only the data for the current session X": "Vous avez seulement les données de la session {name} ici",
+  "You have to do that for each session if you want to save all of them": "Vous devez faire cela pour chaque session si vous voulez toutes le enregistrer",
+  "Help": "Aide"
 }

@@ -32,7 +32,7 @@
         </v-container>
 
         <v-card-actions v-if="loaded">
-          <v-btn v-on:click="startCounter(undefined, new Date())" v-bind:disabled="runningCounter" color="success">
+          <v-btn v-on:click="startCounter(undefined, new Date())" v-bind:disabled="runningCounter" color="primary">
             <v-icon>play_arrow</v-icon>
             <span>{{ $t("START") }}</span>
           </v-btn>
@@ -50,7 +50,7 @@
 
     <v-container>
       <v-card>
-        <v-toolbar dark color="secondary">
+        <v-toolbar dark color="primary">
           <v-card-title>
             <v-btn icon>
               <v-icon>inbox</v-icon>
@@ -64,7 +64,7 @@
         </v-container>
         <v-list dense two-line subheader v-else>
 
-          <v-container class="text-xs-center">
+          <div class="text-xs-center" style="padding:10px;">
             <v-text-field
               v-bind:label="$t('Search')"
               v-model="activitiesSearch"
@@ -73,7 +73,7 @@
               v-bind:append-icon-cb="() => {activitiesSearch=''}"
             ></v-text-field>
             <v-pagination v-bind:length="pagesCount" v-model="lastActivitiesPage" v-if="searchedActivities.length > 0"></v-pagination>
-          </v-container>
+          </div>
 
           <v-divider></v-divider>
 
@@ -140,15 +140,20 @@
                 </v-layout>
               </v-list-tile-action>
             </v-list-tile>
-            <v-divider v-bind:key="'separator-' + item._id"></v-divider>
+            <v-divider v-bind:key="'divider-' + item._id"></v-divider>
           </template>
         </v-list>
       </v-card>
     </v-container>
 
-    <v-dialog v-model="asked_delete" max-width="290">
+    <v-dialog v-model="asked_delete">
       <v-card>
-        <v-card-title class="headline">{{$t('Confirm the delete')}}</v-card-title>
+        <v-toolbar dark color="primary">
+          <v-card-title>{{ $t('Confirm the delete') }}</v-card-title>
+        </v-toolbar>
+        <v-card-text>
+          <p>{{ $t('Please confirm the delete of this activity') }}.</p>
+        </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="success" v-on:click="asked_delete_document=null;asked_delete=false;">{{$t('Abort')}}</v-btn>
@@ -208,7 +213,7 @@ export default {
         document.data_version = 1
       }
 
-      this.db.kernel
+      this.db.current.db
         .post(document, {}, function (err, res) {
           if (err) {
             alert('IKE0013:\n' + err)
@@ -258,7 +263,7 @@ export default {
 
       that.db.checkAndCreateViews()
         .then(() => {
-          that.db.kernel
+          that.db.current.db
             .query('all_activities/all_activities', {include_docs: true})
             .then(res => {
               that.activities = []
@@ -289,7 +294,7 @@ export default {
     confirm_delete_activity () {
       let that = this
 
-      this.db.kernel
+      this.db.current.db
         .remove(this.asked_delete_document)
         .then(() => {
           that.asked_delete = false
@@ -362,7 +367,7 @@ export default {
     let that = this
     this.db.checkAndCreateViews()
       .then(() => {
-        that.db.kernel
+        that.db.current.db
           .query('all_activities/all_activities', {include_docs: true})
           .then(res => {
             let unstoppedList = res.rows.filter(e => e.doc.stop_date === undefined || e.doc.stop_hour === undefined)

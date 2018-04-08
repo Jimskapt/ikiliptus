@@ -22,10 +22,16 @@
             <v-alert type="info" v-bind:value="true">
               {{ $t('In order to save your data, just copy and paste the following data in an text editor (like notepad), and then save it as *.json file') }}.
             </v-alert>
-            <v-checkbox
-              v-bind:label="$t('Show it human-readable ?')"
-              v-model="pretify"
-            ></v-checkbox>
+            <v-alert type="warning" v-bind:value="true">
+              {{ $t('This is only the data for the current session X', {name: db.current.name}) }}.<br />
+              {{ $t('You have to do that for each session if you want to save all of them') }}.
+            </v-alert>
+            <v-container>
+              <v-checkbox
+                v-bind:label="$t('Show it human-readable ?')"
+                v-model="pretify"
+              ></v-checkbox>
+            </v-container>
             <v-text-field multi-line v-model="jsonText" label="Here are your data"></v-text-field>
           </v-form>
         </v-container>
@@ -46,7 +52,7 @@ export default {
   mounted () {
     let that = this
 
-    this.db.kernel
+    this.db.current.db
       .allDocs({include_docs: true}, function (err, doc) {
         if (err) {
           alert('IKE0009:\n' + err)
