@@ -315,6 +315,8 @@ export default {
         })
       })
 
+      labels.sort()
+
       let datasets = []
       Object.keys(this.durationsPerCategoryAndDay).forEach(category => {
         let obj = {
