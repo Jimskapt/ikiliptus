@@ -5,6 +5,22 @@ export default {
 
     document.cookie = key + '=' + value + '; expires=' + oneYearFromNow.toUTCString()
   },
+  getCookies () {
+    let result = {}
+
+    document.cookie
+      .split(';')
+      .map(e => {
+        return e
+          .split('=')
+          .map(e2 => e2.trim())
+      })
+      .forEach(e => {
+        result[e[0]] = e[1]
+      })
+
+    return result
+  },
   computeColorFromText (text) {
     let value = 0
     for (let i = 0; i < text.length; i++) {
