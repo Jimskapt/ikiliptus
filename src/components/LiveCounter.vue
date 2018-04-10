@@ -166,6 +166,8 @@
 </template>
 
 <script>
+import Vue from 'vue'
+import tools from '../tools/index.js'
 import Activity from '@/components/Activity'
 
 export default {
@@ -327,13 +329,260 @@ export default {
       window.scrollTo(0, 0)
     }
   },
+  watch: {
+    activitiesSearch (newValue, oldValue) {
+      tools.setCookie('research', newValue)
+    }
+  },
   computed: {
     searchedActivities () {
       if (this.activities === undefined || this.activities === null || this.activities === []) {
         return []
       }
 
-      return this.activities.filter(e => e.subject.includes(this.activitiesSearch))
+      let searchText = this.activitiesSearch
+      let res = this.activities
+
+      /*
+TESTS :
+
+// should match :
+stop:2018/04/04
+start:2018/04/04
+start>2018/04/04
+start<2018/04/04
+start>=2018/04/04
+start<=2018/04/04
+start:04/04/2018
+start>04/04/2018
+start<04/04/2018
+start:2018/04/04 04:04:04
+start:2018/04/04 04:04
+start:2018/04/04 04:04:04 PM
+start:2018/04/04 04:04 PM
+start:2018/04/04 04:04:04 AM
+start:2018/04/04 04:04 AM
+start:2018/04/04 4:4
+start:2018/04/04 4:4:4
+start:2018/04/04 14:14:14
+start:today
+start:today 14:14:14
+start:now
+
+// should fail :
+test:2018/04/04
+start!2018/04/04
+start2018/04/04
+start:test
+start:4854
+start:test4854
+start:test/4854
+start:test/48:54
+start:now 14:14:14
+      */
+
+      if (searchText !== undefined && searchText !== null && searchText.trim() !== '') {
+        let dayRegex = this.$t('date_format').split('DD').join('[0-9]{1,2}').split('MM').join('[0-9]{1,2}').split('YYYY').join('[0-9]{4}')
+        let hourRegex = this.$t('hour_format').split('hh').join('[0-9]{1,2}').split('HH').join('[0-9]{1,2}').split('mm').join('[0-9]{1,2}').split('ss').join('[0-9]{1,2}').split('A').join('A|PM')
+
+        let dateRegex = '((start)|(stop))(:|<=?|>=?)((((' + dayRegex + ')|(today))( ' + hourRegex + ')?)|(now))'
+        let dateMatch = searchText.match(new RegExp(dateRegex, 'g'))
+
+        let operations = {}
+        let that = this
+
+        let dayFormat = 'DD/MM/YYYY'
+        let hourFormat = dayFormat + ' HH:mm:ss'
+
+        if (dateMatch !== null && dateMatch.length > 0) {
+          dateMatch.forEach(match => {
+            searchText = searchText.split(match).join('').trim()
+
+            let items = new RegExp(dateRegex, 'g').exec(match)
+
+            if (items !== null) {
+              let field = items[1]
+              let operator = items[4]
+              let time = items[5]
+
+              if (time === 'now') {
+                time = that.$moment().format(hourFormat)
+              } else if (time.includes('today')) {
+                time = time.split('today').join(that.$moment().format(dayFormat))
+              }
+
+              if (time.length === dayFormat.length) {
+                time = that.$moment(time, dayFormat).format(hourFormat)
+              }
+
+              Vue.set(operations, field, {
+                operator: operator,
+                time: time,
+                $time: that.$moment(time, hourFormat)
+              })
+            }
+          })
+        }
+
+        /*
+TESTS :
+
+// should match :
+subject:test
+subject:=test
+subject:test175
+subject:"test bis"
+medium:test
+medium:"test bis"
+actor:test
+actor:"test bis"
+
+// should fail :
+subject:test bis
+      */
+        let metadataRegex = '((subject)|(medium)|(actor))(:=?)(("[^"]+")|([^\n ]+))'
+        let metadataMatch = searchText.match(new RegExp(metadataRegex, 'g'))
+
+        if (metadataMatch !== null && metadataMatch.length > 0) {
+          metadataMatch.forEach(match => {
+            searchText = searchText.split(match).join('').trim()
+
+            let items = new RegExp(metadataRegex, 'g').exec(match)
+
+            if (items !== null) {
+              let field = items[1]
+              let operator = items[5]
+              let metadata = items[6]
+              metadata = metadata.split('"').join('')
+
+              Vue.set(operations, field, {
+                operator: operator,
+                metadata: metadata
+              })
+            }
+          })
+        }
+
+        /*
+TESTS :
+
+// should match :
+categories:=aaa
+categories:aaa
+categories:aaa,bbb,ccc
+categories:aaa, bbb ,ccc
+categories:"a a a", bbb
+categories:"a a a","b b b"
+
+// should fail :
+categories:a a a, b b b
+categories:aaa, bbb ,ccc test
+      */
+        metadataRegex = ''
+        metadataMatch = searchText.match(new RegExp(metadataRegex, 'g'))
+
+        if (metadataMatch !== null && metadataMatch.length > 0) {
+          metadataMatch.forEach(match => {
+            searchText = searchText.split(match).join('').trim()
+
+            let items = new RegExp(metadataRegex, 'g').exec(match)
+
+            if (items !== null) {
+              let field = items[1]
+              let operator = items[5]
+              let metadata = items[6]
+              metadata = metadata.split('"').join('')
+
+              Vue.set(operations, field, {
+                operator: operator,
+                metadata: metadata
+              })
+            }
+          })
+        }
+
+        if (Object.keys(operations).length > 0) {
+          res = res.filter(e => {
+            let check = true
+
+            if (operations.start !== undefined) {
+              let elementDate = e.start_date + ' ' + e.start_hour + ':' + ((e.start_seconds === undefined) ? '00' : e.start_seconds)
+              elementDate = that.$moment(elementDate, 'YYYY-MM-DD HH:mm:ss')
+
+              if (operations.start.operator === ':') {
+                check &= elementDate === operations.start.$time
+              } else if (operations.start.operator === '>') {
+                check &= elementDate > operations.start.$time
+              } else if (operations.start.operator === '<') {
+                check &= elementDate < operations.start.$time
+              } else if (operations.start.operator === '>=') {
+                check &= elementDate >= operations.start.$time
+              } else if (operations.start.operator === '<=') {
+                check &= elementDate <= operations.start.$time
+              }
+            }
+
+            if (operations.stop !== undefined) {
+              let elementDate = e.stop_date + ' ' + e.stop_hour + ':' + ((e.stop_seconds === undefined) ? '00' : e.stop_seconds)
+              elementDate = that.$moment(elementDate, 'YYYY-MM-DD HH:mm:ss')
+
+              if (operations.stop.operator === ':') {
+                check &= elementDate === operations.stop.$time
+              } else if (operations.stop.operator === '>') {
+                check &= elementDate > operations.stop.$time
+              } else if (operations.stop.operator === '<') {
+                check &= elementDate < operations.stop.$time
+              } else if (operations.stop.operator === '>=') {
+                check &= elementDate >= operations.stop.$time
+              } else if (operations.stop.operator === '<=') {
+                check &= elementDate <= operations.stop.$time
+              }
+            }
+
+            if (operations.subject !== undefined) {
+              if (e.subject) {
+                if (operations.subject.operator === ':') {
+                  check &= e.subject.includes(operations.subject.metadata)
+                } else if (operations.subject.operator === ':=') {
+                  check &= e.subject === operations.subject.metadata
+                }
+              } else {
+                check = false
+              }
+            }
+
+            if (operations.medium !== undefined) {
+              if (e.medium) {
+                if (operations.medium.operator === ':') {
+                  check &= e.medium.includes(operations.medium.metadata)
+                } else if (operations.medium.operator === ':=') {
+                  check &= e.medium === operations.medium.metadata
+                }
+              } else {
+                check = false
+              }
+            }
+
+            if (operations.actor !== undefined) {
+              if (e.actor) {
+                if (operations.actor.operator === ':') {
+                  check &= e.actor.includes(operations.actor.metadata)
+                } else if (operations.actor.operator === ':=') {
+                  check &= e.actor === operations.actor.metadata
+                }
+              } else {
+                check = false
+              }
+            }
+
+            return check
+          })
+        }
+      }
+
+      searchText = searchText.trim()
+
+      return res
     },
     paginatedActivities () {
       let result = []
@@ -362,6 +611,11 @@ export default {
       .$on('dbupdate', this.fetchAllSubjects)
 
     this.fetchAllSubjects()
+
+    let cookies = tools.getCookies()
+    if (cookies.research) {
+      this.activitiesSearch = cookies.research
+    }
 
     // searching unstopped activities, and using the first of them in the live counter
     let that = this

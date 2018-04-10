@@ -21,17 +21,7 @@ let settings = {
     }
   },
   load () {
-    let cookies = {}
-    document.cookie
-      .split(';')
-      .map(e => {
-        return e
-          .split('=')
-          .map(e2 => e2.trim())
-      })
-      .forEach(e => {
-        cookies[e[0]] = e[1]
-      })
+    let cookies = tools.getCookies()
 
     if (cookies.locale !== undefined) {
       this.locale.set(cookies.locale)

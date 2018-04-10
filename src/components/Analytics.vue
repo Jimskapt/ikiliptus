@@ -373,6 +373,8 @@ export default {
       let durations = []
       let counter = []
 
+      labels.sort()
+
       labels.forEach(label => {
         if (that.durationsPerDay[label] === undefined) {
           durations.push(0)
