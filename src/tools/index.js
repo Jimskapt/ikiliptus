@@ -3,6 +3,8 @@ export default {
     let oneYearFromNow = new Date()
     oneYearFromNow.setTime(oneYearFromNow.getTime() + 365 * 24 * 60 * 60 * 1000)
 
+    value = value.split('=').join('\\=')
+
     document.cookie = key + '=' + value + '; expires=' + oneYearFromNow.toUTCString()
   },
   getCookies () {
@@ -12,8 +14,10 @@ export default {
       .split(';')
       .map(e => {
         return e
+          .split('\\=')
+          .join('|-|/|')
           .split('=')
-          .map(e2 => e2.trim())
+          .map(e2 => e2.trim().split('|-|/|').join('='))
       })
       .forEach(e => {
         result[e[0]] = e[1]

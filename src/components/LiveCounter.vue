@@ -469,33 +469,60 @@ TESTS :
 // should match :
 categories:=aaa
 categories:aaa
+categories:"aaa"
+categories:"a a a"
 categories:aaa,bbb,ccc
-categories:aaa, bbb ,ccc
-categories:"a a a", bbb
+categories:"a a a",bbb
 categories:"a a a","b b b"
 
 // should fail :
 categories:a a a, b b b
+categories:"a a a", bbb
+categories:aaa, bbb ,ccc
 categories:aaa, bbb ,ccc test
       */
-        metadataRegex = ''
-        metadataMatch = searchText.match(new RegExp(metadataRegex, 'g'))
+        let categoriesRegex = '(categories)(:=?)((,?(("[^"]+")|([^ \n]+)))+)'
+        let categoriesMatch = searchText.match(new RegExp(categoriesRegex, 'g'))
 
-        if (metadataMatch !== null && metadataMatch.length > 0) {
-          metadataMatch.forEach(match => {
+        if (categoriesMatch !== null && categoriesMatch.length > 0) {
+          categoriesMatch.forEach(match => {
             searchText = searchText.split(match).join('').trim()
 
-            let items = new RegExp(metadataRegex, 'g').exec(match)
+            let items = new RegExp(categoriesRegex, 'g').exec(match)
 
             if (items !== null) {
               let field = items[1]
-              let operator = items[5]
-              let metadata = items[6]
-              metadata = metadata.split('"').join('')
+              let operator = items[2]
+              let categories = items[3]
+              categories = categories
+                .split(',')
+                .map(e => e.split('"').join('').trim())
 
               Vue.set(operations, field, {
                 operator: operator,
-                metadata: metadata
+                categories: categories
+              })
+            }
+          })
+        }
+
+        let voluntaryRegex = '(!?)(voluntary)'
+        let voluntaryMatch = searchText.match(new RegExp(voluntaryRegex, 'g'))
+
+        if (voluntaryMatch !== null && voluntaryMatch.length > 0) {
+          voluntaryMatch.forEach(match => {
+            searchText = searchText.split(match).join('').trim()
+
+            let items = new RegExp(voluntaryRegex, 'g').exec(match)
+
+            if (items !== null) {
+              let field = items[2]
+              let operator = items[1]
+              let value = (operator === '!') ? '' : true
+
+              Vue.set(operations, field, {
+                operator: operator,
+                value: value
               })
             }
           })
@@ -570,6 +597,28 @@ categories:aaa, bbb ,ccc test
                 } else if (operations.actor.operator === ':=') {
                   check &= e.actor === operations.actor.metadata
                 }
+              } else {
+                check = false
+              }
+            }
+
+            if (operations.categories !== undefined) {
+              if (e.categories && e.categories.length > 0) {
+                if (operations.categories.operator === ':') {
+                  operations.categories.categories.forEach(category => {
+                    check &= e.categories.includes(category)
+                  })
+                } else if (operations.categories.operator === ':=') {
+                  check &= e.categories.every(e => operations.categories.categories.includes(e))
+                }
+              } else {
+                check = false
+              }
+            }
+
+            if (operations.voluntary !== undefined) {
+              if (e.voluntary !== undefined) {
+                check &= e.voluntary === operations.voluntary.value
               } else {
                 check = false
               }
