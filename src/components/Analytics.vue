@@ -12,74 +12,82 @@
         </v-toolbar>
 
         <v-container>
-          <v-layout row>
-            <v-flex>
-              <v-menu
-                ref="fromDateMenu"
-                v-bind:close-on-content-click="false"
-                v-model="fromDateMenu"
-                v-bind:return-value.sync="fromDateMenu"
-                full-width
-              >
-                <v-text-field
-                  v-bind:label="$t('From')"
-                  v-model="fromDateDisplay"
-                  prepend-icon="event"
-                  slot="activator"
-                  readonly
-                  append-icon="close"
-                  v-bind:append-icon-cb="() => {fromDate=null}"
-                ></v-text-field>
-                <v-date-picker v-model="fromDate" no-title scrollable full-width>
-                  <v-spacer></v-spacer>
-                  <v-btn color="error" v-on:click="fromDateMenu = false">{{$t('Abort')}}</v-btn>
-                  <v-btn color="success" v-on:click="$refs.fromDateMenu.save(fromDate)">{{$t('OK')}}</v-btn>
-                </v-date-picker>
-              </v-menu>
-            </v-flex>
-            <v-flex>
-              <v-menu
-                ref="toDateMenu"
-                v-bind:close-on-content-click="false"
-                v-model="toDateMenu"
-                v-bind:return-value.sync="toDateMenu"
-                full-width
-              >
-                <v-text-field
-                  v-bind:label="$t('To')"
-                  v-model="toDateDisplay"
-                  prepend-icon="event"
-                  slot="activator"
-                  readonly
-                  append-icon="close"
-                  v-bind:append-icon-cb="() => {toDate=null}"
-                ></v-text-field>
-                <v-date-picker v-model="toDate" no-title scrollable full-width>
-                  <v-spacer></v-spacer>
-                  <v-btn color="error" v-on:click="toDateMenu = false">{{$t('Abort')}}</v-btn>
-                  <v-btn color="success" v-on:click="$refs.toDateMenu.save(toDate)">{{$t('OK')}}</v-btn>
-                </v-date-picker>
-              </v-menu>
-            </v-flex>
-          </v-layout>
+          <v-menu
+            ref="fromDateMenu"
+            v-bind:close-on-content-click="false"
+            v-model="fromDateMenu"
+            v-bind:return-value.sync="fromDateMenu"
+            full-width
+          >
+            <v-text-field
+              v-bind:label="$t('From')"
+              v-model="fromDateDisplay"
+              prepend-icon="event"
+              slot="activator"
+              readonly
+              append-icon="close"
+              v-bind:append-icon-cb="() => {fromDate=null}"
+            ></v-text-field>
+            <v-date-picker v-model="fromDate" no-title scrollable full-width>
+              <v-spacer></v-spacer>
+              <v-btn color="error" v-on:click="fromDateMenu = false">{{$t('Abort')}}</v-btn>
+              <v-btn color="success" v-on:click="$refs.fromDateMenu.save(fromDate)">{{$t('OK')}}</v-btn>
+            </v-date-picker>
+          </v-menu>
 
-          <v-divider></v-divider>
-
-          <h2 style="text-align:center;margin-top:20px;">{{ $t('Activities') }} :</h2>
-          <line-chart v-bind:chart-data="activitiesCollection" v-bind:height="350" v-bind:options="activitiesOptions"></line-chart>
-
-          <p></p>
-          <v-divider></v-divider>
-
-          <h2 style="text-align:center;margin-top:20px;">{{ $t('Categories') }} :</h2>
-          <pie-chart v-bind:chart-data="categoriesCollection" v-bind:height="350" v-bind:options="categoriesOptions"></pie-chart>
-
-          <p></p>
-          <v-divider></v-divider>
-
-          <h2 style="text-align:center;margin-top:20px;">{{ $t('Categories per day') }} :</h2>
-          <bar-chart v-bind:chart-data="categoriesPerDayCollection" v-bind:height="350" v-bind:options="categoriesPerDayOptions"></bar-chart>
+          <v-menu
+            ref="toDateMenu"
+            v-bind:close-on-content-click="false"
+            v-model="toDateMenu"
+            v-bind:return-value.sync="toDateMenu"
+            full-width
+          >
+            <v-text-field
+              v-bind:label="$t('To')"
+              v-model="toDateDisplay"
+              prepend-icon="event"
+              slot="activator"
+              readonly
+              append-icon="close"
+              v-bind:append-icon-cb="() => {toDate=null}"
+            ></v-text-field>
+            <v-date-picker v-model="toDate" no-title scrollable full-width>
+              <v-spacer></v-spacer>
+              <v-btn color="error" v-on:click="toDateMenu = false">{{$t('Abort')}}</v-btn>
+              <v-btn color="success" v-on:click="$refs.toDateMenu.save(toDate)">{{$t('OK')}}</v-btn>
+            </v-date-picker>
+          </v-menu>
         </v-container>
+
+        <v-tabs v-model="viewTab" dark color="primary" slider-color="secondary">
+          <v-tab>
+            <v-icon>timeline</v-icon>
+            <span>&nbsp;Global</span>
+          </v-tab>
+          <v-tab-item>
+            <v-container>
+              <h2 style="text-align:center;margin-top:20px;">{{ $t('Activities') }} :</h2>
+              <line-chart v-bind:chart-data="activitiesCollection" v-bind:height="350" v-bind:options="activitiesOptions"></line-chart>
+            </v-container>
+          </v-tab-item>
+          <v-tab>
+            <v-icon>label_outline</v-icon>
+            <span>&nbsp;Categories</span>
+          </v-tab>
+          <v-tab-item>
+            <v-container>
+              <h2 style="text-align:center;margin-top:20px;">{{ $t('Categories') }} :</h2>
+              <pie-chart v-bind:chart-data="categoriesCollection" v-bind:height="350" v-bind:options="categoriesOptions"></pie-chart>
+
+              <p></p>
+              <v-divider></v-divider>
+
+              <h2 style="text-align:center;margin-top:20px;">{{ $t('Categories per day') }} :</h2>
+              <bar-chart v-bind:chart-data="categoriesPerDayCollection" v-bind:height="350" v-bind:options="categoriesPerDayOptions"></bar-chart>
+            </v-container>
+          </v-tab-item>
+        </v-tabs>
+
       </v-card>
     </v-container>
 
