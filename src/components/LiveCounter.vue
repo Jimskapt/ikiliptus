@@ -128,7 +128,7 @@
               <v-list-tile-action>
                 <v-layout row>
                   <v-flex xs6>
-                    <v-btn flat icon v-on:click="nextCounter(item);goToTop();" v-bind:disabled="runningCounter">
+                    <v-btn flat icon v-on:click="copyActivity(item);goToTop();">
                       <v-icon>content_copy</v-icon>
                     </v-btn>
                   </v-flex>
@@ -156,8 +156,36 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="success" v-on:click="asked_delete_document=null;asked_delete=false;">{{$t('Abort')}}</v-btn>
-          <v-btn color="error" v-on:click="confirm_delete_activity">{{$t('OK')}}</v-btn>
+          <v-btn color="success" v-on:click="asked_delete_document=null;asked_delete=false;">
+            <v-icon>close</v-icon>
+            {{$t('Abort')}}
+          </v-btn>
+          <v-btn color="error" v-on:click="confirm_delete_activity">
+            <v-icon>delete</v-icon>
+            {{$t('Delete')}}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="asked_copy">
+      <v-card>
+        <v-toolbar dark color="primary">
+          <v-card-title>{{ $t('Confirm the copy') }}</v-card-title>
+        </v-toolbar>
+        <v-card-text>
+          <p>{{ $t('Please confirm the copy of the activity in the current activity') }}.</p>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="success" v-on:click="asked_copy_document=null;asked_copy=false;">
+            <v-icon>close</v-icon>
+            {{$t('Abort')}}
+          </v-btn>
+          <v-btn color="primary" v-on:click="confirm_copy_activity">
+            <v-icon>content_copy</v-icon>
+            {{$t('Copy')}}
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -183,6 +211,8 @@ export default {
       dialog_subject: '',
       asked_delete: false,
       asked_delete_document: null,
+      asked_copy: false,
+      asked_copy_document: null,
       lastActivitiesPage: 1,
       activitiesPerPage: 10,
       activitiesSearch: '',
@@ -258,6 +288,14 @@ export default {
         this.liveSaveConfirm()
       }
     },
+    copyActivity (document) {
+      if (this.runningCounter) {
+        this.asked_copy_document = document
+        this.asked_copy = true
+      } else {
+        this.nextCounter(document)
+      }
+    },
     fetchAllSubjects () {
       let that = this
 
@@ -305,6 +343,59 @@ export default {
           that.fetchAllSubjects()
         })
         .catch(err => alert('IKE0018:\n' + err))
+    },
+    confirm_copy_activity () {
+      let that = this
+      let document = this.asked_copy_document
+
+      delete document._id
+      delete document._rev
+      delete document.start_date
+      delete document.start_hour
+      delete document.start_seconds
+      delete document.stop_date
+      delete document.stop_hour
+      delete document.stop_seconds
+      if (!document.data_type) {
+        document.data_type = 'subject'
+      }
+      if (!document.data_version) {
+        document.data_version = 1
+      }
+
+      this.db.current.db
+        .get(this.currentID, function (err, doc) {
+          return new Promise((resolve, reject) => {
+            if (err) {
+              throw new Error(err)
+            } else {
+              Object.keys(doc).forEach(key => {
+                if (document[key] === undefined) {
+                  document[key] = doc[key]
+                }
+              })
+              resolve()
+            }
+          })
+        })
+        .then(() => {
+          this.db.current.db
+            .put(document, {}, function (err, res) {
+              if (err) {
+                alert('IKE0036:\n' + err)
+              }
+
+              if (res.ok === true) {
+                that.fetchAllSubjects()
+                that.asked_copy_document = null
+                that.asked_copy = false
+              } else {
+                alert('IKE0035:\n' + res)
+              }
+            })
+            .catch(err => alert('IKE0034:\n' + err))
+        })
+        .catch(err => { alert('IKE0033:\n' + err) })
     },
     deltaTime (activity) {
       return tools.deltaT(

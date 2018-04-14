@@ -59,5 +59,9 @@
   "You have to do that for each session if you want to save all of them": "Vous devez faire cela pour chaque session si vous voulez toutes le enregistrer",
   "Help": "Aide",
   "Global": "Général",
-  "Not voluntary": "Involontaire"
+  "Not voluntary": "Involontaire",
+  "Delete": "Supprimer",
+  "Copy": "Copier",
+  "Confirm the copy": "Confirmer la copie",
+  "Please confirm the copy of the activity in the current activity": "Veuillez confirmer la copie de cette activité dans l'activité en cours"
 }
