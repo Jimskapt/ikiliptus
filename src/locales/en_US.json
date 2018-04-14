@@ -57,5 +57,7 @@
   "Color": "Color",
   "This is only the data for the current session X": "This is only the data for the current session {name}",
   "You have to do that for each session if you want to save all of them": "You have to do that for each session if you want to save all of them",
-  "Help": "Help"
+  "Help": "Help",
+  "Global": "Global",
+  "Not voluntary": "Not voluntary"
 }

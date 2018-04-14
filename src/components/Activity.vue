@@ -306,6 +306,7 @@
 </template>
 
 <script>
+import tools from '../tools/index.js'
 export default {
   name: 'Interval',
   props: {
@@ -490,25 +491,14 @@ export default {
       this.newCategories.splice(this.newCategories.indexOf(value), 1)
     },
     refreshCounter () {
-      if (this.newStartDate !== null && this.newStartHour !== null && this.newStartSeconds !== null) {
-        let now = new Date()
-        if (this.newStopDate !== null && this.newStopHour !== null && this.newStopSeconds !== null) {
-          now = this.$moment(this.newStopDate + ' ' + this.newStopHour + ':' + this.newStopSeconds, 'YYYY-MM-DD HH:mm:ss').toDate()
-        }
-        let delta = now
-        delta -= this.$moment(this.newStartDate + ' ' + this.newStartHour + ':' + this.newStartSeconds, 'YYYY-MM-DD HH:mm:ss').toDate()
-
-        let way = +1
-        let offset = new Date().getTimezoneOffset() / 60
-        if (offset < 0) {
-          way = -1
-          offset *= -1
-        }
-
-        delta += way * this.$moment('1990-01-01 ' + offset + ':00:00', 'YYYY-MM-DD HH:mm:ss').toDate()
-
-        this.timeAgo = this.$moment(delta).format('HH:mm:ss')
-      }
+      this.timeAgo = tools.deltaT(
+        this.$moment,
+        this.newStartDate,
+        this.newStartHour,
+        this.newStartSeconds,
+        this.newStopDate,
+        this.newStopHour,
+        this.newStopSeconds)
     },
     saveconfirmed () {
       this.saveConfirmed = true

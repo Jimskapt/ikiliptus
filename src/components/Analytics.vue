@@ -57,12 +57,27 @@
               <v-btn color="success" v-on:click="$refs.toDateMenu.save(toDate)">{{$t('OK')}}</v-btn>
             </v-date-picker>
           </v-menu>
+
+          <v-layout row>
+            <v-flex>
+              <v-checkbox
+                v-bind:label="$t('Voluntary')"
+                v-model="wantVoluntary"
+              ></v-checkbox>
+            </v-flex>
+            <v-flex>
+              <v-checkbox
+                v-bind:label="$t('Not voluntary')"
+                v-model="wantNotVoluntary"
+              ></v-checkbox>
+            </v-flex>
+          </v-layout>
         </v-container>
 
         <v-tabs v-model="viewTab" dark color="primary" slider-color="secondary">
           <v-tab>
             <v-icon>timeline</v-icon>
-            <span>&nbsp;Global</span>
+            <span>&nbsp;{{ $t('Global') }}</span>
           </v-tab>
           <v-tab-item>
             <v-container>
@@ -72,7 +87,7 @@
           </v-tab-item>
           <v-tab>
             <v-icon>label_outline</v-icon>
-            <span>&nbsp;Categories</span>
+            <span>&nbsp;{{ $t('Categories') }}</span>
           </v-tab>
           <v-tab-item>
             <v-container>
@@ -112,6 +127,10 @@ export default {
       fromDate: null,
       toDateMenu: false,
       toDate: null,
+      wantVoluntary: true,
+      wantNotVoluntary: true,
+      activities: [],
+      viewTab: null,
       activitiesOptions: {
         scales: {
           yAxes: [
@@ -240,49 +259,62 @@ export default {
 
       return ''
     },
+    filteredActivities () {
+      let that = this
+      return this.activities.filter(activity => {
+        let result = true
+
+        if (that.fromDate !== null && that.fromDate !== undefined && activity.start_date !== undefined) {
+          result &= (that.$moment(activity.start_date, 'YYYY-MM-DD') >= that.$moment(that.fromDate, 'YYYY-MM-DD'))
+        }
+
+        if (that.toDate !== null && that.toDate !== undefined && activity.stop_date !== undefined) {
+          result &= (that.$moment(activity.stop_date, 'YYYY-MM-DD') < that.$moment(that.toDate, 'YYYY-MM-DD'))
+        }
+
+        if (activity.voluntary !== undefined) {
+          result &= ((activity.voluntary === true && that.wantVoluntary) || (activity.voluntary === '' && that.wantNotVoluntary))
+        }
+
+        return result
+      })
+    },
     categoriesCollection () {
       let that = this
 
-      let data = []
-      Object.keys(this.durationsPerCategoryAndDay).forEach(category => {
-        let obj = {
-          value: 0,
-          category: category,
-          color: tools.computeColorFromText(category)
+      let data = {}
+      this.filteredActivities.forEach(activity => {
+        if (activity.start_date && activity.start_hour && activity.stop_date && activity.stop_hour && activity.categories && activity.categories.length > 0) {
+          activity.categories.forEach(category => {
+            let deltaT = tools.deltaT(
+              that.$moment,
+              activity.start_date,
+              activity.start_hour,
+              activity.start_seconds,
+              activity.stop_date,
+              activity.stop_hour,
+              activity.stop_seconds)
+            let $deltaT = that.$moment.duration(deltaT)
+
+            let newDuration = $deltaT.get('hours') * 3600 + $deltaT.get('minutes') * 60 + $deltaT.get('seconds')
+
+            if (data[category] !== undefined) {
+              newDuration += data[category]
+            }
+
+            Vue.set(data, category, newDuration)
+          })
         }
-
-        Object.keys(this.durationsPerCategoryAndDay[category]).forEach(day => {
-          let date = that.$moment(day, 'YYYY-MM-DD')
-          let inject = true
-
-          if (that.fromDate !== null && that.fromDate !== undefined) {
-            if (date < that.$moment(that.fromDate, 'YYYY-MM-DD')) {
-              inject = false
-            }
-          }
-          if (that.toDate !== null && that.toDate !== undefined) {
-            if (date > that.$moment(that.toDate, 'YYYY-MM-DD')) {
-              inject = false
-            }
-          }
-
-          if (inject) {
-            obj.value += this.durationsPerCategoryAndDay[category][day]
-          }
-        })
-
-        data.push(obj)
       })
 
-      data = data.sort((a, b) => b.value - a.value)
+      let labels = Object.keys(data)
+      labels = labels.sort((a, b) => data[b] - data[a])
 
-      let labels = []
       let durations = []
       let colors = []
-      data.forEach(e => {
-        labels.push(e.category)
-        durations.push(e.value)
-        colors.push(e.color)
+      labels.forEach(e => {
+        durations.push(data[e])
+        colors.push(tools.computeColorFromText(e))
       })
 
       return {
@@ -300,33 +332,47 @@ export default {
     categoriesPerDayCollection () {
       let that = this
 
+      let data = {}
+      this.filteredActivities.forEach(activity => {
+        if (activity.start_date && activity.start_hour && activity.stop_date && activity.stop_hour && activity.categories && activity.categories.length > 0) {
+          activity.categories.forEach(category => {
+            let deltaT = tools.deltaT(
+              that.$moment,
+              activity.start_date,
+              activity.start_hour,
+              activity.start_seconds,
+              activity.stop_date,
+              activity.stop_hour,
+              activity.stop_seconds)
+            let $deltaT = that.$moment.duration(deltaT)
+
+            let newDuration = $deltaT.get('hours') * 3600 + $deltaT.get('minutes') * 60 + $deltaT.get('seconds')
+
+            if (data[category] === undefined) {
+              Vue.set(data, category, {})
+            }
+
+            if (data[category][activity.start_date] !== undefined) {
+              newDuration += data[category][activity.start_date]
+            }
+
+            Vue.set(data[category], activity.start_date, newDuration)
+          })
+        }
+      })
+
       let labels = []
-      Object.keys(this.durationsPerCategoryAndDay).forEach(category => {
-        Object.keys(this.durationsPerCategoryAndDay[category]).forEach(day => {
-          let date = that.$moment(day, 'YYYY-MM-DD')
-          let inject = !labels.includes(day)
-
-          if (that.fromDate !== null && that.fromDate !== undefined) {
-            if (date < that.$moment(that.fromDate, 'YYYY-MM-DD')) {
-              inject = false
-            }
-          }
-          if (that.toDate !== null && that.toDate !== undefined) {
-            if (date > that.$moment(that.toDate, 'YYYY-MM-DD')) {
-              inject = false
-            }
-          }
-
-          if (inject) {
+      Object.keys(data).forEach(category => {
+        Object.keys(data[category]).forEach(day => {
+          if (!labels.includes(day)) {
             labels.push(day)
           }
         })
       })
-
       labels.sort()
 
       let datasets = []
-      Object.keys(this.durationsPerCategoryAndDay).forEach(category => {
+      Object.keys(data).forEach(category => {
         let obj = {
           label: category,
           backgroundColor: tools.computeColorFromText(category),
@@ -336,19 +382,14 @@ export default {
           data: []
         }
         labels.forEach(day => {
-          if (this.durationsPerCategoryAndDay[category][day] === undefined) {
+          if (data[category][day] === undefined) {
             obj.data.push(0)
           } else {
-            obj.data.push(this.durationsPerCategoryAndDay[category][day])
+            obj.data.push(data[category][day])
           }
         })
         datasets.push(obj)
       })
-
-      /*
-        console.log(labels)
-        console.log(datasets)
-      */
 
       return {
         labels: labels,
@@ -358,42 +399,48 @@ export default {
     activitiesCollection () {
       let that = this
 
-      let labels = []
-      Object.keys(this.activitiesPerDay).forEach(dateString => {
-        let date = that.$moment(dateString, 'YYYY-MM-DD')
-        let inject = true
+      let data = {}
+      this.filteredActivities.forEach(activity => {
+        if (activity.start_date && activity.start_hour && activity.stop_date && activity.stop_hour) {
+          let deltaT = tools.deltaT(
+            that.$moment,
+            activity.start_date,
+            activity.start_hour,
+            activity.start_seconds,
+            activity.stop_date,
+            activity.stop_hour,
+            activity.stop_seconds)
+          let $deltaT = that.$moment.duration(deltaT)
 
-        if (that.fromDate !== null && that.fromDate !== undefined) {
-          if (date < that.$moment(that.fromDate, 'YYYY-MM-DD')) {
-            inject = false
+          let newDuration = $deltaT.get('hours') * 3600 + $deltaT.get('minutes') * 60 + $deltaT.get('seconds')
+          let newCounter = 1
+          if (data[activity.start_date] !== undefined) {
+            newDuration += data[activity.start_date].duration
+            newCounter = data[activity.start_date].count + 1
           }
-        }
-        if (that.toDate !== null && that.toDate !== undefined) {
-          if (date > that.$moment(that.toDate, 'YYYY-MM-DD')) {
-            inject = false
-          }
-        }
-
-        if (inject) {
-          labels.push(dateString)
+          Vue.set(data, activity.start_date, {
+            duration: newDuration,
+            count: newCounter
+          })
         }
       })
+
+      let labels = Object.keys(data)
+      labels.sort()
       let durations = []
       let counter = []
 
-      labels.sort()
-
       labels.forEach(label => {
-        if (that.durationsPerDay[label] === undefined) {
+        if (data[label] === undefined || data[label].duration === undefined) {
           durations.push(0)
         } else {
-          durations.push(that.durationsPerDay[label])
+          durations.push(data[label].duration)
         }
 
-        if (that.activitiesPerDay[label] === undefined) {
+        if (data[label] === undefined || data[label].count === undefined) {
           counter.push(0)
         } else {
-          counter.push(that.activitiesPerDay[label])
+          counter.push(data[label].count)
         }
       })
 
@@ -446,55 +493,25 @@ export default {
   },
   mounted () {
     let that = this
-    this.db.checkAndCreateViews()
+    that.db.checkAndCreateViews()
       .then(() => {
         that.db.current.db
-          .query('activities_per_day/activities_per_day', {group: true})
+          .query('all_activities/all_activities', {include_docs: true})
           .then(res => {
-            that.activitiesPerDay = {}
-            res.rows.forEach(e => {
-              Vue.set(that.activitiesPerDay, e.key, e.value)
-            })
+            that.activities = []
+
+            let filtered = res.rows
+              .filter(e => e.doc.stop_date !== undefined && e.doc.stop_hour !== undefined)
+
+            for (let i = 0; i < filtered.length; i++) {
+              that.activities.push(filtered[i].doc)
+            }
+
+            that.loaded = true
           })
-
-        that.db.current.db
-          .query('duration_per_day/duration_per_day', {group: true})
-          .then(res => {
-            that.durationsPerDay = {}
-            res.rows.forEach(e => {
-              Vue.set(that.durationsPerDay, e.key, e.value)
-            })
-          })
-
-        that.db.current.db
-          .query('duration_per_category_and_day/duration_per_category_and_day', {group: true})
-          .then(res => {
-            that.durationsPerCategoryAndDay = {}
-            res.rows
-              .sort((a, b) => b.value - a.value)
-              .forEach(e => {
-                let obj = {}
-                if (that.durationsPerCategoryAndDay[e.key[0]] !== undefined) {
-                  obj = that.durationsPerCategoryAndDay[e.key[0]]
-                }
-
-                obj[e.key[1]] = e.value
-
-                Vue.set(that.durationsPerCategoryAndDay, e.key[0], obj)
-              })
-          })
-
-        that.db.current.db
-          .query('categories_powers/categories_powers', {group: true})
-          .then(res => {
-            that.categoriesPowers = {}
-            res.rows
-              .sort((a, b) => b.value - a.value)
-              .forEach(e => {
-                Vue.set(that.categoriesPowers, e.key, e.value)
-              })
-          })
+          .catch(err => alert('IKE0030:\n' + err))
       })
+      .catch(err => alert('IKE0031:\n' + err))
   }
 }
 </script>

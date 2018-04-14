@@ -38,5 +38,38 @@ export default {
     }
 
     return result
+  },
+  deltaT ($moment, startDate, startHour, startSeconds, stopDate, stopHour, stopSeconds) {
+    if (stopDate === undefined) {
+      stopDate = null
+    }
+    if (stopHour === undefined) {
+      stopHour = null
+    }
+    if (stopSeconds === undefined) {
+      stopSeconds = null
+    }
+
+    if (startDate !== null && startHour !== null && startSeconds !== null) {
+      let now = new Date()
+      if (stopDate !== null && stopHour !== null && stopSeconds !== null) {
+        now = $moment(stopDate + ' ' + stopHour + ':' + stopSeconds, 'YYYY-MM-DD HH:mm:ss').toDate()
+      }
+      let delta = now
+      delta -= $moment(startDate + ' ' + startHour + ':' + startSeconds, 'YYYY-MM-DD HH:mm:ss').toDate()
+
+      let way = +1
+      let offset = new Date().getTimezoneOffset() / 60
+      if (offset < 0) {
+        way = -1
+        offset *= -1
+      }
+
+      delta += way * $moment('1990-01-01 ' + offset + ':00:00', 'YYYY-MM-DD HH:mm:ss').toDate()
+
+      return $moment(delta).format('HH:mm:ss')
+    } else {
+      return '00:00:00'
+    }
   }
 }
