@@ -23,7 +23,14 @@
               append-icon="close"
               v-bind:append-icon-cb="() => {newStartDate=null}"
             ></v-text-field>
-            <v-date-picker v-model="newStartDate" no-title scrollable full-width>
+            <v-date-picker
+              v-model="newStartDate"
+              no-title
+              scrollable
+              full-width
+              v-bind:locale="$settings.locale.get().split('_').join('-')"
+              v-bind:first-day-of-week="parseInt($t('vuetify_first-day-of-week'))"
+            >
               <v-spacer></v-spacer>
               <v-btn color="error" v-on:click="startDateMenu = false">{{$t('Abort')}}</v-btn>
               <v-btn color="success" v-on:click="$refs.startDateMenu.save(newStartDate)">{{$t('OK')}}</v-btn>
@@ -58,9 +65,12 @@
               append-icon="close"
               v-bind:append-icon-cb="() => {newStartHour=null}"
             ></v-text-field>
-            <v-time-picker scrollable full-width
+            <v-time-picker
+              scrollable
+              full-width
               v-model="newStartHour"
               v-on:change="$refs.startHourMenu.save(newStartHour)"
+              v-bind:format="$t('vuetify_clock_format')"
             ></v-time-picker>
           </v-menu>
         </span>
@@ -95,7 +105,14 @@
               append-icon="close"
               v-bind:append-icon-cb="() => {newStopDate=null}"
             ></v-text-field>
-            <v-date-picker v-model="newStopDate" no-title scrollable full-width>
+            <v-date-picker
+              v-model="newStopDate"
+              no-title
+              scrollable
+              full-width
+              v-bind:locale="$settings.locale.get().split('_').join('-')"
+              v-bind:first-day-of-week="parseInt($t('vuetify_first-day-of-week'))"
+            >
               <v-spacer></v-spacer>
               <v-btn color="error" v-on:click="stopDateMenu = false">{{$t('Abort')}}</v-btn>
               <v-btn color="success" v-on:click="$refs.stopDateMenu.save(newStopDate)">{{$t('OK')}}</v-btn>
@@ -130,9 +147,12 @@
               append-icon="close"
               v-bind:append-icon-cb="() => {newStopHour=null}"
             ></v-text-field>
-            <v-time-picker scrollable full-width
+            <v-time-picker
+              scrollable
+              full-width
               v-model="newStopHour"
               v-on:change="$refs.stopHourMenu.save(newStopHour)"
+              v-bind:format="$t('vuetify_clock_format')"
             ></v-time-picker>
           </v-menu>
         </span>

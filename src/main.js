@@ -26,6 +26,7 @@ Vue.prototype.db.eventBus = eventBus
 Vue.prototype.$settings = Settings
 Vue.prototype.$settings.DB = Vue.prototype.db
 Vue.prototype.$settings.eventBus = Vue.prototype.eventBus
+Vue.prototype.$settings.momentJS = Vue.prototype.$moment
 Vue.prototype.$settings.i18n = i18n
 Vue.prototype.$settings.load()
 

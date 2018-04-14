@@ -1,6 +1,8 @@
 {
   "local_description": "English (US)",
   "US_locale_description": "English (US)",
+  "vuetify_first-day-of-week": "0",
+  "vuetify_clock_format": "ampm",
   "date_format": "MM/DD/YYYY",
   "hour_format": "hh:mm:ss A",
   "Live Counter": "Live Counter",

@@ -28,7 +28,14 @@
               append-icon="close"
               v-bind:append-icon-cb="() => {fromDate=null}"
             ></v-text-field>
-            <v-date-picker v-model="fromDate" no-title scrollable full-width>
+            <v-date-picker
+              v-model="fromDate"
+              no-title
+              scrollable
+              full-width
+              v-bind:locale="$settings.locale.get().split('_').join('-')"
+              v-bind:first-day-of-week="parseInt($t('vuetify_first-day-of-week'))"
+            >
               <v-spacer></v-spacer>
               <v-btn color="error" v-on:click="fromDateMenu = false">{{$t('Abort')}}</v-btn>
               <v-btn color="success" v-on:click="$refs.fromDateMenu.save(fromDate)">{{$t('OK')}}</v-btn>
@@ -51,7 +58,14 @@
               append-icon="close"
               v-bind:append-icon-cb="() => {toDate=null}"
             ></v-text-field>
-            <v-date-picker v-model="toDate" no-title scrollable full-width>
+            <v-date-picker
+              v-model="toDate"
+              no-title
+              scrollable
+              full-width
+              v-bind:locale="$settings.locale.get().split('_').join('-')"
+              v-bind:first-day-of-week="parseInt($t('vuetify_first-day-of-week'))"
+            >
               <v-spacer></v-spacer>
               <v-btn color="error" v-on:click="toDateMenu = false">{{$t('Abort')}}</v-btn>
               <v-btn color="success" v-on:click="$refs.toDateMenu.save(toDate)">{{$t('OK')}}</v-btn>

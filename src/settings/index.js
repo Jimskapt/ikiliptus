@@ -5,6 +5,7 @@ let settings = {
   eventBus: null,
   DB: null,
   vuetify: null,
+  momentJS: null,
   locale: {
     value: 'en_US',
     get () {
@@ -17,6 +18,7 @@ let settings = {
         this.value = value
 
         settings.i18n.locale = this.value
+        settings.momentJS.locale(this.value.split('_').join('-'))
       }
     }
   },

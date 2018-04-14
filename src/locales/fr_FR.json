@@ -1,6 +1,8 @@
 {
   "local_description": "Français (France)",
   "US_locale_description": "French (France)",
+  "vuetify_first-day-of-week": "1",
+  "vuetify_clock_format": "24hr",
   "date_format": "DD/MM/YYYY",
   "hour_format": "HH:mm:ss",
   "Live Counter": "Compteur temps réel",
