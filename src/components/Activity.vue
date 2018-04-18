@@ -1,5 +1,6 @@
 <template>
   <v-form>
+    <pre>{{dbData}}</pre>
     <p style="font-size:48px;text-align:center;">
       {{ timeAgo }}
     </p>
@@ -21,19 +22,18 @@
               slot="activator"
               readonly
               append-icon="close"
-              v-bind:append-icon-cb="() => {newStartDate=null}"
+              v-bind:append-icon-cb="() => {dbData.start_date=null}"
             ></v-text-field>
             <v-date-picker
-              v-model="newStartDate"
+              v-model="dbData.start_date"
               no-title
               scrollable
               full-width
               v-bind:locale="$settings.locale.get().split('_').join('-')"
               v-bind:first-day-of-week="parseInt($t('vuetify_first-day-of-week'))"
             >
-              <v-spacer></v-spacer>
-              <v-btn color="error" v-on:click="startDateMenu = false">{{$t('Abort')}}</v-btn>
-              <v-btn color="success" v-on:click="$refs.startDateMenu.save(newStartDate)">{{$t('OK')}}</v-btn>
+              <v-btn block color="error" v-on:click="startDateMenu = false">{{$t('Abort')}}</v-btn>
+              <v-btn block color="success" v-on:click="$refs.startDateMenu.save(dbData.start_date)">{{$t('OK')}}</v-btn>
             </v-date-picker>
           </v-menu>
         </span>
@@ -63,13 +63,13 @@
               slot="activator"
               readonly
               append-icon="close"
-              v-bind:append-icon-cb="() => {newStartHour=null}"
+              v-bind:append-icon-cb="() => {dbData.start_hour=null}"
             ></v-text-field>
             <v-time-picker
               scrollable
               full-width
-              v-model="newStartHour"
-              v-on:change="$refs.startHourMenu.save(newStartHour)"
+              v-model="dbData.start_hour"
+              v-on:change="$refs.startHourMenu.save(dbData.start_hour)"
               v-bind:format="$t('vuetify_clock_format')"
             ></v-time-picker>
           </v-menu>
@@ -103,10 +103,10 @@
               slot="activator"
               readonly
               append-icon="close"
-              v-bind:append-icon-cb="() => {newStopDate=null}"
+              v-bind:append-icon-cb="() => {dbData.stop_date=null}"
             ></v-text-field>
             <v-date-picker
-              v-model="newStopDate"
+              v-model="dbData.stop_date"
               no-title
               scrollable
               full-width
@@ -115,7 +115,7 @@
             >
               <v-spacer></v-spacer>
               <v-btn color="error" v-on:click="stopDateMenu = false">{{$t('Abort')}}</v-btn>
-              <v-btn color="success" v-on:click="$refs.stopDateMenu.save(newStopDate)">{{$t('OK')}}</v-btn>
+              <v-btn color="success" v-on:click="$refs.stopDateMenu.save(dbData.stop_date)">{{$t('OK')}}</v-btn>
             </v-date-picker>
           </v-menu>
         </span>
@@ -145,13 +145,13 @@
               slot="activator"
               readonly
               append-icon="close"
-              v-bind:append-icon-cb="() => {newStopHour=null}"
+              v-bind:append-icon-cb="() => {dbData.stop_hour=null}"
             ></v-text-field>
             <v-time-picker
               scrollable
               full-width
-              v-model="newStopHour"
-              v-on:change="$refs.stopHourMenu.save(newStopHour)"
+              v-model="dbData.stop_hour"
+              v-on:change="$refs.stopHourMenu.save(dbData.stop_hour)"
               v-bind:format="$t('vuetify_clock_format')"
             ></v-time-picker>
           </v-menu>
@@ -170,41 +170,29 @@
 
     <v-text-field
       v-bind:label="$t('Subject')"
-      v-model="newSubject"
+      v-model="dbData.subject"
       prepend-icon="label"
-      v-on:input="showSubjects = true"
+      v-on:input="showSuggestions.subject = true"
       append-icon="close"
-      v-bind:append-icon-cb="() => {newSubject=''}"
+      v-bind:append-icon-cb="() => {dbData.subject=''}"
     ></v-text-field>
 
-    <v-card v-if="showSubjects && subjects_founds && subjects_founds.length > 0">
-      <v-toolbar dark dense color="secondary">
-        <v-toolbar-side-icon><v-icon>lightbulb_outline</v-icon></v-toolbar-side-icon>
-        <v-toolbar-title class="white--text">Suggestions</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-btn icon v-on:click="showSubjects = false">
-          <v-icon>close</v-icon>
-        </v-btn>
-      </v-toolbar>
-      <v-list dense>
-        <template v-for="found in subjects_founds">
-          <v-list-tile v-bind:key="'subject_suggest:' + found" v-on:click="newSubject = found">
-            <v-list-tile-action><v-icon>label_outline</v-icon></v-list-tile-action>
-            <v-list-tile-content>{{found}}</v-list-tile-content>
-          </v-list-tile>
-          <v-divider v-bind:key="'divider:' + found"></v-divider>
-        </template>
-      </v-list>
-    </v-card>
+    <suggestions-list
+      name="subject"
+      v-bind:show="showSuggestions.subject"
+      v-bind:list="subjects_founds"
+      v-on:suggestionhide="suggestionhide"
+      v-on:suggestionselect="suggestionselect"
+    ></suggestions-list>
 
     <v-layout>
-      <v-btn icon v-on:click="showCategories = true">
+      <v-btn icon v-on:click="showSuggestions.categories = true">
         <v-icon>move_to_inbox</v-icon>
       </v-btn>
       <v-select
         v-bind:label="$t('Categories')"
-        v-on:input="showCategories = true"
-        v-model="newCategories"
+        v-on:input="showSuggestions.categories = true"
+        v-model="dbData.categories"
         chips
         tags
         clearable
@@ -217,27 +205,16 @@
       </v-select>
     </v-layout>
 
-    <v-card v-if="showCategories && categories_list && categories_list.length > 0">
-      <v-toolbar dark dense color="secondary">
-        <v-toolbar-side-icon><v-icon>lightbulb_outline</v-icon></v-toolbar-side-icon>
-        <v-toolbar-title class="white--text">Suggestions</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-btn icon v-on:click="showCategories = false">
-          <v-icon>close</v-icon>
-        </v-btn>
-      </v-toolbar>
-      <v-list dense v-if="categories_list && categories_list.length > 0">
-        <template v-for="found in categories_founds">
-          <v-list-tile v-bind:key="'categories_suggest:' + found" v-on:click="newCategories.push(found)">
-            <v-list-tile-action><v-icon>move_to_inbox</v-icon></v-list-tile-action>
-            <v-list-tile-content>{{found}}</v-list-tile-content>
-          </v-list-tile>
-          <v-divider v-bind:key="'divider:' + found"></v-divider>
-        </template>
-      </v-list>
-    </v-card>
+    <suggestions-list
+      name="categories"
+      v-bind:show="showSuggestions.categories"
+      v-bind:list="categories_founds"
+      v-on:suggestionhide="suggestionhide"
+      v-on:suggestionselect="suggestionselect"
+    ></suggestions-list>
 
-    <template v-for="(item, i) in customFields">
+    <template v-for="item in customFields">
+      <!--
       <v-checkbox
         v-bind:key="'checkbox-' + i"
         v-bind:label="item.label"
@@ -251,16 +228,23 @@
         v-model="dbData[item.name]"
         v-else
       ></v-text-field>
+      -->
+      <custom-field
+        v-bind:key="'custom-' + item.name"
+        v-bind:settings="item"
+        v-bind:value="dbData[item.name]"
+        v-on:customfieldchange="customfieldchange"
+      ></custom-field>
     </template>
 
     <v-text-field
       v-bind:label="$t('Details')"
-      v-model="newDetails"
+      v-model="dbData.details"
       prepend-icon="comment"
       v-bind:disabled="locked.includes('details')"
       multi-line
       append-icon="close"
-      v-bind:append-icon-cb="() => {newDetails=''}"
+      v-bind:append-icon-cb="() => {dbData.details=''}"
     ></v-text-field>
 
     <v-snackbar v-bind:timeout="1000" top v-model="saveConfirmed" color="success">
@@ -275,6 +259,9 @@
 
 <script>
 import tools from '../tools/index.js'
+import CustomField from '@/components/CustomField'
+import SuggestionsList from '@/components/SuggestionsList'
+
 export default {
   name: 'Interval',
   props: {
@@ -300,31 +287,31 @@ export default {
   data () {
     return {
       startDateMenu: false,
-      newStartDate: null,
       startHourMenu: false,
-      newStartHour: null,
       stopDateMenu: false,
-      newStartSeconds: null,
-      newStopDate: null,
       stopHourMenu: false,
-      newStopHour: null,
-      newStopSeconds: null,
-      newVoluntary: '',
-      newMedium: '',
-      newActor: '',
-      newDetails: '',
-      newSubject: '',
-      newCategories: [],
-      showSubjects: false,
-      showActors: false,
-      showCategories: false,
-      showMediums: false,
+      showSuggestions: {
+        subject: false,
+        categories: false
+      },
       subjects_list: [],
       mediums_list: [],
       actors_list: [],
       categories_list: [],
       timeAgo: '00:00:00',
-      dbData: {},
+      dbData: {
+        data_type: 'subject',
+        data_version: 1,
+        start_date: null,
+        start_hour: null,
+        start_seconds: null,
+        stop_date: null,
+        stop_hour: null,
+        stop_seconds: null,
+        subject: '',
+        categories: [],
+        details: ''
+      },
       saveConfirmed: false,
       customFields: []
     }
@@ -333,7 +320,7 @@ export default {
     save (payload) {
       let that = this
       this.db.current.db
-        .put(this.newData, function (err, res) {
+        .put(this.dbData, function (err, res) {
           if (err) {
             alert('IKE0001:\n' + err)
           } else {
@@ -346,14 +333,32 @@ export default {
         })
         .catch(err => { alert('IKE0002:\n' + err) })
     },
+    suggestionhide (field) {
+      this.showSuggestions[field] = false
+    },
+    suggestionselect (payload) {
+      if (payload !== undefined && payload.field !== undefined && payload.value !== undefined) {
+        if (payload.field === 'categories') {
+          this.dbData[payload.field].push(payload.value)
+        } else {
+          this.dbData[payload.field] = payload.value
+          this.showSuggestions[payload.field] = false
+        }
+      }
+    },
+    customfieldchange (payload) {
+      if (payload !== undefined && payload.field !== undefined && payload.value !== undefined) {
+        this.dbData[payload.field] = payload.value
+      }
+    },
     setStop (args) {
       if (args === undefined) {
         args = new Date()
       }
 
-      this.newStopDate = this.$moment(args).format('YYYY-MM-DD')
-      this.newStopHour = this.$moment(args).format('HH:mm')
-      this.newStopSeconds = args.getSeconds()
+      this.dbData.stop_date = this.$moment(args).format('YYYY-MM-DD')
+      this.dbData.stop_hour = this.$moment(args).format('HH:mm')
+      this.dbData.stop_seconds = args.getSeconds()
 
       this.save({origin: 'stop'})
     },
@@ -364,44 +369,9 @@ export default {
           if (err) {
             alert('IKE0003:\n' + err)
           } else {
-            that.dbData = doc
-
-            if (doc.start_date) {
-              that.newStartDate = doc.start_date
-            }
-            if (doc.start_hour) {
-              that.newStartHour = doc.start_hour
-            }
-            if (doc.start_seconds) {
-              that.newStartSeconds = doc.start_seconds
-            }
-            if (doc.stop_date) {
-              that.newStopDate = doc.stop_date
-            }
-            if (doc.stop_hour) {
-              that.newStopHour = doc.stop_hour
-            }
-            if (doc.stop_seconds) {
-              that.newStopSeconds = doc.stop_seconds
-            }
-            if (doc.subject) {
-              that.newSubject = doc.subject
-            }
-            if (doc.categories) {
-              that.newCategories = doc.categories
-            }
-            if (doc.voluntary) {
-              that.newVoluntary = doc.voluntary
-            }
-            if (doc.medium) {
-              that.newMedium = doc.medium
-            }
-            if (doc.actor) {
-              that.newActor = doc.actor
-            }
-            if (doc.details) {
-              that.newDetails = doc.details
-            }
+            Object.keys(doc).forEach(key => {
+              that.dbData[key] = doc[key]
+            })
           }
         })
         .catch(err => { alert('IKE0004:\n' + err) })
@@ -450,108 +420,64 @@ export default {
         .catch(err => { alert('IKE0008:\n' + err) })
     },
     find_text (array, value) {
-      if (value.trim() === '' || array === undefined) {
+      if (value === undefined || array === undefined) {
+        return []
+      }
+
+      if (value.trim() === '') {
         return []
       }
 
       return array.filter(e => e.toLowerCase().includes(value.trim().toLowerCase()) && e !== value)
     },
     removeCategory (value) {
-      this.newCategories.splice(this.newCategories.indexOf(value), 1)
+      this.dbData.categories.splice(this.dbData.categories.indexOf(value), 1)
     },
     refreshCounter () {
       this.timeAgo = tools.deltaT(
         this.$moment,
-        this.newStartDate,
-        this.newStartHour,
-        this.newStartSeconds,
-        this.newStopDate,
-        this.newStopHour,
-        this.newStopSeconds)
+        this.dbData.start_date,
+        this.dbData.start_hour,
+        this.dbData.start_seconds,
+        this.dbData.stop_date,
+        this.dbData.stop_hour,
+        this.dbData.stop_seconds)
     },
     saveconfirmed () {
       this.saveConfirmed = true
     }
   },
   computed: {
-    newData () {
-      let result = this.dbData
-
-      if (this.newStartDate !== null && this.newStartDate !== undefined) {
-        result.start_date = this.newStartDate
-      }
-      if (this.newStartHour !== null && this.newStartHour !== undefined) {
-        result.start_hour = this.newStartHour
-      }
-      if (this.newStartSeconds !== null && this.newStartSeconds !== undefined) {
-        result.start_seconds = this.newStartSeconds
-      }
-      if (this.newStopDate !== null && this.newStopDate !== undefined) {
-        result.stop_date = this.newStopDate
-      }
-      if (this.newStopHour !== null && this.newStopHour !== undefined) {
-        result.stop_hour = this.newStopHour
-      }
-      if (this.newStopSeconds !== null && this.newStopSeconds !== undefined) {
-        result.stop_seconds = this.newStopSeconds
-      }
-      if (this.newSubject !== null && this.newSubject !== undefined) {
-        result.subject = this.newSubject
-      }
-      if (this.newCategories !== null && this.newCategories !== undefined) {
-        result.categories = this.newCategories
-      }
-      if (this.newVoluntary !== null && this.newVoluntary !== undefined) {
-        result.voluntary = this.newVoluntary
-      }
-      if (this.newMedium !== null && this.newMedium !== undefined) {
-        result.medium = this.newMedium
-      }
-      if (this.newActor !== null && this.newActor !== undefined) {
-        result.actor = this.newActor
-      }
-      if (this.newDetails !== null && this.newDetails !== undefined) {
-        result.details = this.newDetails
-      }
-
-      return result
-    },
     subjects_founds () {
-      return this.find_text(this.subjects_list, this.newSubject)
-    },
-    mediums_founds () {
-      return this.find_text(this.mediums_list, this.newMedium)
-    },
-    actors_founds () {
-      return this.find_text(this.actors_list, this.newActor)
+      return this.find_text(this.subjects_list, this.dbData.subject)
     },
     categories_founds () {
-      return this.categories_list.filter(e => !this.newCategories.includes(e))
+      return this.categories_list.filter(e => !this.dbData.categories.includes(e))
     },
     newStartDateDisplay () {
-      if (this.newStartDate && this.newStartDate != null) {
-        return this.$moment(this.newStartDate, 'YYYY-MM-DD').format(this.$t('date_format'))
+      if (this.dbData.start_date && this.dbData.start_date != null) {
+        return this.$moment(this.dbData.start_date, 'YYYY-MM-DD').format(this.$t('date_format'))
       }
 
       return ''
     },
     newStartHourDisplay () {
-      if (this.newStartHour && this.newStartHour != null) {
-        return this.$moment(this.newStartHour + ':' + this.newStartSeconds, 'HH:mm:ss').format(this.$t('hour_format'))
+      if (this.dbData.start_hour && this.dbData.start_hour != null) {
+        return this.$moment(this.dbData.start_hour + ':' + this.dbData.start_seconds, 'HH:mm:ss').format(this.$t('hour_format'))
       }
 
       return ''
     },
     newStopDateDisplay () {
-      if (this.newStopDate && this.newStopDate != null) {
-        return this.$moment(this.newStopDate, 'YYYY-MM-DD').format(this.$t('date_format'))
+      if (this.dbData.stop_date && this.dbData.stop_date != null) {
+        return this.$moment(this.dbData.stop_date, 'YYYY-MM-DD').format(this.$t('date_format'))
       }
 
       return ''
     },
     newStopHourDisplay () {
-      if (this.newStopHour && this.newStopHour != null) {
-        return this.$moment(this.newStopHour + ':' + this.newStopSeconds, 'HH:mm:ss').format(this.$t('hour_format'))
+      if (this.dbData.stop_hour && this.dbData.stop_hour != null) {
+        return this.$moment(this.dbData.stop_hour + ':' + this.dbData.stop_seconds, 'HH:mm:ss').format(this.$t('hour_format'))
       }
 
       return ''
@@ -566,7 +492,7 @@ export default {
 
     let that = this
     setTimeout(() => {
-      if (that.newStopDate === null && that.newStopHour === null && that.newStopSeconds === null) {
+      if (that.dbData.stop_date === null && that.dbData.stop_hour === null && that.dbData.stop_seconds === null) {
         setInterval(that.refreshCounter, 1000)
       } else {
         that.refreshCounter()
@@ -581,8 +507,18 @@ export default {
           .get('custom_fields')
           .then(doc => {
             that.customFields = doc.fields
+
+            doc.fields.forEach(field => {
+              if (that.dbData[field.name] === undefined) {
+                that.dbData[field.name] = ''
+              }
+            })
           })
       })
+  },
+  components: {
+    SuggestionsList: SuggestionsList,
+    CustomField: CustomField
   },
   destroyed () {
     this.eventBus
