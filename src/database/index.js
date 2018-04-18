@@ -13,9 +13,12 @@ let sessions = {
     color: '#1976D2',
     db: new PouchDB('ikiliptus')
   },
+  mount (id) {
+    let simpleID = id.split('-').join('')
+    return new PouchDB(simpleID)
+  },
   setCurrent (doc, vuetify) {
-    let simpleID = doc._id.split('-').join('')
-    doc.db = new PouchDB(simpleID)
+    doc.db = sessions.mount(doc._id)
     sessions.current = doc
 
     vuetify.theme.primary = doc.color

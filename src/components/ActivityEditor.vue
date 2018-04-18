@@ -17,11 +17,11 @@
         </v-container>
 
         <v-card-actions>
-          <v-btn color="error" v-on:click="$router.go(-1)">
+          <v-btn block color="error" v-on:click="$router.go(-1)">
             <v-icon>clear</v-icon>
             <span>{{ $t("Abort") }}</span>
           </v-btn>
-          <v-btn color="success" v-on:click="eventBus.$emit('save')">
+          <v-btn block color="success" v-on:click="eventBus.$emit('save')">
             <v-icon>done</v-icon>
             <span>{{ $t("OK") }}</span>
           </v-btn>

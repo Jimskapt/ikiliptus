@@ -11,11 +11,8 @@
   "NEXT": "NEXT",
   "From": "From",
   "To": "To",
-  "Voluntary": "Voluntary",
   "Yes": "Yes",
   "No": "No",
-  "Medium": "Medium",
-  "Actor": "Actor",
   "Details": "Details",
   "Counter is not started": "Counter is not started",
   "Last activities": "Last activities",
@@ -65,5 +62,11 @@
   "Delete": "Delete",
   "Copy": "Copy",
   "Confirm the copy": "Confirm the copy",
-  "Please confirm the copy of the activity in the current activity": "Please confirm the copy of the activity in the current activity"
+  "Please confirm the copy of the activity in the current activity": "Please confirm the copy of the activity in the current activity",
+  "Custom fields": "Custom fields",
+  "Add a field": "Add a field",
+  "Icon": "Icon",
+  "Label": "Label",
+  "Field type": "Field type",
+  "Preview": "Preview"
 }

@@ -237,73 +237,21 @@
       </v-list>
     </v-card>
 
-    <v-checkbox
-      v-bind:label="$t('Voluntary')"
-      v-model="newVoluntary"
-      v-bind:disabled="locked.includes('voluntary')"
-    ></v-checkbox>
-
-    <v-text-field
-      v-if="!newVoluntary"
-      v-bind:label="$t('Medium')"
-      v-model="newMedium"
-      prepend-icon="phone"
-      v-bind:disabled="locked.includes('medium')"
-      v-on:input="showMediums = true"
-      append-icon="close"
-      v-bind:append-icon-cb="() => {newMedium=''}"
-    ></v-text-field>
-
-    <v-card v-if="showMediums && mediums_founds && mediums_founds.length > 0">
-      <v-toolbar dark dense color="secondary">
-        <v-toolbar-side-icon><v-icon>lightbulb_outline</v-icon></v-toolbar-side-icon>
-        <v-toolbar-title class="white--text">Suggestions</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-btn icon v-on:click="showMediums = false">
-          <v-icon>close</v-icon>
-        </v-btn>
-      </v-toolbar>
-      <v-list dense>
-        <template v-for="found in mediums_founds">
-          <v-list-tile v-bind:key="'medium_suggest:' + found" v-on:click="newMedium = found">
-            <v-list-tile-action><v-icon>phone</v-icon></v-list-tile-action>
-            <v-list-tile-content>{{found}}</v-list-tile-content>
-          </v-list-tile>
-          <v-divider v-bind:key="'divider:' + found"></v-divider>
-        </template>
-      </v-list>
-    </v-card>
-
-    <v-text-field
-      v-if="!newVoluntary"
-      v-bind:label="$t('Actor')"
-      v-model="newActor"
-      prepend-icon="people"
-      v-bind:disabled="locked.includes('actor')"
-      v-on:input="showActors = true"
-      append-icon="close"
-      v-bind:append-icon-cb="() => {newActor=''}"
-    ></v-text-field>
-
-    <v-container v-if="showActors && actors_founds && actors_founds.length > 0">
-      <v-toolbar dark dense color="secondary">
-        <v-toolbar-side-icon><v-icon>lightbulb_outline</v-icon></v-toolbar-side-icon>
-        <v-toolbar-title class="white--text">Suggestions</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-btn icon v-on:click="showActors = false">
-          <v-icon>close</v-icon>
-        </v-btn>
-      </v-toolbar>
-      <v-list dense>
-        <template v-for="found in actors_founds">
-          <v-list-tile v-bind:key="'actor_suggest:' + found" v-on:click="newActor = found">
-            <v-list-tile-action><v-icon>people</v-icon></v-list-tile-action>
-            <v-list-tile-content>{{found}}</v-list-tile-content>
-          </v-list-tile>
-          <v-divider v-bind:key="'divider:' + found"></v-divider>
-        </template>
-      </v-list>
-    </v-container>
+    <template v-for="(item, i) in customFields">
+      <v-checkbox
+        v-bind:key="'checkbox-' + i"
+        v-bind:label="item.label"
+        v-model="dbData[item.name]"
+        v-if="item.type === 'checkbox'"
+      ></v-checkbox>
+      <v-text-field
+        v-bind:key="'textfield-' + i"
+        v-bind:label="item.label"
+        v-bind:prepend-icon="item.icon"
+        v-model="dbData[item.name]"
+        v-else
+      ></v-text-field>
+    </template>
 
     <v-text-field
       v-bind:label="$t('Details')"
@@ -377,7 +325,8 @@ export default {
       categories_list: [],
       timeAgo: '00:00:00',
       dbData: {},
-      saveConfirmed: false
+      saveConfirmed: false,
+      customFields: []
     }
   },
   methods: {
@@ -624,8 +573,16 @@ export default {
       }
     }, 750)
 
-    // we defer the request because the views could be created, on page load.
-    setTimeout(this.fetchAutocompleteData, 750)
+    this.db.checkAndCreateViews()
+      .then(() => {
+        that.fetchAutocompleteData()
+
+        that.db.current.db
+          .get('custom_fields')
+          .then(doc => {
+            that.customFields = doc.fields
+          })
+      })
   },
   destroyed () {
     this.eventBus

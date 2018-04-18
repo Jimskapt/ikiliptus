@@ -32,15 +32,15 @@
         </v-container>
 
         <v-card-actions v-if="loaded">
-          <v-btn v-on:click="startCounter(undefined, new Date())" v-bind:disabled="runningCounter" color="primary">
+          <v-btn block v-on:click="startCounter(undefined, new Date())" v-bind:disabled="runningCounter" color="primary">
             <v-icon>play_arrow</v-icon>
             <span>{{ $t("START") }}</span>
           </v-btn>
-          <v-btn v-on:click="stopCounter" v-bind:disabled="!runningCounter" color="error">
+          <v-btn block v-on:click="stopCounter" v-bind:disabled="!runningCounter" color="error">
             <v-icon>stop</v-icon>
             <span>{{ $t("STOP") }}</span>
           </v-btn>
-          <v-btn v-on:click="nextCounter" v-bind:disabled="!runningCounter" color="warning">
+          <v-btn block v-on:click="nextCounter" v-bind:disabled="!runningCounter" color="warning">
             <v-icon>skip_next</v-icon>
             <span>{{ $t("NEXT") }}</span>
           </v-btn>
@@ -660,6 +660,7 @@ categories:aaa, bbb ,ccc test
               }
             }
 
+            // TODO : allow custom fields, here !
             if (operations.medium !== undefined) {
               if (e.medium) {
                 if (operations.medium.operator === ':') {

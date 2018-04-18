@@ -5,9 +5,9 @@
         <v-toolbar dark color="primary">
           <v-card-title primary-title dark color="primary">
             <v-btn icon>
-              <v-icon>trending_up</v-icon>
+              <v-icon>search</v-icon>
             </v-btn>
-            <span>{{ $t("Analytics") }}</span>
+            <span>{{ $t("Search") }}</span>
           </v-card-title>
         </v-toolbar>
 
@@ -72,21 +72,46 @@
             </v-date-picker>
           </v-menu>
 
-          <v-layout row>
-            <v-flex>
-              <v-checkbox
-                v-bind:label="$t('Voluntary')"
-                v-model="wantVoluntary"
-              ></v-checkbox>
-            </v-flex>
-            <v-flex>
-              <v-checkbox
-                v-bind:label="$t('Not voluntary')"
-                v-model="wantNotVoluntary"
-              ></v-checkbox>
-            </v-flex>
-          </v-layout>
         </v-container>
+
+        <div v-if="customFields.length > 0">
+          <v-divider></v-divider>
+          <v-container>
+            <template v-for="(item, i) in customFields">
+              <v-layout row v-bind:key="'row-' + i">
+                <v-flex xs1>
+                  <v-switch v-model="customSettings[item.name].enabled"></v-switch>
+                </v-flex>
+                <v-flex xs11>
+                  <v-checkbox
+                    v-bind:label="item.label"
+                    v-model="customSettings[item.name].value"
+                    v-if="item.type === 'checkbox'"
+                  ></v-checkbox>
+                  <v-text-field
+                    v-bind:label="item.label"
+                    v-bind:prepend-icon="item.icon"
+                    v-model="customSettings[item.name].value"
+                    v-else
+                  ></v-text-field>
+                </v-flex>
+              </v-layout>
+            </template>
+          </v-container>
+        </div>
+      </v-card>
+    </v-container>
+
+    <v-container>
+      <v-card>
+        <v-toolbar dark color="primary">
+          <v-card-title primary-title dark color="primary">
+            <v-btn icon>
+              <v-icon>trending_up</v-icon>
+            </v-btn>
+            <span>{{ $t("Analytics") }}</span>
+          </v-card-title>
+        </v-toolbar>
 
         <v-tabs v-model="viewTab" dark color="primary" slider-color="secondary">
           <v-tab>
@@ -230,7 +255,9 @@ export default {
       durationsPerDay: {},
       durationsPerCategory: {},
       durationsPerCategoryAndDay: {},
-      categoriesPowers: {}
+      categoriesPowers: {},
+      customFields: [],
+      customSettings: {}
     }
   },
   methods: {
@@ -286,9 +313,19 @@ export default {
           result &= (that.$moment(activity.stop_date, 'YYYY-MM-DD') < that.$moment(that.toDate, 'YYYY-MM-DD'))
         }
 
-        if (activity.voluntary !== undefined) {
-          result &= ((activity.voluntary === true && that.wantVoluntary) || (activity.voluntary === '' && that.wantNotVoluntary))
-        }
+        that.customFields.forEach(customField => {
+          if (that.customSettings[customField.name].enabled) {
+            if (activity[customField.name] !== undefined) {
+              let value = that.customSettings[customField.name].value
+              if (customField.type === 'checkbox' && value === false) {
+                value = ''
+              }
+              result &= (activity[customField.name] === value)
+            } else {
+              result &= false
+            }
+          }
+        })
 
         return result
       })
@@ -524,6 +561,20 @@ export default {
             that.loaded = true
           })
           .catch(err => alert('IKE0030:\n' + err))
+
+        that.db.current.db
+          .get('custom_fields')
+          .then(doc => {
+            that.customFields = doc.fields
+
+            that.customSettings = {}
+            doc.fields.forEach(field => {
+              Vue.set(that.customSettings, field.name, {
+                enabled: false,
+                value: ((field.type === 'checkbox') ? false : '')
+              })
+            })
+          })
       })
       .catch(err => alert('IKE0031:\n' + err))
   }

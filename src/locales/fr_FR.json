@@ -11,11 +11,8 @@
   "NEXT": "SUIVANT",
   "From": "A partir de",
   "To": "Jusqu'à",
-  "Voluntary": "Volontaire",
   "Yes": "Oui",
   "No": "Non",
-  "Medium": "Medium",
-  "Actor": "Acteur",
   "Details": "Details",
   "Counter is not started": "Le compteur n'a pas été démarré",
   "Last activities": "Les dernières activités",
@@ -65,5 +62,11 @@
   "Delete": "Supprimer",
   "Copy": "Copier",
   "Confirm the copy": "Confirmer la copie",
-  "Please confirm the copy of the activity in the current activity": "Veuillez confirmer la copie de cette activité dans l'activité en cours"
+  "Please confirm the copy of the activity in the current activity": "Veuillez confirmer la copie de cette activité dans l'activité en cours",
+  "Custom fields": "Champs personnalisés",
+  "Add a field": "Ajouter un champ",
+  "Icon": "Icone",
+  "Label": "Libellé",
+  "Field type": "Type de champ",
+  "Preview": "Aperçu"
 }
