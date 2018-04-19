@@ -19,20 +19,20 @@
 
           <v-list two-line subheader>
             <v-subheader>{{ $t('Available sessions') }}</v-subheader>
-            <template v-for="session in db.available">
+            <template v-for="session in $sessions.available">
               <v-divider v-bind:key="'divider-' + session._id"></v-divider>
               <v-list-tile avatar v-bind:key="'list-' + session._id">
                 <v-list-tile-avatar>
                   <div
                     v-bind:style="'cursor:pointer; width:100%; height:100%; border-radius:10px; background-color:' + session.color"
-                    v-on:click="db.setCurrent(session, $vuetify)"
+                    v-on:click="$sessions.setCurrent(session, $vuetify)"
                   ></div>
                 </v-list-tile-avatar>
                 <v-list-tile-content>
                   <v-list-tile-title>
                     <span
                       v-bind:style="'cursor:pointer; text-decoration:underline; color:' + $vuetify.theme.primary"
-                      v-on:click="db.setCurrent(session, $vuetify)"
+                      v-on:click="$sessions.setCurrent(session, $vuetify)"
                     >
                       {{session.name}}
                     </span>
@@ -82,9 +82,8 @@
           ></v-text-field>
         </v-card-text>
         <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="success" v-on:click="deleteConfirmObj=null;typedDeleteConfirm=null;confirmDeleteDialog=false;">{{$t('Abort')}}</v-btn>
-          <v-btn color="error" v-on:click="confirmDeleteSession">{{$t('OK')}}</v-btn>
+          <v-btn block color="success" v-on:click="deleteConfirmObj=null;typedDeleteConfirm=null;confirmDeleteDialog=false;">{{$t('Abort')}}</v-btn>
+          <v-btn block color="error" v-on:click="confirmDeleteSession">{{$t('OK')}}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -117,13 +116,13 @@ export default {
       if (this.typedDeleteConfirm === this.deleteConfirmObj.name) {
         let that = this
 
-        this.db.db
+        this.$sessions.db
           .remove(that.deleteConfirmObj)
           .then(result => {
-            if (that.db.current._id === that.deleteConfirmObj._id) {
-              that.db.available.forEach(e => {
+            if (that.$sessions.current._id === that.deleteConfirmObj._id) {
+              that.$sessions.available.forEach(e => {
                 if (e._id === 'ikiliptus') {
-                  that.db.setCurrent(e, that.$vuetify)
+                  that.$sessions.setCurrent(e, that.$vuetify)
                 }
               })
             }
@@ -136,7 +135,7 @@ export default {
             that.typedDeleteConfirm = null
             that.confirmDeleteDialog = false
 
-            that.db
+            that.$sessions
               .refresh()
               .then(() => {
                 that.$forceUpdate()
@@ -149,7 +148,7 @@ export default {
   },
   mounted () {
     let that = this
-    this.db
+    this.$sessions
       .refresh()
       .then(res => that.$forceUpdate())
       .catch(err => { alert('IKE0027:\n' + err) })

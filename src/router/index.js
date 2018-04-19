@@ -1,12 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Settings from '@/components/Settings'
+import SettingsPage from '@/components/SettingsPage'
 import DataLoader from '@/components/DataLoader'
-import LiveCounter from '@/components/LiveCounter'
+import TheLiveCounter from '@/components/TheLiveCounter'
 import DataDisplay from '@/components/DataDisplay'
 import ActivityEditor from '@/components/ActivityEditor'
 import DataUpgrade from '@/components/DataUpgrade'
-import Analytics from '@/components/Analytics'
+import AnalyticsPage from '@/components/AnalyticsPage'
 import SessionManager from '@/components/SessionManager'
 import SessionEditor from '@/components/SessionEditor'
 
@@ -17,13 +17,13 @@ export default new Router({
     {
       path: '/',
       redirect: {
-        name: 'LiveCounter'
+        name: 'Home'
       }
     },
     {
       path: '/live_counter',
       name: 'LiveCounter',
-      component: LiveCounter
+      component: TheLiveCounter
     },
     {
       path: '/activity/:id',
@@ -34,7 +34,7 @@ export default new Router({
     {
       path: '/settings',
       name: 'Settings',
-      component: Settings
+      component: SettingsPage
     },
     {
       path: '/save',
@@ -54,7 +54,7 @@ export default new Router({
     {
       path: '/analytics',
       name: 'Analytics',
-      component: Analytics
+      component: AnalyticsPage
     },
     {
       path: '/session_manager',
@@ -62,7 +62,7 @@ export default new Router({
       component: SessionManager
     },
     {
-      path: '/session_editor/:id',
+      path: '/session/:id',
       name: 'SessionEditor',
       component: SessionEditor,
       props: true

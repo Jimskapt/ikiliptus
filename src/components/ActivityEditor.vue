@@ -13,7 +13,7 @@
         </v-toolbar>
 
         <v-container>
-          <activity v-bind:id="id"></activity>
+          <activity-field v-bind:id="id"></activity-field>
         </v-container>
 
         <v-card-actions>
@@ -21,7 +21,7 @@
             <v-icon>clear</v-icon>
             <span>{{ $t("Abort") }}</span>
           </v-btn>
-          <v-btn block color="success" v-on:click="eventBus.$emit('save')">
+          <v-btn block color="success" v-on:click="$eventBus.$emit('save')">
             <v-icon>done</v-icon>
             <span>{{ $t("OK") }}</span>
           </v-btn>
@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import Activity from '@/components/Activity'
+import ActivityField from '@/components/ActivityField'
 
 export default {
   name: 'ActivityEditor',
@@ -52,13 +52,13 @@ export default {
     }
   },
   components: {
-    'activity': Activity
+    activityField: ActivityField
   },
   mounted () {
-    this.eventBus.$on('saveconfirm', this.routerGoBack)
+    this.$eventBus.$on('saveconfirm', this.routerGoBack)
   },
   destroyed () {
-    this.eventBus.$off('saveconfirm', this.routerGoBack)
+    this.$eventBus.$off('saveconfirm', this.routerGoBack)
   }
 }
 </script>

@@ -3,11 +3,11 @@ import tools from '../tools/index.js'
 let settings = {
   i18n: null,
   eventBus: null,
-  DB: null,
+  databases: null,
   vuetify: null,
   momentJS: null,
   locale: {
-    value: 'en_US',
+    value: 'en-US',
     get () {
       return this.value
     },
@@ -18,7 +18,7 @@ let settings = {
         this.value = value
 
         settings.i18n.locale = this.value
-        settings.momentJS.locale(this.value.split('_').join('-'))
+        settings.momentJS.locale(this.value)
       }
     }
   },
@@ -31,12 +31,12 @@ let settings = {
 
     if (cookies.last_session !== undefined) {
       let that = this
-      this.DB
+      this.databases
         .refresh()
         .then(() => {
-          that.DB.available.forEach(e => {
+          that.databases.available.forEach(e => {
             if (e._id === cookies.last_session) {
-              that.DB.setCurrent(e, that.vuetify)
+              that.databases.setCurrent(e, that.vuetify)
             }
           })
         })

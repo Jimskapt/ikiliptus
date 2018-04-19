@@ -21,6 +21,11 @@ export default {
       })
       .forEach(e => {
         result[e[0]] = e[1]
+
+        // fix for keep compatiblity of the data with older versions
+        if (e[0] === 'locale') {
+          result[e[0]] = e[1].split('_').join('-')
+        }
       })
 
     return result

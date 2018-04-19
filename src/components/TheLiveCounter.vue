@@ -18,12 +18,12 @@
             <div v-if="runningCounter">
               <v-layout row>
                 <v-spacer></v-spacer>
-                <v-btn v-on:click="eventBus.$emit('save', {origin: 'save', time: new Date()})" color="primary">
+                <v-btn v-on:click="$eventBus.$emit('save', {origin: 'save', time: new Date()})" color="primary">
                   <v-icon>save</v-icon>
                   <span>{{ $t("Save") }}</span>
                 </v-btn>
               </v-layout>
-              <activity v-bind:id="currentID" v-bind:locked="['stop_date','stop_hour']" v-bind:showCounter="true"></activity>
+              <activity-field v-bind:id="currentID" v-bind:locked="['stop_date','stop_hour']" v-bind:showCounter="true"></activity-field>
             </div>
             <v-alert v-else color="info" outline icon="info" v-bind:value="true">
               {{ $t("Counter is not started") }}.
@@ -133,7 +133,7 @@
                     </v-btn>
                   </v-flex>
                   <v-flex xs6>
-                    <v-btn flat icon v-on:click="ask_delete_activity(item)">
+                    <v-btn flat icon v-on:click="askDeleteActivity(item)">
                       <v-icon>delete</v-icon>
                     </v-btn>
                   </v-flex>
@@ -146,7 +146,7 @@
       </v-card>
     </v-container>
 
-    <v-dialog v-model="asked_delete">
+    <v-dialog v-model="askedDelete">
       <v-card>
         <v-toolbar dark color="primary">
           <v-card-title>{{ $t('Confirm the delete') }}</v-card-title>
@@ -155,12 +155,11 @@
           <p>{{ $t('Please confirm the delete of this activity') }}.</p>
         </v-card-text>
         <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="success" v-on:click="asked_delete_document=null;asked_delete=false;">
+          <v-btn block color="success" v-on:click="askedDeleteDocument=null;askedDelete=false;">
             <v-icon>close</v-icon>
             {{$t('Abort')}}
           </v-btn>
-          <v-btn color="error" v-on:click="confirm_delete_activity">
+          <v-btn block color="error" v-on:click="confirmDeleteActivity">
             <v-icon>delete</v-icon>
             {{$t('Delete')}}
           </v-btn>
@@ -168,7 +167,7 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="asked_copy">
+    <v-dialog v-model="askedCopy">
       <v-card>
         <v-toolbar dark color="primary">
           <v-card-title>{{ $t('Confirm the copy') }}</v-card-title>
@@ -177,12 +176,11 @@
           <p>{{ $t('Please confirm the copy of the activity in the current activity') }}.</p>
         </v-card-text>
         <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="success" v-on:click="asked_copy_document=null;asked_copy=false;">
+          <v-btn block color="success" v-on:click="askedCopyDocument=null;askedCopy=false;">
             <v-icon>close</v-icon>
             {{$t('Abort')}}
           </v-btn>
-          <v-btn color="primary" v-on:click="confirm_copy_activity">
+          <v-btn block color="primary" v-on:click="confirmActivityCopy">
             <v-icon>content_copy</v-icon>
             {{$t('Copy')}}
           </v-btn>
@@ -196,10 +194,13 @@
 <script>
 import Vue from 'vue'
 import tools from '../tools/index.js'
-import Activity from '@/components/Activity'
+import ActivityField from '@/components/ActivityField'
 
 export default {
-  name: 'LiveCounter',
+  name: 'TheLiveCounter',
+  components: {
+    activityField: ActivityField
+  },
   data () {
     return {
       currentID: '',
@@ -207,12 +208,10 @@ export default {
       nextAction: '',
       activities: [],
       dialog: false,
-      subjects_list: [],
-      dialog_subject: '',
-      asked_delete: false,
-      asked_delete_document: null,
-      asked_copy: false,
-      asked_copy_document: null,
+      askedDelete: false,
+      askedDeleteDocument: null,
+      askedCopy: false,
+      askedCopyDocument: null,
       lastActivitiesPage: 1,
       activitiesPerPage: 10,
       activitiesSearch: '',
@@ -245,7 +244,7 @@ export default {
         document.data_version = 1
       }
 
-      this.db.current.db
+      this.$sessions.current.db
         .post(document, {}, function (err, res) {
           if (err) {
             alert('IKE0013:\n' + err)
@@ -263,7 +262,7 @@ export default {
     },
     stopCounter () {
       this.runningCounter = false
-      this.eventBus.$emit('setStop', new Date())
+      this.$eventBus.$emit('setStop', new Date())
     },
     liveSaveConfirm (payload) {
       if (payload !== undefined) {
@@ -290,8 +289,8 @@ export default {
     },
     copyActivity (document) {
       if (this.runningCounter) {
-        this.asked_copy_document = document
-        this.asked_copy = true
+        this.askedCopyDocument = document
+        this.askedCopy = true
       } else {
         this.nextCounter(document)
       }
@@ -301,9 +300,9 @@ export default {
 
       that.loaded = false
 
-      that.db.checkAndCreateViews()
+      that.$sessions.checkAndCreateViews()
         .then(() => {
-          that.db.current.db
+          that.$sessions.current.db
             .query('all_activities/all_activities', {include_docs: true})
             .then(res => {
               that.activities = []
@@ -327,26 +326,26 @@ export default {
         })
         .catch(err => alert('IKE0017:\n' + err))
     },
-    ask_delete_activity (document) {
-      this.asked_delete = true
-      this.asked_delete_document = document
+    askDeleteActivity (document) {
+      this.askedDelete = true
+      this.askedDeleteDocument = document
     },
-    confirm_delete_activity () {
+    confirmDeleteActivity () {
       let that = this
 
-      this.db.current.db
-        .remove(this.asked_delete_document)
+      this.$sessions.current.db
+        .remove(this.askedDeleteDocument)
         .then(() => {
-          that.asked_delete = false
-          that.asked_delete_document = null
+          that.askedDelete = false
+          that.askedDeleteDocument = null
 
           that.fetchAllSubjects()
         })
         .catch(err => alert('IKE0018:\n' + err))
     },
-    confirm_copy_activity () {
+    confirmActivityCopy () {
       let that = this
-      let document = this.asked_copy_document
+      let document = this.askedCopyDocument
 
       delete document._id
       delete document._rev
@@ -363,8 +362,8 @@ export default {
         document.data_version = 1
       }
 
-      this.db.current.db
-        .get(this.currentID, function (err, doc) {
+      this.$sessions.current.db
+        .get(that.currentID, function (err, doc) {
           return new Promise((resolve, reject) => {
             if (err) {
               throw new Error(err)
@@ -379,7 +378,7 @@ export default {
           })
         })
         .then(() => {
-          this.db.current.db
+          that.$sessions.current.db
             .put(document, {}, function (err, res) {
               if (err) {
                 alert('IKE0036:\n' + err)
@@ -387,8 +386,8 @@ export default {
 
               if (res.ok === true) {
                 that.fetchAllSubjects()
-                that.asked_copy_document = null
-                that.asked_copy = false
+                that.askedCopyDocument = null
+                that.askedCopy = false
               } else {
                 alert('IKE0035:\n' + res)
               }
@@ -738,7 +737,7 @@ categories:aaa, bbb ,ccc test
     }
   },
   mounted () {
-    this.eventBus
+    this.$eventBus
       .$on('saveconfirm', this.liveSaveConfirm)
       .$on('dbupdate', this.fetchAllSubjects)
 
@@ -751,9 +750,9 @@ categories:aaa, bbb ,ccc test
 
     // searching unstopped activities, and using the first of them in the live counter
     let that = this
-    this.db.checkAndCreateViews()
+    this.$sessions.checkAndCreateViews()
       .then(() => {
-        that.db.current.db
+        that.$sessions.current.db
           .query('all_activities/all_activities', {include_docs: true})
           .then(res => {
             let unstoppedList = res.rows.filter(e => e.doc.stop_date === undefined || e.doc.stop_hour === undefined)
@@ -766,12 +765,9 @@ categories:aaa, bbb ,ccc test
       })
   },
   destroyed () {
-    this.eventBus
+    this.$eventBus
       .$off('saveconfirm', this.saveConfirmation)
       .$off('dbupdate', this.fetchAllSubjects)
-  },
-  components: {
-    'activity': Activity
   }
 }
 </script>

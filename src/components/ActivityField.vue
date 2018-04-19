@@ -1,6 +1,5 @@
 <template>
   <v-form>
-    <pre>{{dbData}}</pre>
     <p style="font-size:48px;text-align:center;">
       {{ timeAgo }}
     </p>
@@ -29,7 +28,7 @@
               no-title
               scrollable
               full-width
-              v-bind:locale="$settings.locale.get().split('_').join('-')"
+              v-bind:locale="$settings.locale.get()"
               v-bind:first-day-of-week="parseInt($t('vuetify_first-day-of-week'))"
             >
               <v-btn block color="error" v-on:click="startDateMenu = false">{{$t('Abort')}}</v-btn>
@@ -110,7 +109,7 @@
               no-title
               scrollable
               full-width
-              v-bind:locale="$settings.locale.get().split('_').join('-')"
+              v-bind:locale="$settings.locale.get()"
               v-bind:first-day-of-week="parseInt($t('vuetify_first-day-of-week'))"
             >
               <v-spacer></v-spacer>
@@ -180,7 +179,7 @@
     <suggestions-list
       name="subject"
       v-bind:show="showSuggestions.subject"
-      v-bind:list="subjects_founds"
+      v-bind:list="subjectsFound"
       v-on:suggestionhide="suggestionhide"
       v-on:suggestionselect="suggestionselect"
     ></suggestions-list>
@@ -208,7 +207,7 @@
     <suggestions-list
       name="categories"
       v-bind:show="showSuggestions.categories"
-      v-bind:list="categories_founds"
+      v-bind:list="categoriesFound"
       v-on:suggestionhide="suggestionhide"
       v-on:suggestionselect="suggestionselect"
     ></suggestions-list>
@@ -263,7 +262,7 @@ import CustomField from '@/components/CustomField'
 import SuggestionsList from '@/components/SuggestionsList'
 
 export default {
-  name: 'Interval',
+  name: 'ActivityField',
   props: {
     id: {
       type: String,
@@ -294,10 +293,10 @@ export default {
         subject: false,
         categories: false
       },
-      subjects_list: [],
-      mediums_list: [],
-      actors_list: [],
-      categories_list: [],
+      subjectsList: [],
+      mediumsList: [],
+      actorsList: [],
+      categoriesList: [],
       timeAgo: '00:00:00',
       dbData: {
         data_type: 'subject',
@@ -319,15 +318,15 @@ export default {
   methods: {
     save (payload) {
       let that = this
-      this.db.current.db
+      this.$sessions.current.db
         .put(this.dbData, function (err, res) {
           if (err) {
             alert('IKE0001:\n' + err)
           } else {
             if (payload !== undefined) {
-              that.eventBus.$emit('saveconfirm', payload.origin)
+              that.$eventBus.$emit('saveconfirm', payload.origin)
             } else {
-              that.eventBus.$emit('saveconfirm')
+              that.$eventBus.$emit('saveconfirm')
             }
           }
         })
@@ -364,7 +363,7 @@ export default {
     },
     refreshData (relaunchCounter) {
       let that = this
-      this.db.current.db
+      this.$sessions.current.db
         .get(this.id, function (err, doc) {
           if (err) {
             alert('IKE0003:\n' + err)
@@ -379,47 +378,47 @@ export default {
     fetchAutocompleteData () {
       let that = this
 
-      this.db.current.db
+      this.$sessions.current.db
         .query('subjects_powers/subjects_powers', {group: true})
         .then(res => {
-          that.subjects_list = []
+          that.subjectsList = []
           res.rows.forEach(e => {
-            that.subjects_list.push(e.key)
+            that.subjectsList.push(e.key)
           })
         })
         .catch(err => { alert('IKE0005:\n' + err) })
 
-      this.db.current.db
+      this.$sessions.current.db
         .query('mediums_powers/mediums_powers', {group: true})
         .then(res => {
-          that.mediums_list = []
+          that.mediumsList = []
           res.rows.forEach(e => {
-            that.mediums_list.push(e.key)
+            that.mediumsList.push(e.key)
           })
         })
         .catch(err => { alert('IKE0006:\n' + err) })
 
-      this.db.current.db
+      this.$sessions.current.db
         .query('actors_powers/actors_powers', {group: true})
         .then(res => {
-          that.actors_list = []
+          that.actorsList = []
           res.rows.forEach(e => {
-            that.actors_list.push(e.key)
+            that.actorsList.push(e.key)
           })
         })
         .catch(err => { alert('IKE0007:\n' + err) })
 
-      this.db.current.db
+      this.$sessions.current.db
         .query('categories_powers/categories_powers', {group: true})
         .then(res => {
-          that.categories_list = []
+          that.categoriesList = []
           res.rows.forEach(e => {
-            that.categories_list.push(e.key)
+            that.categoriesList.push(e.key)
           })
         })
         .catch(err => { alert('IKE0008:\n' + err) })
     },
-    find_text (array, value) {
+    findText (array, value) {
       if (value === undefined || array === undefined) {
         return []
       }
@@ -448,11 +447,11 @@ export default {
     }
   },
   computed: {
-    subjects_founds () {
-      return this.find_text(this.subjects_list, this.dbData.subject)
+    subjectsFound () {
+      return this.findText(this.subjectsList, this.dbData.subject)
     },
-    categories_founds () {
-      return this.categories_list.filter(e => !this.dbData.categories.includes(e))
+    categoriesFound () {
+      return this.categoriesList.filter(e => !this.dbData.categories.includes(e))
     },
     newStartDateDisplay () {
       if (this.dbData.start_date && this.dbData.start_date != null) {
@@ -484,9 +483,9 @@ export default {
     }
   },
   mounted () {
-    this.eventBus.$on('setStop', this.setStop)
-    this.eventBus.$on('save', this.save)
-    this.eventBus.$on('saveconfirm', this.saveconfirmed)
+    this.$eventBus.$on('setStop', this.setStop)
+    this.$eventBus.$on('save', this.save)
+    this.$eventBus.$on('saveconfirm', this.saveconfirmed)
 
     this.refreshData()
 
@@ -499,11 +498,11 @@ export default {
       }
     }, 750)
 
-    this.db.checkAndCreateViews()
+    this.$sessions.checkAndCreateViews()
       .then(() => {
         that.fetchAutocompleteData()
 
-        that.db.current.db
+        that.$sessions.current.db
           .get('custom_fields')
           .then(doc => {
             that.customFields = doc.fields
@@ -517,11 +516,11 @@ export default {
       })
   },
   components: {
-    SuggestionsList: SuggestionsList,
-    CustomField: CustomField
+    suggestionsList: SuggestionsList,
+    customField: CustomField
   },
   destroyed () {
-    this.eventBus
+    this.$eventBus
       .$off('setStop', this.setStop)
       .$off('save', this.save)
       .$off('saveconfirm', this.saveconfirmed)

@@ -20,11 +20,11 @@ Vue.use(VueMoment)
 
 let eventBus = new Vue()
 
-Vue.prototype.eventBus = eventBus
-Vue.prototype.db = DB
-Vue.prototype.db.eventBus = eventBus
+Vue.prototype.$eventBus = eventBus
+Vue.prototype.$sessions = DB
+Vue.prototype.$sessions.eventBus = eventBus
 Vue.prototype.$settings = Settings
-Vue.prototype.$settings.DB = Vue.prototype.db
+Vue.prototype.$settings.databases = Vue.prototype.$sessions
 Vue.prototype.$settings.eventBus = Vue.prototype.eventBus
 Vue.prototype.$settings.momentJS = Vue.prototype.$moment
 Vue.prototype.$settings.i18n = i18n

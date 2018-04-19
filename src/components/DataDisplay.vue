@@ -23,7 +23,7 @@
               {{ $t('In order to save your data, just copy and paste the following data in an text editor (like notepad), and then save it as *.json file') }}.
             </v-alert>
             <v-alert type="warning" v-bind:value="true">
-              {{ $t('This is only the data for the current session X', {name: db.current.name}) }}.<br />
+              {{ $t('This is only the data for the current session X', {name: $sessions.current.name}) }}.<br />
               {{ $t('You have to do that for each session if you want to save all of them') }}.
             </v-alert>
             <v-container>
@@ -52,7 +52,7 @@ export default {
   mounted () {
     let that = this
 
-    this.db.current.db
+    this.$sessions.current.db
       .allDocs({include_docs: true}, function (err, doc) {
         if (err) {
           alert('IKE0009:\n' + err)

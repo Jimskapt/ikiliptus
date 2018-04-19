@@ -14,7 +14,7 @@
       </v-btn>
       <v-btn small dark flat v-bind:to="{name: 'SessionManager'}">
         <v-icon>folder</v-icon>
-        <span>&nbsp;{{db.current.name}}</span>
+        <span>&nbsp;{{$sessions.current.name}}</span>
       </v-btn>
     </v-toolbar>
 

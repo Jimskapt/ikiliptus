@@ -33,7 +33,7 @@
               no-title
               scrollable
               full-width
-              v-bind:locale="$settings.locale.get().split('_').join('-')"
+              v-bind:locale="$settings.locale.get()"
               v-bind:first-day-of-week="parseInt($t('vuetify_first-day-of-week'))"
             >
               <v-spacer></v-spacer>
@@ -63,7 +63,7 @@
               no-title
               scrollable
               full-width
-              v-bind:locale="$settings.locale.get().split('_').join('-')"
+              v-bind:locale="$settings.locale.get()"
               v-bind:first-day-of-week="parseInt($t('vuetify_first-day-of-week'))"
             >
               <v-spacer></v-spacer>
@@ -83,17 +83,13 @@
                   <v-switch v-model="customSettings[item.name].enabled"></v-switch>
                 </v-flex>
                 <v-flex xs11>
-                  <v-checkbox
-                    v-bind:label="item.label"
-                    v-model="customSettings[item.name].value"
-                    v-if="item.type === 'checkbox'"
-                  ></v-checkbox>
-                  <v-text-field
-                    v-bind:label="item.label"
-                    v-bind:prepend-icon="item.icon"
-                    v-model="customSettings[item.name].value"
-                    v-else
-                  ></v-text-field>
+                  <custom-field
+                    v-bind:key="'custom-' + item.name"
+                    v-bind:settings="item"
+                    v-bind:value="customSettings[item.name].value"
+                    v-bind:disabled="!customSettings[item.name].enabled"
+                    v-on:customfieldchange="customfieldchange"
+                  ></custom-field>
                 </v-flex>
               </v-layout>
             </template>
@@ -151,11 +147,39 @@
 <script>
 import Vue from 'vue'
 import tools from '../tools/index.js'
+import CustomField from '@/components/CustomField'
 import { Line, Pie, Bar, mixins } from 'vue-chartjs'
 const { reactiveProp } = mixins
 
 export default {
-  name: 'Analytics',
+  name: 'AnalyticsPage',
+  components: {
+    customField: CustomField,
+    lineChart: {
+      extends: Line,
+      mixins: [reactiveProp],
+      props: ['options'],
+      mounted () {
+        this.renderChart(this.chartData, this.options)
+      }
+    },
+    pieChart: {
+      extends: Pie,
+      mixins: [reactiveProp],
+      props: ['options'],
+      mounted () {
+        this.renderChart(this.chartData, this.options)
+      }
+    },
+    barChart: {
+      extends: Bar,
+      mixins: [reactiveProp],
+      props: ['options'],
+      mounted () {
+        this.renderChart(this.chartData, this.options)
+      }
+    }
+  },
   data () {
     let that = this
 
@@ -283,6 +307,11 @@ export default {
       result += seconds
 
       return result
+    },
+    customfieldchange (payload) {
+      if (payload !== undefined && payload.field !== undefined && payload.value !== undefined) {
+        this.customSettings[payload.field].value = payload.value
+      }
     }
   },
   computed: {
@@ -516,37 +545,11 @@ export default {
       }
     }
   },
-  components: {
-    lineChart: {
-      extends: Line,
-      mixins: [reactiveProp],
-      props: ['options'],
-      mounted () {
-        this.renderChart(this.chartData, this.options)
-      }
-    },
-    pieChart: {
-      extends: Pie,
-      mixins: [reactiveProp],
-      props: ['options'],
-      mounted () {
-        this.renderChart(this.chartData, this.options)
-      }
-    },
-    barChart: {
-      extends: Bar,
-      mixins: [reactiveProp],
-      props: ['options'],
-      mounted () {
-        this.renderChart(this.chartData, this.options)
-      }
-    }
-  },
   mounted () {
     let that = this
-    that.db.checkAndCreateViews()
+    that.$sessions.checkAndCreateViews()
       .then(() => {
-        that.db.current.db
+        that.$sessions.current.db
           .query('all_activities/all_activities', {include_docs: true})
           .then(res => {
             that.activities = []
@@ -562,7 +565,7 @@ export default {
           })
           .catch(err => alert('IKE0030:\n' + err))
 
-        that.db.current.db
+        that.$sessions.current.db
           .get('custom_fields')
           .then(doc => {
             that.customFields = doc.fields
