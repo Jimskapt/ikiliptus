@@ -23,7 +23,7 @@
                   <span>{{ $t("Save") }}</span>
                 </v-btn>
               </v-layout>
-              <activity-field v-bind:id="currentID" v-bind:locked="['stop_date','stop_hour']" v-bind:showCounter="true"></activity-field>
+              <activity-form v-bind:id="currentID" v-bind:locked="['stop_date','stop_hour']" v-bind:showCounter="true"></activity-form>
             </div>
             <v-alert v-else color="info" outline icon="info" v-bind:value="true">
               {{ $t("Counter is not started") }}.
@@ -194,12 +194,12 @@
 <script>
 import Vue from 'vue'
 import tools from '../tools/index.js'
-import ActivityField from '@/components/ActivityField'
+import ActivityForm from '@/components/ActivityForm'
 
 export default {
   name: 'TheLiveCounter',
   components: {
-    activityField: ActivityField
+    activityForm: ActivityForm
   },
   data () {
     return {
@@ -370,7 +370,7 @@ export default {
             } else {
               Object.keys(doc).forEach(key => {
                 if (document[key] === undefined) {
-                  document[key] = doc[key]
+                  that.$set(document, key, doc[key])
                 }
               })
               resolve()

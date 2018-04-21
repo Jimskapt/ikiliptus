@@ -262,7 +262,7 @@ import CustomField from '@/components/CustomField'
 import SuggestionsList from '@/components/SuggestionsList'
 
 export default {
-  name: 'ActivityField',
+  name: 'ActivityForm',
   props: {
     id: {
       type: String,
@@ -333,21 +333,21 @@ export default {
         .catch(err => { alert('IKE0002:\n' + err) })
     },
     suggestionhide (field) {
-      this.showSuggestions[field] = false
+      this.$set(this.showSuggestions, field, false)
     },
     suggestionselect (payload) {
       if (payload !== undefined && payload.field !== undefined && payload.value !== undefined) {
         if (payload.field === 'categories') {
           this.dbData[payload.field].push(payload.value)
         } else {
-          this.dbData[payload.field] = payload.value
-          this.showSuggestions[payload.field] = false
+          this.$set(this.dbData, payload.field, payload.value)
+          this.$set(this.showSuggestions, payload.field, false)
         }
       }
     },
     customfieldchange (payload) {
       if (payload !== undefined && payload.field !== undefined && payload.value !== undefined) {
-        this.dbData[payload.field] = payload.value
+        this.$set(this.dbData, payload.field, payload.value)
       }
     },
     setStop (args) {
@@ -369,7 +369,7 @@ export default {
             alert('IKE0003:\n' + err)
           } else {
             Object.keys(doc).forEach(key => {
-              that.dbData[key] = doc[key]
+              that.$set(that.dbData, key, doc[key])
             })
           }
         })
@@ -509,7 +509,7 @@ export default {
 
             doc.fields.forEach(field => {
               if (that.dbData[field.name] === undefined) {
-                that.dbData[field.name] = ''
+                that.$set(that.dbData, field.name, '')
               }
             })
           })

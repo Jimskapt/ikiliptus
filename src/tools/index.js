@@ -1,3 +1,5 @@
+import Vue from 'vue'
+
 export default {
   setCookie (key, value) {
     let oneYearFromNow = new Date()
@@ -20,11 +22,11 @@ export default {
           .map(e2 => e2.trim().split('|-|/|').join('='))
       })
       .forEach(e => {
-        result[e[0]] = e[1]
+        Vue.set(result, e[0], e[1])
 
         // fix for keep compatiblity of the data with older versions
         if (e[0] === 'locale') {
-          result[e[0]] = e[1].split('_').join('-')
+          Vue.set(result, e[0], e[1].split('_').join('-'))
         }
       })
 

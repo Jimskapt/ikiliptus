@@ -13,7 +13,7 @@
         </v-toolbar>
 
         <v-container>
-          <activity-field v-bind:id="id"></activity-field>
+          <activity-form v-bind:id="id"></activity-form>
         </v-container>
 
         <v-card-actions>
@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import ActivityField from '@/components/ActivityField'
+import ActivityForm from '@/components/ActivityForm'
 
 export default {
   name: 'ActivityEditor',
@@ -52,7 +52,7 @@ export default {
     }
   },
   components: {
-    activityField: ActivityField
+    activityForm: ActivityForm
   },
   mounted () {
     this.$eventBus.$on('saveconfirm', this.routerGoBack)

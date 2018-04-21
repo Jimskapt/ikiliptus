@@ -16,8 +16,9 @@ export default new Router({
   routes: [
     {
       path: '/',
+      name: 'Home',
       redirect: {
-        name: 'Home'
+        name: 'LiveCounter'
       }
     },
     {
@@ -57,7 +58,7 @@ export default new Router({
       component: AnalyticsPage
     },
     {
-      path: '/session_manager',
+      path: '/sessions',
       name: 'SessionManager',
       component: SessionManager
     },
