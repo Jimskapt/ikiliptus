@@ -28,9 +28,8 @@
                   <custom-field
                     :key="'custom-' + item.name"
                     :settings="item"
-                    :value="customSettings[item.name].value"
                     :disabled="!customSettings[item.name].enabled"
-                    @customfieldchange="customfieldchange"
+                    v-model="customSettings[item.name].value"
                   ></custom-field>
                 </v-flex>
               </v-layout>
@@ -251,28 +250,9 @@ export default {
       result += seconds
 
       return result
-    },
-    customfieldchange (payload) {
-      if (payload !== undefined && payload.field !== undefined && payload.value !== undefined) {
-        this.customSettings[payload.field].value = payload.value
-      }
     }
   },
   computed: {
-    fromDateDisplay () {
-      if (this.fromDate && this.fromDate != null) {
-        return this.$moment(this.fromDate, 'YYYY-MM-DD').format(this.$t('date_format'))
-      }
-
-      return ''
-    },
-    toDateDisplay () {
-      if (this.toDate && this.toDate != null) {
-        return this.$moment(this.toDate, 'YYYY-MM-DD').format(this.$t('date_format'))
-      }
-
-      return ''
-    },
     filteredActivities () {
       let that = this
       return this.activities.filter(activity => {

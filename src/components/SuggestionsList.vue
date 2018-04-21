@@ -26,7 +26,7 @@ export default {
   props: ['name', 'list', 'value'],
   model: {
     prop: 'value',
-    event: 'select'
+    event: 'change'
   },
   data () {
     return {
@@ -59,9 +59,9 @@ export default {
       if (Array.isArray(this.value)) {
         let copy = this.value
         copy.push(value)
-        this.$emit('select', copy)
+        this.$emit('change', copy)
       } else {
-        this.$emit('select', value)
+        this.$emit('change', value)
       }
     }
   }

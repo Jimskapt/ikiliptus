@@ -4,7 +4,6 @@
       :label="settings.label"
       :disabled="disabled"
       v-model="valueCopy"
-      @change="$emit('change', valueCopy)"
       v-if="settings.type === 'checkbox'"
     ></v-checkbox>
     <template v-else>
@@ -14,8 +13,7 @@
         :disabled="disabled"
         v-model="valueCopy"
         append-icon="close"
-        :append-icon-cb="() => {valueCopy=''; $emit('change', valueCopy)}"
-        @input="$emit('change', valueCopy)"
+        :append-icon-cb="() => {valueCopy=''}"
       ></v-text-field>
       <suggestions-list
         :name="settings.name"
@@ -48,6 +46,9 @@ export default {
   watch: {
     value (newValue) {
       this.valueCopy = newValue
+    },
+    valueCopy (newValue) {
+      this.$emit('change', newValue)
     }
   },
   methods: {
