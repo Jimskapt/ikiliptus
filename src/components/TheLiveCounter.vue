@@ -80,51 +80,53 @@
           <template v-for="item in paginatedActivities">
             <v-list-tile @click="$router.push({name:'Activity', params: {id: item._id}})" :key="item._id">
               <v-list-tile-content>
-                <v-list-tile-title>
-                  <strong>
-                    <span v-if="item.subject">
-                      {{item.subject}}
+                <v-list-tile-title style="font-weight:bold;">
+                  <span v-if="item.subject">
+                    {{item.subject}}
+                  </span>
+                  <span v-else>
+                    <span v-if="item.start_date != item.stop_date">
+                    {{$t('From')}}
+                    {{ $moment(item.start_date, 'YYYY-MM-DD').format($t('date_format')) }}
+                    {{ $moment(item.start_hour + ':' + item.start_seconds, 'HH:mm:ss', 'HH:mm:ss').format($t('hour_format')) }}
+                    {{$t('To').toLowerCase()}}
+                    {{ $moment(item.stop_date, 'YYYY-MM-DD').format($t('date_format')) }}
+                    {{ $moment(item.stop_hour + ':' + item.stop_seconds, 'HH:mm:ss').format($t('hour_format')) }}
                     </span>
                     <span v-else>
-                      <span v-if="item.start_date != item.stop_date">
-                      {{$t('From')}}
-                      {{ $moment(item.start_date, 'YYYY-MM-DD').format($t('date_format')) }}
+                      {{ $moment(item.start_date, 'YYYY-MM-DD').format($t('date_format')) }} :
+                      {{$t('From').toLowerCase()}}
                       {{ $moment(item.start_hour + ':' + item.start_seconds, 'HH:mm:ss', 'HH:mm:ss').format($t('hour_format')) }}
                       {{$t('To').toLowerCase()}}
-                      {{ $moment(item.stop_date, 'YYYY-MM-DD').format($t('date_format')) }}
                       {{ $moment(item.stop_hour + ':' + item.stop_seconds, 'HH:mm:ss').format($t('hour_format')) }}
-                      </span>
-                      <span v-else>
-                        {{ $moment(item.start_date, 'YYYY-MM-DD').format($t('date_format')) }} :
-                        {{$t('From').toLowerCase()}}
-                        {{ $moment(item.start_hour + ':' + item.start_seconds, 'HH:mm:ss', 'HH:mm:ss').format($t('hour_format')) }}
-                        {{$t('To').toLowerCase()}}
-                        {{ $moment(item.stop_hour + ':' + item.stop_seconds, 'HH:mm:ss').format($t('hour_format')) }}
-                      </span>
                     </span>
-                  </strong>
+                  </span>
                 </v-list-tile-title>
                 <v-list-tile-sub-title>
-                  <v-chip small color="primary" disabled>
-                    <v-avatar>
-                      <v-icon>alarm</v-icon>
-                    </v-avatar>
-                    <span>{{ deltaTime(item) }}</span>
-                  </v-chip>
-                  <v-chip small dark disabled v-for="category in item.categories" v-bind:key="'chip-' + item._id + '-' + category">
-                    <v-avatar>
-                      <v-icon>move_to_inbox</v-icon>
-                    </v-avatar>
-                    <span>{{ category }}</span>
-                  </v-chip>
+                  <v-layout row>
+                    <v-chip small outline color="primary" disabled>
+                      <v-avatar>
+                        <v-icon>alarm</v-icon>
+                      </v-avatar>
+                      <span>{{ deltaTime(item) }}</span>
+                    </v-chip>
+                    <v-chip small dark outline disabled v-for="category in item.categories" v-bind:key="'chip-' + item._id + '-' + category">
+                      <v-avatar>
+                        <v-icon>move_to_inbox</v-icon>
+                      </v-avatar>
+                      <span>{{ category }}</span>
+                    </v-chip>
+                  </v-layout>
                 </v-list-tile-sub-title>
                 <v-list-tile-sub-title>
-                  <v-chip small disabled v-if="item[field.name] && item[field.name] !== '' && field.type !== 'checkbox'" v-for="field in $sessions.current.$customFields" v-bind:key="'chip-' + item._id + '-' + field.name">
-                    <v-avatar>
-                      <v-icon>{{field.icon}}</v-icon>
-                    </v-avatar>
-                    <span>{{item[field.name]}}</span>
-                  </v-chip>
+                  <v-layout row>
+                    <v-chip small disabled v-if="item[field.name] && item[field.name] !== '' && field.type !== 'checkbox'" v-for="field in $sessions.current.$customFields" v-bind:key="'chip-' + item._id + '-' + field.name">
+                      <v-avatar>
+                        <v-icon>{{field.icon}}</v-icon>
+                      </v-avatar>
+                      <span>{{item[field.name]}}</span>
+                    </v-chip>
+                  </v-layout>
                 </v-list-tile-sub-title>
               </v-list-tile-content>
               <v-list-tile-action>

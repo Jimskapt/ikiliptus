@@ -20,11 +20,11 @@
           <v-divider></v-divider>
           <v-container>
             <template v-for="(item, i) in $sessions.current.$customFields">
-              <v-layout row :key="'row-' + i">
-                <v-flex xs1>
+              <v-layout align-baseline row :key="'row-' + i">
+                <v-flex xs2 sm1>
                   <v-switch v-model="customSettings[item.name].enabled"></v-switch>
                 </v-flex>
-                <v-flex xs11>
+                <v-flex xs10 sm11>
                   <custom-field
                     :key="'custom-' + item.name"
                     :settings="item"

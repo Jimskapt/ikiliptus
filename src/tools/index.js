@@ -74,7 +74,13 @@ export default {
 
       delta += way * $moment('1990-01-01 ' + offset + ':00:00', 'YYYY-MM-DD HH:mm:ss').toDate()
 
-      return $moment(delta).format('HH:mm:ss')
+      let diff = $moment(delta)
+
+      if (diff.hours() > 0) {
+        return diff.format('HH:mm:ss')
+      } else {
+        return diff.format('mm:ss')
+      }
     } else {
       return '00:00:00'
     }
