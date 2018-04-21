@@ -3,7 +3,7 @@
     v-bind:label="settings.label"
     v-bind:disabled="disabled"
     v-model="valueCopy"
-    v-on:change="customfieldchange"
+    v-on:change="$emit('change', valueCopy)"
     v-if="settings.type === 'checkbox'"
   ></v-checkbox>
   <v-text-field
@@ -11,7 +11,7 @@
     v-bind:prepend-icon="settings.icon"
     v-bind:disabled="disabled"
     v-model="valueCopy"
-    v-on:input="customfieldchange"
+    v-on:input="$emit('change', valueCopy)"
     v-else
   ></v-text-field>
 </template>
@@ -19,21 +19,23 @@
 <script>
 export default {
   name: 'CustomField',
+  model: {
+    prop: 'value',
+    event: 'change'
+  },
+  props: ['settings', 'value', 'disabled'],
   data () {
     return {
       valueCopy: ''
     }
   },
-  props: ['settings', 'value', 'disabled'],
   watch: {
-    value (newValue, oldValue) {
+    value (newValue) {
       this.valueCopy = newValue
     }
   },
-  methods: {
-    customfieldchange () {
-      this.$emit('customfieldchange', {field: this.settings.name, value: this.valueCopy})
-    }
+  mounted () {
+    this.valueCopy = this.value
   }
 }
 </script>

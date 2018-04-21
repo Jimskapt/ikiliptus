@@ -1,169 +1,24 @@
 <template>
   <v-form>
+    <!-- <pre>{{dbData}}</pre> -->
     <p style="font-size:48px;text-align:center;">
       {{ timeAgo }}
     </p>
 
     <v-layout row>
       <v-flex xs6>
-        <span v-if="!locked.includes('start_date')">
-          <v-menu
-            ref="startDateMenu"
-            v-bind:close-on-content-click="false"
-            v-model="startDateMenu"
-            v-bind:return-value.sync="startDateMenu"
-            full-width
-          >
-            <v-text-field
-              v-bind:label="$t('From')"
-              v-model="newStartDateDisplay"
-              prepend-icon="event"
-              slot="activator"
-              readonly
-              append-icon="close"
-              v-bind:append-icon-cb="() => {dbData.start_date=null}"
-            ></v-text-field>
-            <v-date-picker
-              v-model="dbData.start_date"
-              no-title
-              scrollable
-              full-width
-              v-bind:locale="$settings.locale.get()"
-              v-bind:first-day-of-week="parseInt($t('vuetify_first-day-of-week'))"
-            >
-              <v-btn block color="error" v-on:click="startDateMenu = false">{{$t('Abort')}}</v-btn>
-              <v-btn block color="success" v-on:click="$refs.startDateMenu.save(dbData.start_date)">{{$t('OK')}}</v-btn>
-            </v-date-picker>
-          </v-menu>
-        </span>
-        <span v-else>
-          <v-text-field
-            v-bind:label="$t('From')"
-            v-model="newStartDateDisplay"
-            prepend-icon="event"
-            disabled
-            readonly
-          ></v-text-field>
-        </span>
+        <time-selector type="day" v-bind:label="$t('From')" v-model="dbData.start_date" v-bind:disabled="locked.includes('start_date')"></time-selector>
       </v-flex>
       <v-flex xs6>
-        <span v-if="!locked.includes('start_hour')">
-          <v-menu
-            ref="startHourMenu"
-            v-bind:close-on-content-click="false"
-            v-model="startHourMenu"
-            v-bind:return-value.sync="startHourMenu"
-            full-width
-          >
-            <v-text-field
-              v-bind:label="$t('From')"
-              v-model="newStartHourDisplay"
-              prepend-icon="schedule"
-              slot="activator"
-              readonly
-              append-icon="close"
-              v-bind:append-icon-cb="() => {dbData.start_hour=null}"
-            ></v-text-field>
-            <v-time-picker
-              scrollable
-              full-width
-              v-model="dbData.start_hour"
-              v-on:change="$refs.startHourMenu.save(dbData.start_hour)"
-              v-bind:format="$t('vuetify_clock_format')"
-            ></v-time-picker>
-          </v-menu>
-        </span>
-        <span v-else>
-          <v-text-field
-            v-bind:label="$t('From')"
-            v-model="newStartHourDisplay"
-            prepend-icon="schedule"
-            disabled
-            readonly
-          ></v-text-field>
-        </span>
+        <time-selector type="hour" v-bind:label="$t('From')" v-model="dbData.start_hour" v-bind:seconds="dbData.start_seconds" v-bind:disabled="locked.includes('start_hour')"></time-selector>
       </v-flex>
     </v-layout>
-
-    <v-layout row wrap>
+    <v-layout row>
       <v-flex xs6>
-        <span v-if="!locked.includes('stop_date')">
-          <v-menu
-            ref="stopDateMenu"
-            v-bind:close-on-content-click="false"
-            v-model="stopDateMenu"
-            v-bind:return-value.sync="stopDateMenu"
-            full-width
-          >
-            <v-text-field
-              v-bind:label="$t('To')"
-              v-model="newStopDateDisplay"
-              prepend-icon="event"
-              slot="activator"
-              readonly
-              append-icon="close"
-              v-bind:append-icon-cb="() => {dbData.stop_date=null}"
-            ></v-text-field>
-            <v-date-picker
-              v-model="dbData.stop_date"
-              no-title
-              scrollable
-              full-width
-              v-bind:locale="$settings.locale.get()"
-              v-bind:first-day-of-week="parseInt($t('vuetify_first-day-of-week'))"
-            >
-              <v-spacer></v-spacer>
-              <v-btn color="error" v-on:click="stopDateMenu = false">{{$t('Abort')}}</v-btn>
-              <v-btn color="success" v-on:click="$refs.stopDateMenu.save(dbData.stop_date)">{{$t('OK')}}</v-btn>
-            </v-date-picker>
-          </v-menu>
-        </span>
-        <span v-else>
-          <v-text-field
-            v-bind:label="$t('To')"
-            v-model="newStopDateDisplay"
-            prepend-icon="event"
-            disabled
-            readonly
-          ></v-text-field>
-        </span>
+        <time-selector type="day" v-bind:label="$t('To')" v-model="dbData.stop_date" v-bind:disabled="locked.includes('stop_date')"></time-selector>
       </v-flex>
       <v-flex xs6>
-        <span v-if="!locked.includes('stop_hour')">
-          <v-menu
-            ref="stopHourMenu"
-            v-bind:close-on-content-click="false"
-            v-model="stopHourMenu"
-            v-bind:return-value.sync="stopHourMenu"
-            full-width
-          >
-            <v-text-field
-              v-bind:label="$t('To')"
-              v-model="newStopHourDisplay"
-              prepend-icon="schedule"
-              slot="activator"
-              readonly
-              append-icon="close"
-              v-bind:append-icon-cb="() => {dbData.stop_hour=null}"
-            ></v-text-field>
-            <v-time-picker
-              scrollable
-              full-width
-              v-model="dbData.stop_hour"
-              v-on:change="$refs.stopHourMenu.save(dbData.stop_hour)"
-              v-bind:format="$t('vuetify_clock_format')"
-            ></v-time-picker>
-          </v-menu>
-        </span>
-        <span v-else>
-          <v-text-field
-            v-bind:label="$t('To')"
-            v-model="newStopHourDisplay"
-            prepend-icon="schedule"
-            disabled
-            readonly
-          ></v-text-field>
-        </span>
+        <time-selector type="hour" v-bind:label="$t('To')" v-model="dbData.stop_hour" v-bind:seconds="dbData.stop_seconds" v-bind:disabled="locked.includes('stop_hour')"></time-selector>
       </v-flex>
     </v-layout>
 
@@ -171,68 +26,43 @@
       v-bind:label="$t('Subject')"
       v-model="dbData.subject"
       prepend-icon="label"
-      v-on:input="showSuggestions.subject = true"
       append-icon="close"
       v-bind:append-icon-cb="() => {dbData.subject=''}"
     ></v-text-field>
 
     <suggestions-list
       name="subject"
-      v-bind:show="showSuggestions.subject"
       v-bind:list="subjectsFound"
-      v-on:suggestionhide="suggestionhide"
-      v-on:suggestionselect="suggestionselect"
+      v-model="dbData.subject"
     ></suggestions-list>
 
-    <v-layout>
-      <v-btn icon v-on:click="showSuggestions.categories = true">
-        <v-icon>move_to_inbox</v-icon>
-      </v-btn>
-      <v-select
-        v-bind:label="$t('Categories')"
-        v-on:input="showSuggestions.categories = true"
-        v-model="dbData.categories"
-        chips
-        tags
-        clearable
-      >
-        <template slot="selection" slot-scope="data">
-          <v-chip small close v-on:input="removeCategory(data.item)">
-            <strong>{{data.item}}</strong>
-          </v-chip>
-        </template>
-      </v-select>
-    </v-layout>
+    <v-select
+      ref="categories"
+      v-bind:label="$t('Categories')"
+      v-model="dbData.categories"
+      prepend-icon="move_to_inbox"
+      chips
+      tags
+      clearable
+    >
+      <template slot="selection" slot-scope="data">
+        <v-chip small close v-on:input="removeCategory(data.item)">
+          <strong>{{data.item}}</strong>
+        </v-chip>
+      </template>
+    </v-select>
 
     <suggestions-list
       name="categories"
-      v-bind:show="showSuggestions.categories"
       v-bind:list="categoriesFound"
-      v-on:suggestionhide="suggestionhide"
-      v-on:suggestionselect="suggestionselect"
+      v-model="dbData.categories"
     ></suggestions-list>
 
     <template v-for="item in customFields">
-      <!--
-      <v-checkbox
-        v-bind:key="'checkbox-' + i"
-        v-bind:label="item.label"
-        v-model="dbData[item.name]"
-        v-if="item.type === 'checkbox'"
-      ></v-checkbox>
-      <v-text-field
-        v-bind:key="'textfield-' + i"
-        v-bind:label="item.label"
-        v-bind:prepend-icon="item.icon"
-        v-model="dbData[item.name]"
-        v-else
-      ></v-text-field>
-      -->
       <custom-field
         v-bind:key="'custom-' + item.name"
         v-bind:settings="item"
-        v-bind:value="dbData[item.name]"
-        v-on:customfieldchange="customfieldchange"
+        v-model="dbData[item.name]"
       ></custom-field>
     </template>
 
@@ -259,10 +89,16 @@
 <script>
 import tools from '../tools/index.js'
 import CustomField from '@/components/CustomField'
+import TimeSelector from '@/components/TimeSelector'
 import SuggestionsList from '@/components/SuggestionsList'
 
 export default {
   name: 'ActivityForm',
+  components: {
+    suggestionsList: SuggestionsList,
+    customField: CustomField,
+    timeSelector: TimeSelector
+  },
   props: {
     id: {
       type: String,
@@ -285,17 +121,7 @@ export default {
   },
   data () {
     return {
-      startDateMenu: false,
-      startHourMenu: false,
-      stopDateMenu: false,
-      stopHourMenu: false,
-      showSuggestions: {
-        subject: false,
-        categories: false
-      },
       subjectsList: [],
-      mediumsList: [],
-      actorsList: [],
       categoriesList: [],
       timeAgo: '00:00:00',
       dbData: {
@@ -331,24 +157,6 @@ export default {
           }
         })
         .catch(err => { alert('IKE0002:\n' + err) })
-    },
-    suggestionhide (field) {
-      this.$set(this.showSuggestions, field, false)
-    },
-    suggestionselect (payload) {
-      if (payload !== undefined && payload.field !== undefined && payload.value !== undefined) {
-        if (payload.field === 'categories') {
-          this.dbData[payload.field].push(payload.value)
-        } else {
-          this.$set(this.dbData, payload.field, payload.value)
-          this.$set(this.showSuggestions, payload.field, false)
-        }
-      }
-    },
-    customfieldchange (payload) {
-      if (payload !== undefined && payload.field !== undefined && payload.value !== undefined) {
-        this.$set(this.dbData, payload.field, payload.value)
-      }
     },
     setStop (args) {
       if (args === undefined) {
@@ -387,26 +195,6 @@ export default {
           })
         })
         .catch(err => { alert('IKE0005:\n' + err) })
-
-      this.$sessions.current.db
-        .query('mediums_powers/mediums_powers', {group: true})
-        .then(res => {
-          that.mediumsList = []
-          res.rows.forEach(e => {
-            that.mediumsList.push(e.key)
-          })
-        })
-        .catch(err => { alert('IKE0006:\n' + err) })
-
-      this.$sessions.current.db
-        .query('actors_powers/actors_powers', {group: true})
-        .then(res => {
-          that.actorsList = []
-          res.rows.forEach(e => {
-            that.actorsList.push(e.key)
-          })
-        })
-        .catch(err => { alert('IKE0007:\n' + err) })
 
       this.$sessions.current.db
         .query('categories_powers/categories_powers', {group: true})
@@ -514,10 +302,6 @@ export default {
             })
           })
       })
-  },
-  components: {
-    suggestionsList: SuggestionsList,
-    customField: CustomField
   },
   destroyed () {
     this.$eventBus
