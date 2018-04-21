@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-container>
-      <v-btn large block v-on:click="$router.go(-1)" color="error">
+      <v-btn large block @click="$router.go(-1)" color="error">
         <v-icon>keyboard_arrow_left</v-icon>
         <span>{{ $t('Go back') }}</span>
       </v-btn>
@@ -18,16 +18,16 @@
         </v-toolbar>
 
         <v-container>
-          <v-alert type="info" v-bind:value="true">
+          <v-alert type="info" :value="true">
             {{ $t('Please paste your data in the following field and click on the LOAD button, in order to load them in this app') }}.
           </v-alert>
 
-          <v-text-field multi-line v-model="input" v-bind:label="$t('Paste your data here')"></v-text-field>
+          <v-text-field multi-line v-model="input" :label="$t('Paste your data here')"></v-text-field>
         </v-container>
       </v-card>
     </v-container>
     <v-container>
-      <v-btn large block v-on:click="save" color="success">
+      <v-btn large block @click="save" color="success">
         <v-icon>unarchive</v-icon>
         <span>{{ $t('Load') }}</span>
       </v-btn>

@@ -14,61 +14,61 @@
         <v-container>
           <v-menu
             ref="fromDateMenu"
-            v-bind:close-on-content-click="false"
+            :close-on-content-click="false"
             v-model="fromDateMenu"
-            v-bind:return-value.sync="fromDateMenu"
+            :return-value.sync="fromDateMenu"
             full-width
           >
             <v-text-field
-              v-bind:label="$t('From')"
+              :label="$t('From')"
               v-model="fromDateDisplay"
               prepend-icon="event"
               slot="activator"
               readonly
               append-icon="close"
-              v-bind:append-icon-cb="() => {fromDate=null}"
+              :append-icon-cb="() => {fromDate=null}"
             ></v-text-field>
             <v-date-picker
               v-model="fromDate"
               no-title
               scrollable
               full-width
-              v-bind:locale="$settings.locale.get()"
-              v-bind:first-day-of-week="parseInt($t('vuetify_first-day-of-week'))"
+              :locale="$settings.locale.get()"
+              :first-day-of-week="parseInt($t('vuetify_first-day-of-week'))"
             >
               <v-spacer></v-spacer>
-              <v-btn color="error" v-on:click="fromDateMenu = false">{{$t('Abort')}}</v-btn>
-              <v-btn color="success" v-on:click="$refs.fromDateMenu.save(fromDate)">{{$t('OK')}}</v-btn>
+              <v-btn color="error" @click="fromDateMenu = false">{{$t('Abort')}}</v-btn>
+              <v-btn color="success" @click="$refs.fromDateMenu.save(fromDate)">{{$t('OK')}}</v-btn>
             </v-date-picker>
           </v-menu>
 
           <v-menu
             ref="toDateMenu"
-            v-bind:close-on-content-click="false"
+            :close-on-content-click="false"
             v-model="toDateMenu"
-            v-bind:return-value.sync="toDateMenu"
+            :return-value.sync="toDateMenu"
             full-width
           >
             <v-text-field
-              v-bind:label="$t('To')"
+              :label="$t('To')"
               v-model="toDateDisplay"
               prepend-icon="event"
               slot="activator"
               readonly
               append-icon="close"
-              v-bind:append-icon-cb="() => {toDate=null}"
+              :append-icon-cb="() => {toDate=null}"
             ></v-text-field>
             <v-date-picker
               v-model="toDate"
               no-title
               scrollable
               full-width
-              v-bind:locale="$settings.locale.get()"
-              v-bind:first-day-of-week="parseInt($t('vuetify_first-day-of-week'))"
+              :locale="$settings.locale.get()"
+              :first-day-of-week="parseInt($t('vuetify_first-day-of-week'))"
             >
               <v-spacer></v-spacer>
-              <v-btn color="error" v-on:click="toDateMenu = false">{{$t('Abort')}}</v-btn>
-              <v-btn color="success" v-on:click="$refs.toDateMenu.save(toDate)">{{$t('OK')}}</v-btn>
+              <v-btn color="error" @click="toDateMenu = false">{{$t('Abort')}}</v-btn>
+              <v-btn color="success" @click="$refs.toDateMenu.save(toDate)">{{$t('OK')}}</v-btn>
             </v-date-picker>
           </v-menu>
 
@@ -78,17 +78,17 @@
           <v-divider></v-divider>
           <v-container>
             <template v-for="(item, i) in customFields">
-              <v-layout row v-bind:key="'row-' + i">
+              <v-layout row :key="'row-' + i">
                 <v-flex xs1>
                   <v-switch v-model="customSettings[item.name].enabled"></v-switch>
                 </v-flex>
                 <v-flex xs11>
                   <custom-field
-                    v-bind:key="'custom-' + item.name"
-                    v-bind:settings="item"
-                    v-bind:value="customSettings[item.name].value"
-                    v-bind:disabled="!customSettings[item.name].enabled"
-                    v-on:customfieldchange="customfieldchange"
+                    :key="'custom-' + item.name"
+                    :settings="item"
+                    :value="customSettings[item.name].value"
+                    :disabled="!customSettings[item.name].enabled"
+                    @customfieldchange="customfieldchange"
                   ></custom-field>
                 </v-flex>
               </v-layout>
@@ -117,7 +117,7 @@
           <v-tab-item>
             <v-container>
               <h2 style="text-align:center;margin-top:20px;">{{ $t('Activities') }} :</h2>
-              <line-chart v-bind:chart-data="activitiesCollection" v-bind:height="350" v-bind:options="activitiesOptions"></line-chart>
+              <line-chart :chart-data="activitiesCollection" :height="350" :options="activitiesOptions"></line-chart>
             </v-container>
           </v-tab-item>
           <v-tab>
@@ -127,13 +127,13 @@
           <v-tab-item>
             <v-container>
               <h2 style="text-align:center;margin-top:20px;">{{ $t('Categories') }} :</h2>
-              <pie-chart v-bind:chart-data="categoriesCollection" v-bind:height="350" v-bind:options="categoriesOptions"></pie-chart>
+              <pie-chart :chart-data="categoriesCollection" :height="350" :options="categoriesOptions"></pie-chart>
 
               <p></p>
               <v-divider></v-divider>
 
               <h2 style="text-align:center;margin-top:20px;">{{ $t('Categories per day') }} :</h2>
-              <bar-chart v-bind:chart-data="categoriesPerDayCollection" v-bind:height="350" v-bind:options="categoriesPerDayOptions"></bar-chart>
+              <bar-chart :chart-data="categoriesPerDayCollection" :height="350" :options="categoriesPerDayOptions"></bar-chart>
             </v-container>
           </v-tab-item>
         </v-tabs>

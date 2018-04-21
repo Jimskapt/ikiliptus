@@ -13,13 +13,13 @@
 
         <v-container>
           <v-select
-            v-bind:items="available_locales"
+            :items="available_locales"
             item-text="us"
             item-value="value"
-            v-bind:hint="`${locale.local}`"
+            :hint="`${locale.local}`"
             return-object
             v-model="locale"
-            v-bind:label="$t('Locale') + ' (locale)'"
+            :label="$t('Locale') + ' (locale)'"
             prepend-icon="language"
             autocomplete
           ></v-select>
@@ -28,7 +28,7 @@
               <v-subheader>{{ $t('Export your data') }}</v-subheader>
             </v-flex>
             <v-flex xs6>
-              <v-btn block color="secondary" v-on:click="$router.push({name:'Save'})">
+              <v-btn block color="secondary" @click="$router.push({name:'Save'})">
                 <v-icon>save</v-icon>
                 <span>{{ $t('Save') }}</span>
               </v-btn>
@@ -39,7 +39,7 @@
               <v-subheader>{{ $t('Import your data') }}</v-subheader>
             </v-flex>
             <v-flex xs6>
-              <v-btn block color="secondary" v-on:click="$router.push({name:'Load'})">
+              <v-btn block color="secondary" @click="$router.push({name:'Load'})">
                 <v-icon>unarchive</v-icon>
                 <span>{{ $t('Load') }}</span>
               </v-btn>
@@ -47,7 +47,7 @@
           </v-layout>
 
           <v-container>
-            <v-btn dark block color="error" v-on:click="forceRefresh">
+            <v-btn dark block color="error" @click="forceRefresh">
               <v-icon>refresh</v-icon>
               <span>{{ $t('Debug : refresh page') }}</span>
             </v-btn>
@@ -55,11 +55,11 @@
         </v-container>
 
         <v-card-actions>
-          <v-btn color="error" v-on:click="$router.go(-1)">
+          <v-btn color="error" @click="$router.go(-1)">
             <v-icon>clear</v-icon>
             <span>{{ $t("Abort") }}</span>
           </v-btn>
-          <v-btn color="success" v-on:click="save">
+          <v-btn color="success" @click="save">
             <v-icon>done</v-icon>
             <span>{{ $t("OK") }}</span>
           </v-btn>

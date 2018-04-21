@@ -1,18 +1,18 @@
 <template>
   <v-app>
     <v-toolbar dark color="primary">
-      <v-toolbar-side-icon v-on:click="menu = true"></v-toolbar-side-icon>
+      <v-toolbar-side-icon @click="menu = true"></v-toolbar-side-icon>
       <v-toolbar-title>
         <span>Ikiliptus</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn small icon v-bind:to="{name: 'LiveCounter'}">
+      <v-btn small icon :to="{name: 'LiveCounter'}">
         <v-icon>alarm</v-icon>
       </v-btn>
-      <v-btn small icon v-bind:to="{name: 'Analytics'}">
+      <v-btn small icon :to="{name: 'Analytics'}">
         <v-icon>trending_up</v-icon>
       </v-btn>
-      <v-btn small dark flat v-bind:to="{name: 'SessionManager'}">
+      <v-btn small dark flat :to="{name: 'SessionManager'}">
         <v-icon>folder</v-icon>
         <span>&nbsp;{{$sessions.current.name}}</span>
       </v-btn>
@@ -25,7 +25,7 @@
 
       <v-list>
 
-        <v-list-tile v-bind:to="{name: 'LiveCounter'}">
+        <v-list-tile :to="{name: 'LiveCounter'}">
           <v-list-tile-action>
             <v-icon>alarm</v-icon>
           </v-list-tile-action>
@@ -34,7 +34,7 @@
           </v-list-tile-content>
         </v-list-tile>
 
-        <v-list-tile v-bind:to="{name: 'Analytics'}">
+        <v-list-tile :to="{name: 'Analytics'}">
           <v-list-tile-action>
             <v-icon>trending_up</v-icon>
           </v-list-tile-action>
@@ -43,7 +43,7 @@
           </v-list-tile-content>
         </v-list-tile>
 
-        <v-list-tile v-bind:to="{name: 'SessionManager'}">
+        <v-list-tile :to="{name: 'SessionManager'}">
           <v-list-tile-action>
             <v-icon>folder</v-icon>
           </v-list-tile-action>
@@ -54,7 +54,7 @@
 
         <v-divider></v-divider>
 
-        <v-list-tile v-bind:to="{name: 'Settings'}">
+        <v-list-tile :to="{name: 'Settings'}">
           <v-list-tile-action>
             <v-icon>settings</v-icon>
           </v-list-tile-action>
@@ -63,7 +63,7 @@
           </v-list-tile-content>
         </v-list-tile>
 
-        <v-list-tile v-on:click="openGithub">
+        <v-list-tile @click="openGithub">
           <v-list-tile-action>
             <v-icon>open_in_new</v-icon>
           </v-list-tile-action>

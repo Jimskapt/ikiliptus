@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-container>
-      <v-btn large block v-on:click="$router.go(-1)" color="warning">
+      <v-btn large block @click="$router.go(-1)" color="warning">
         <v-icon>keyboard_arrow_left</v-icon>
         <span>{{ $t('Go back') }}</span>
       </v-btn>
@@ -19,16 +19,16 @@
 
         <v-container>
           <v-form>
-            <v-alert type="info" v-bind:value="true">
+            <v-alert type="info" :value="true">
               {{ $t('In order to save your data, just copy and paste the following data in an text editor (like notepad), and then save it as *.json file') }}.
             </v-alert>
-            <v-alert type="warning" v-bind:value="true">
+            <v-alert type="warning" :value="true">
               {{ $t('This is only the data for the current session X', {name: $sessions.current.name}) }}.<br />
               {{ $t('You have to do that for each session if you want to save all of them') }}.
             </v-alert>
             <v-container>
               <v-checkbox
-                v-bind:label="$t('Show it human-readable ?')"
+                :label="$t('Show it human-readable ?')"
                 v-model="pretify"
               ></v-checkbox>
             </v-container>

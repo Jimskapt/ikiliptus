@@ -13,34 +13,34 @@
         </v-toolbar>
 
         <v-container>
-          <v-progress-linear v-bind:indeterminate="true" v-if="!loaded"></v-progress-linear>
+          <v-progress-linear :indeterminate="true" v-if="!loaded"></v-progress-linear>
           <div v-else>
             <div v-if="runningCounter">
               <v-layout row>
                 <v-spacer></v-spacer>
-                <v-btn v-on:click="$eventBus.$emit('save', {origin: 'save', time: new Date()})" color="primary">
+                <v-btn @click="$eventBus.$emit('save', {origin: 'save', time: new Date()})" color="primary">
                   <v-icon>save</v-icon>
                   <span>{{ $t("Save") }}</span>
                 </v-btn>
               </v-layout>
-              <activity-form v-bind:id="currentID" v-bind:locked="['stop_date','stop_hour']" v-bind:showCounter="true"></activity-form>
+              <activity-form :id="currentID" :locked="['stop_date','stop_hour']" :showCounter="true"></activity-form>
             </div>
-            <v-alert v-else color="info" outline icon="info" v-bind:value="true">
+            <v-alert v-else color="info" outline icon="info" :value="true">
               {{ $t("Counter is not started") }}.
             </v-alert>
           </div>
         </v-container>
 
         <v-card-actions v-if="loaded">
-          <v-btn block v-on:click="startCounter(undefined, new Date())" v-bind:disabled="runningCounter" color="primary">
+          <v-btn block @click="startCounter(undefined, new Date())" :disabled="runningCounter" color="primary">
             <v-icon>play_arrow</v-icon>
             <span>{{ $t("START") }}</span>
           </v-btn>
-          <v-btn block v-on:click="stopCounter" v-bind:disabled="!runningCounter" color="error">
+          <v-btn block @click="stopCounter" :disabled="!runningCounter" color="error">
             <v-icon>stop</v-icon>
             <span>{{ $t("STOP") }}</span>
           </v-btn>
-          <v-btn block v-on:click="nextCounter" v-bind:disabled="!runningCounter" color="warning">
+          <v-btn block @click="nextCounter" :disabled="!runningCounter" color="warning">
             <v-icon>skip_next</v-icon>
             <span>{{ $t("NEXT") }}</span>
           </v-btn>
@@ -60,28 +60,28 @@
         </v-toolbar>
 
         <v-container v-if="!loaded">
-          <v-progress-linear v-bind:indeterminate="true"></v-progress-linear>
+          <v-progress-linear :indeterminate="true"></v-progress-linear>
         </v-container>
         <v-list dense two-line subheader v-else>
 
           <div class="text-xs-center" style="padding:10px;">
             <v-text-field
-              v-bind:label="$t('Search')"
+              :label="$t('Search')"
               v-model="activitiesSearch"
               prepend-icon="search"
               append-icon="close"
-              v-bind:append-icon-cb="() => {activitiesSearch=''}"
+              :append-icon-cb="() => {activitiesSearch=''}"
             ></v-text-field>
-            <v-pagination v-bind:length="pagesCount" v-model="lastActivitiesPage" v-if="searchedActivities.length > 0"></v-pagination>
+            <v-pagination :length="pagesCount" v-model="lastActivitiesPage" v-if="searchedActivities.length > 0"></v-pagination>
           </div>
 
           <v-divider></v-divider>
 
           <template v-for="item in paginatedActivities">
-            <v-list-tile v-bind:key="item._id">
+            <v-list-tile :key="item._id">
               <v-list-tile-content>
                 <v-list-tile-title>
-                  <router-link v-bind:to="{name:'Activity', params: {id: item._id}}">
+                  <router-link :to="{name:'Activity', params: {id: item._id}}">
                     <span v-if="item.subject">
                       {{item.subject}}
                     </span>
@@ -128,19 +128,19 @@
               <v-list-tile-action>
                 <v-layout row>
                   <v-flex xs6>
-                    <v-btn flat icon v-on:click="copyActivity(item);goToTop();">
+                    <v-btn flat icon @click="copyActivity(item);goToTop();">
                       <v-icon>content_copy</v-icon>
                     </v-btn>
                   </v-flex>
                   <v-flex xs6>
-                    <v-btn flat icon v-on:click="askDeleteActivity(item)">
+                    <v-btn flat icon @click="askDeleteActivity(item)">
                       <v-icon>delete</v-icon>
                     </v-btn>
                   </v-flex>
                 </v-layout>
               </v-list-tile-action>
             </v-list-tile>
-            <v-divider v-bind:key="'divider-' + item._id"></v-divider>
+            <v-divider :key="'divider-' + item._id"></v-divider>
           </template>
         </v-list>
       </v-card>
@@ -155,11 +155,11 @@
           <p>{{ $t('Please confirm the delete of this activity') }}.</p>
         </v-card-text>
         <v-card-actions>
-          <v-btn block color="success" v-on:click="askedDeleteDocument=null;askedDelete=false;">
+          <v-btn block color="success" @click="askedDeleteDocument=null;askedDelete=false;">
             <v-icon>close</v-icon>
             {{$t('Abort')}}
           </v-btn>
-          <v-btn block color="error" v-on:click="confirmDeleteActivity">
+          <v-btn block color="error" @click="confirmDeleteActivity">
             <v-icon>delete</v-icon>
             {{$t('Delete')}}
           </v-btn>
@@ -176,11 +176,11 @@
           <p>{{ $t('Please confirm the copy of the activity in the current activity') }}.</p>
         </v-card-text>
         <v-card-actions>
-          <v-btn block color="success" v-on:click="askedCopyDocument=null;askedCopy=false;">
+          <v-btn block color="success" @click="askedCopyDocument=null;askedCopy=false;">
             <v-icon>close</v-icon>
             {{$t('Abort')}}
           </v-btn>
-          <v-btn block color="primary" v-on:click="confirmActivityCopy">
+          <v-btn block color="primary" @click="confirmActivityCopy">
             <v-icon>content_copy</v-icon>
             {{$t('Copy')}}
           </v-btn>

@@ -7,38 +7,38 @@
 
     <v-layout row>
       <v-flex xs6>
-        <time-selector type="day" v-bind:label="$t('From')" v-model="dbData.start_date" v-bind:disabled="locked.includes('start_date')"></time-selector>
+        <time-selector type="day" :label="$t('From')" v-model="dbData.start_date" :disabled="locked.includes('start_date')"></time-selector>
       </v-flex>
       <v-flex xs6>
-        <time-selector type="hour" v-bind:label="$t('From')" v-model="dbData.start_hour" v-bind:seconds="dbData.start_seconds" v-bind:disabled="locked.includes('start_hour')"></time-selector>
+        <time-selector type="hour" :label="$t('From')" v-model="dbData.start_hour" :seconds="dbData.start_seconds" :disabled="locked.includes('start_hour')"></time-selector>
       </v-flex>
     </v-layout>
     <v-layout row>
       <v-flex xs6>
-        <time-selector type="day" v-bind:label="$t('To')" v-model="dbData.stop_date" v-bind:disabled="locked.includes('stop_date')"></time-selector>
+        <time-selector type="day" :label="$t('To')" v-model="dbData.stop_date" :disabled="locked.includes('stop_date')"></time-selector>
       </v-flex>
       <v-flex xs6>
-        <time-selector type="hour" v-bind:label="$t('To')" v-model="dbData.stop_hour" v-bind:seconds="dbData.stop_seconds" v-bind:disabled="locked.includes('stop_hour')"></time-selector>
+        <time-selector type="hour" :label="$t('To')" v-model="dbData.stop_hour" :seconds="dbData.stop_seconds" :disabled="locked.includes('stop_hour')"></time-selector>
       </v-flex>
     </v-layout>
 
     <v-text-field
-      v-bind:label="$t('Subject')"
+      :label="$t('Subject')"
       v-model="dbData.subject"
       prepend-icon="label"
       append-icon="close"
-      v-bind:append-icon-cb="() => {dbData.subject=''}"
+      :append-icon-cb="() => {dbData.subject=''}"
     ></v-text-field>
 
     <suggestions-list
       name="subject"
-      v-bind:list="subjectsFound"
+      :list="subjectsFound"
       v-model="dbData.subject"
     ></suggestions-list>
 
     <v-select
       ref="categories"
-      v-bind:label="$t('Categories')"
+      :label="$t('Categories')"
       v-model="dbData.categories"
       prepend-icon="move_to_inbox"
       chips
@@ -46,7 +46,7 @@
       clearable
     >
       <template slot="selection" slot-scope="data">
-        <v-chip small close v-on:input="removeCategory(data.item)">
+        <v-chip small close @input="removeCategory(data.item)">
           <strong>{{data.item}}</strong>
         </v-chip>
       </template>
@@ -54,32 +54,32 @@
 
     <suggestions-list
       name="categories"
-      v-bind:list="categoriesFound"
+      :list="categoriesFound"
       v-model="dbData.categories"
     ></suggestions-list>
 
     <template v-for="item in customFields">
       <custom-field
-        v-bind:key="'custom-' + item.name"
-        v-bind:settings="item"
+        :key="'custom-' + item.name"
+        :settings="item"
         v-model="dbData[item.name]"
       ></custom-field>
     </template>
 
     <v-text-field
-      v-bind:label="$t('Details')"
+      :label="$t('Details')"
       v-model="dbData.details"
       prepend-icon="comment"
-      v-bind:disabled="locked.includes('details')"
+      :disabled="locked.includes('details')"
       multi-line
       append-icon="close"
-      v-bind:append-icon-cb="() => {dbData.details=''}"
+      :append-icon-cb="() => {dbData.details=''}"
     ></v-text-field>
 
-    <v-snackbar v-bind:timeout="1000" top v-model="saveConfirmed" color="success">
+    <v-snackbar :timeout="1000" top v-model="saveConfirmed" color="success">
       <v-icon dark>done</v-icon>
       {{ $t('Save confirmed') }}
-      <v-btn flat v-on:click="saveConfirmed = false">
+      <v-btn flat @click="saveConfirmed = false">
         <v-icon>close</v-icon>
       </v-btn>
     </v-snackbar>

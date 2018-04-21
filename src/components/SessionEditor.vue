@@ -24,7 +24,7 @@
               <v-list two-line subheader>
                 <v-list-tile avatar>
                   <v-list-tile-avatar>
-                    <div v-bind:style="'width:100%; height:100%; border-radius:10px; background-color:' + newSessionColor"></div>
+                    <div :style="'width:100%; height:100%; border-radius:10px; background-color:' + newSessionColor"></div>
                   </v-list-tile-avatar>
                   <v-list-tile-content>
                     <v-list-tile-title>{{newSessionName}}</v-list-tile-title>
@@ -37,21 +37,21 @@
 
           <v-form>
             <v-text-field
-              v-bind:label="$t('Name')"
+              :label="$t('Name')"
               v-model="newSessionName"
               prepend-icon="label"
-              v-on:change="refreshNewSessionColor"
+              @change="refreshNewSessionColor"
             ></v-text-field>
 
             <v-text-field
-              v-bind:label="$t('Color')"
+              :label="$t('Color')"
               v-model="newSessionColor"
               prepend-icon="invert_colors"
-              v-on:change="colorChange"
+              @change="colorChange"
             ></v-text-field>
 
             <v-text-field
-              v-bind:label="$t('Server URI of CouchDB')"
+              :label="$t('Server URI of CouchDB')"
               v-model="newSessionRemote"
               prepend-icon="storage"
             ></v-text-field>
@@ -70,10 +70,10 @@
                 <v-expansion-panel>
                   <v-expansion-panel-content
                     v-for="(item, i) in dbDataFields.fields"
-                    v-bind:key="'panel-' + i"
-                    v-bind:value="fieldView === 'panel-' + i"
+                    :key="'panel-' + i"
+                    :value="fieldView === 'panel-' + i"
                   >
-                    <div slot="header" v-on:click="toggleFieldSettings(i)">
+                    <div slot="header" @click="toggleFieldSettings(i)">
                       <v-icon v-if="item.icon && item.type !== 'checkbox'">{{item.icon}}</v-icon>
                       <span>{{item.label}} ({{item.name}})</span>
                     </div>
@@ -83,39 +83,39 @@
                         <div style="border:1px solid grey;padding:10px;">
                           <v-subheader>{{ $t('Preview') }}</v-subheader>
                           <custom-field
-                            v-bind:settings="item"
-                            v-bind:disabled="true"
+                            :settings="item"
+                            :disabled="true"
                           ></custom-field>
                         </div>
                       </v-container>
 
-                      <v-btn block color="error" v-on:click="removeField(item)">
+                      <v-btn block color="error" @click="removeField(item)">
                         <v-icon>delete</v-icon>
                         <span>{{ $t("Delete") }}</span>
                       </v-btn>
 
                       <v-text-field
-                        v-bind:label="$t('Name')"
+                        :label="$t('Name')"
                         prepend-icon="vpn_key"
                         v-model="item.name"
                       ></v-text-field>
 
                       <v-text-field
-                        v-bind:label="$t('Icon')"
+                        :label="$t('Icon')"
                         prepend-icon="filter_frames"
                         v-model="item.icon"
                         v-if="item.type !== 'checkbox'"
                       ></v-text-field>
 
                       <v-text-field
-                        v-bind:label="$t('Label')"
+                        :label="$t('Label')"
                         prepend-icon="label_outline"
                         v-model="item.label"
                       ></v-text-field>
 
                       <v-select
-                        v-bind:items="['textfield', 'checkbox']"
-                        v-bind:label="$t('Field type')"
+                        :items="['textfield', 'checkbox']"
+                        :label="$t('Field type')"
                         prepend-icon="widgets"
                         v-model="item.type"
                         single-line
@@ -126,7 +126,7 @@
                 </v-expansion-panel>
 
                 <v-card-actions>
-                  <v-btn block color="primary" v-on:click="addField">
+                  <v-btn block color="primary" @click="addField">
                     <v-icon>add</v-icon>
                     <span>{{ $t('Add a field') }}</span>
                   </v-btn>
@@ -137,11 +137,11 @@
           </v-form>
         </v-container>
         <v-card-actions>
-          <v-btn block color="error" v-on:click="$router.go(-1)">
+          <v-btn block color="error" @click="$router.go(-1)">
             <v-icon>clear</v-icon>
             <span>{{ $t("Abort") }}</span>
           </v-btn>
-          <v-btn block color="success" v-on:click="save">
+          <v-btn block color="success" @click="save">
             <v-icon>done</v-icon>
             <span>{{ $t("OK") }}</span>
           </v-btn>

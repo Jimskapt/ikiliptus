@@ -12,7 +12,7 @@
         </v-toolbar>
 
         <v-container>
-          <v-btn color="primary" v-bind:to="{name: 'SessionEditor', params: {id: '0'}}">
+          <v-btn color="primary" :to="{name: 'SessionEditor', params: {id: '0'}}">
             <v-icon>add</v-icon>
             <span>{{ $t('Create a new session') }}</span>
           </v-btn>
@@ -20,19 +20,19 @@
           <v-list two-line subheader>
             <v-subheader>{{ $t('Available sessions') }}</v-subheader>
             <template v-for="session in $sessions.available">
-              <v-divider v-bind:key="'divider-' + session._id"></v-divider>
-              <v-list-tile avatar v-bind:key="'list-' + session._id">
+              <v-divider :key="'divider-' + session._id"></v-divider>
+              <v-list-tile avatar :key="'list-' + session._id">
                 <v-list-tile-avatar>
                   <div
-                    v-bind:style="'cursor:pointer; width:100%; height:100%; border-radius:10px; background-color:' + session.color"
-                    v-on:click="$sessions.setCurrent(session, $vuetify)"
+                    :style="'cursor:pointer; width:100%; height:100%; border-radius:10px; background-color:' + session.color"
+                    @click="$sessions.setCurrent(session, $vuetify)"
                   ></div>
                 </v-list-tile-avatar>
                 <v-list-tile-content>
                   <v-list-tile-title>
                     <span
-                      v-bind:style="'cursor:pointer; text-decoration:underline; color:' + $vuetify.theme.primary"
-                      v-on:click="$sessions.setCurrent(session, $vuetify)"
+                      :style="'cursor:pointer; text-decoration:underline; color:' + $vuetify.theme.primary"
+                      @click="$sessions.setCurrent(session, $vuetify)"
                     >
                       {{session.name}}
                     </span>
@@ -42,12 +42,12 @@
                 <v-list-tile-action>
                   <v-layout row>
                     <v-flex xs6>
-                      <v-btn flat icon v-on:click="goToEdit(session._id)">
+                      <v-btn flat icon @click="goToEdit(session._id)">
                         <v-icon>edit</v-icon>
                       </v-btn>
                     </v-flex>
                     <v-flex xs6>
-                      <v-btn flat icon v-on:click="askToDelete(session)" v-bind:disabled="session._id === 'ikiliptus'">
+                      <v-btn flat icon @click="askToDelete(session)" :disabled="session._id === 'ikiliptus'">
                         <v-icon>delete</v-icon>
                       </v-btn>
                     </v-flex>
@@ -73,17 +73,17 @@
               <v-chip color="red" text-color="white">{{ deleteConfirmObj.name }}</v-chip>
             </i18n>
           </h2>
-          <v-alert type="info" v-bind:value="true">
+          <v-alert type="info" :value="true">
             {{ $t('Please type the name of the session in the following field in order to confirm the delete') }}.
           </v-alert>
           <v-text-field
-            v-bind:label="$t('Session name')"
+            :label="$t('Session name')"
             v-model="typedDeleteConfirm"
           ></v-text-field>
         </v-card-text>
         <v-card-actions>
-          <v-btn block color="success" v-on:click="deleteConfirmObj=null;typedDeleteConfirm=null;confirmDeleteDialog=false;">{{$t('Abort')}}</v-btn>
-          <v-btn block color="error" v-on:click="confirmDeleteSession">{{$t('OK')}}</v-btn>
+          <v-btn block color="success" @click="deleteConfirmObj=null;typedDeleteConfirm=null;confirmDeleteDialog=false;">{{$t('Abort')}}</v-btn>
+          <v-btn block color="error" @click="confirmDeleteSession">{{$t('OK')}}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

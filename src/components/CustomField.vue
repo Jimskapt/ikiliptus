@@ -1,17 +1,17 @@
 <template>
   <v-checkbox
-    v-bind:label="settings.label"
-    v-bind:disabled="disabled"
+    :label="settings.label"
+    :disabled="disabled"
     v-model="valueCopy"
-    v-on:change="$emit('change', valueCopy)"
+    @change="$emit('change', valueCopy)"
     v-if="settings.type === 'checkbox'"
   ></v-checkbox>
   <v-text-field
-    v-bind:label="settings.label"
-    v-bind:prepend-icon="settings.icon"
-    v-bind:disabled="disabled"
+    :label="settings.label"
+    :prepend-icon="settings.icon"
+    :disabled="disabled"
     v-model="valueCopy"
-    v-on:input="$emit('change', valueCopy)"
+    @input="$emit('change', valueCopy)"
     v-else
   ></v-text-field>
 </template>
