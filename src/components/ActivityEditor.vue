@@ -13,19 +13,42 @@
         </v-toolbar>
 
         <v-container>
-          <activity-form :id="id"></activity-form>
-        </v-container>
+          <v-container grid-list-md>
+            <v-layout row>
+              <v-flex xs6>
+                <v-btn block color="error" @click="$router.go(-1)">
+                  <v-icon>clear</v-icon>
+                  <span>{{ $t("Abort") }}</span>
+                </v-btn>
+              </v-flex>
+              <v-flex xs6>
+                <v-btn block color="success" @click="$eventBus.$emit('save')">
+                  <v-icon>done</v-icon>
+                  <span>{{ $t("OK") }}</span>
+                </v-btn>
+              </v-flex>
+            </v-layout>
+          </v-container>
 
-        <v-card-actions>
-          <v-btn block color="error" @click="$router.go(-1)">
-            <v-icon>clear</v-icon>
-            <span>{{ $t("Abort") }}</span>
-          </v-btn>
-          <v-btn block color="success" @click="$eventBus.$emit('save')">
-            <v-icon>done</v-icon>
-            <span>{{ $t("OK") }}</span>
-          </v-btn>
-        </v-card-actions>
+          <activity-form :id="id"></activity-form>
+
+          <v-container grid-list-md>
+            <v-layout row>
+              <v-flex xs6>
+                <v-btn block color="error" @click="$router.go(-1)">
+                  <v-icon>clear</v-icon>
+                  <span>{{ $t("Abort") }}</span>
+                </v-btn>
+              </v-flex>
+              <v-flex xs6>
+                <v-btn block color="success" @click="$eventBus.$emit('save')">
+                  <v-icon>done</v-icon>
+                  <span>{{ $t("OK") }}</span>
+                </v-btn>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-container>
       </v-card>
     </v-container>
 

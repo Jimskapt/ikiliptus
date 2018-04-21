@@ -78,10 +78,10 @@
           <v-divider></v-divider>
 
           <template v-for="item in paginatedActivities">
-            <v-list-tile :key="item._id">
+            <v-list-tile @click="$router.push({name:'Activity', params: {id: item._id}})" :key="item._id">
               <v-list-tile-content>
                 <v-list-tile-title>
-                  <router-link :to="{name:'Activity', params: {id: item._id}}">
+                  <strong>
                     <span v-if="item.subject">
                       {{item.subject}}
                     </span>
@@ -102,7 +102,7 @@
                         {{ $moment(item.stop_hour + ':' + item.stop_seconds, 'HH:mm:ss').format($t('hour_format')) }}
                       </span>
                     </span>
-                  </router-link>
+                  </strong>
                 </v-list-tile-title>
                 <v-list-tile-sub-title>
                   <v-chip small color="primary" disabled>
@@ -130,12 +130,12 @@
               <v-list-tile-action>
                 <v-layout row>
                   <v-flex xs6>
-                    <v-btn flat icon @click="copyActivity(item);goToTop();">
+                    <v-btn flat icon @click.stop="copyActivity(item);goToTop();">
                       <v-icon>content_copy</v-icon>
                     </v-btn>
                   </v-flex>
                   <v-flex xs6>
-                    <v-btn flat icon @click="askDeleteActivity(item)">
+                    <v-btn flat icon @click.stop="askDeleteActivity(item)">
                       <v-icon>delete</v-icon>
                     </v-btn>
                   </v-flex>
