@@ -12,66 +12,8 @@
         </v-toolbar>
 
         <v-container>
-          <v-menu
-            ref="fromDateMenu"
-            :close-on-content-click="false"
-            v-model="fromDateMenu"
-            :return-value.sync="fromDateMenu"
-            full-width
-          >
-            <v-text-field
-              :label="$t('From')"
-              v-model="fromDateDisplay"
-              prepend-icon="event"
-              slot="activator"
-              readonly
-              append-icon="close"
-              :append-icon-cb="() => {fromDate=null}"
-            ></v-text-field>
-            <v-date-picker
-              v-model="fromDate"
-              no-title
-              scrollable
-              full-width
-              :locale="$settings.locale.get()"
-              :first-day-of-week="parseInt($t('vuetify_first-day-of-week'))"
-            >
-              <v-spacer></v-spacer>
-              <v-btn color="error" @click="fromDateMenu = false">{{$t('Abort')}}</v-btn>
-              <v-btn color="success" @click="$refs.fromDateMenu.save(fromDate)">{{$t('OK')}}</v-btn>
-            </v-date-picker>
-          </v-menu>
-
-          <v-menu
-            ref="toDateMenu"
-            :close-on-content-click="false"
-            v-model="toDateMenu"
-            :return-value.sync="toDateMenu"
-            full-width
-          >
-            <v-text-field
-              :label="$t('To')"
-              v-model="toDateDisplay"
-              prepend-icon="event"
-              slot="activator"
-              readonly
-              append-icon="close"
-              :append-icon-cb="() => {toDate=null}"
-            ></v-text-field>
-            <v-date-picker
-              v-model="toDate"
-              no-title
-              scrollable
-              full-width
-              :locale="$settings.locale.get()"
-              :first-day-of-week="parseInt($t('vuetify_first-day-of-week'))"
-            >
-              <v-spacer></v-spacer>
-              <v-btn color="error" @click="toDateMenu = false">{{$t('Abort')}}</v-btn>
-              <v-btn color="success" @click="$refs.toDateMenu.save(toDate)">{{$t('OK')}}</v-btn>
-            </v-date-picker>
-          </v-menu>
-
+          <time-selector type="day" :label="$t('From')" v-model="fromDate"></time-selector>
+          <time-selector type="day" :label="$t('To')" v-model="toDate"></time-selector>
         </v-container>
 
         <div v-if="customFields.length > 0">
@@ -148,6 +90,7 @@
 import Vue from 'vue'
 import tools from '../tools/index.js'
 import CustomField from '@/components/CustomField'
+import TimeSelector from '@/components/TimeSelector'
 import { Line, Pie, Bar, mixins } from 'vue-chartjs'
 const { reactiveProp } = mixins
 
@@ -155,6 +98,7 @@ export default {
   name: 'AnalyticsPage',
   components: {
     customField: CustomField,
+    timeSelector: TimeSelector,
     lineChart: {
       extends: Line,
       mixins: [reactiveProp],
