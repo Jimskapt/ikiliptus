@@ -1,24 +1,39 @@
 <template>
-  <v-checkbox
-    :label="settings.label"
-    :disabled="disabled"
-    v-model="valueCopy"
-    @change="$emit('change', valueCopy)"
-    v-if="settings.type === 'checkbox'"
-  ></v-checkbox>
-  <v-text-field
-    :label="settings.label"
-    :prepend-icon="settings.icon"
-    :disabled="disabled"
-    v-model="valueCopy"
-    @input="$emit('change', valueCopy)"
-    v-else
-  ></v-text-field>
+  <div>
+    <v-checkbox
+      :label="settings.label"
+      :disabled="disabled"
+      v-model="valueCopy"
+      @change="$emit('change', valueCopy)"
+      v-if="settings.type === 'checkbox'"
+    ></v-checkbox>
+    <template v-else>
+      <v-text-field
+        :label="settings.label"
+        :prepend-icon="settings.icon"
+        :disabled="disabled"
+        v-model="valueCopy"
+        append-icon="close"
+        :append-icon-cb="() => {valueCopy=''; $emit('change', valueCopy)}"
+        @input="$emit('change', valueCopy)"
+      ></v-text-field>
+      <suggestions-list
+        :name="settings.name"
+        :list="filteredList"
+        v-model="valueCopy"
+        v-if="!disabled"
+      ></suggestions-list>
+    </template>
+  </div>
 </template>
 
 <script>
+import SuggestionsList from '@/components/SuggestionsList'
 export default {
   name: 'CustomField',
+  components: {
+    suggestionsList: SuggestionsList
+  },
   model: {
     prop: 'value',
     event: 'change'
@@ -26,7 +41,8 @@ export default {
   props: ['settings', 'value', 'disabled'],
   data () {
     return {
-      valueCopy: ''
+      valueCopy: '',
+      list: []
     }
   },
   watch: {
@@ -34,8 +50,47 @@ export default {
       this.valueCopy = newValue
     }
   },
+  methods: {
+    fetchAutocompleteData () {
+      if (this.settings.type !== 'checkbox') {
+        let that = this
+
+        this.$sessions.checkAndCreateViews()
+          .then(() => {
+            that.$sessions.current.db
+              .query('all_activities/all_activities', {include_docs: true})
+              .then(res => {
+                let temp = {}
+
+                res.rows.forEach(item => {
+                  if (item.doc[that.settings.name] !== undefined && item.doc[that.settings.name] !== null && item.doc[that.settings.name] !== '') {
+                    that.$set(temp, item.doc[that.settings.name], true)
+                  }
+                })
+
+                that.list = Object.keys(temp)
+              })
+              .catch(err => { alert('IKE0038:\n' + err) })
+          })
+          .catch(err => { alert('IKE0039:\n' + err) })
+      }
+    }
+  },
+  computed: {
+    filteredList () {
+      if (this.list === undefined) {
+        return []
+      }
+
+      return this.list.filter(e => {
+        return e.toLowerCase().includes(this.valueCopy.toLowerCase()) && e !== this.valueCopy
+      })
+    }
+  },
   mounted () {
     this.valueCopy = this.value
+
+    this.fetchAutocompleteData()
   }
 }
 </script>
