@@ -58,7 +58,7 @@
       v-model="dbData.categories"
     ></suggestions-list>
 
-    <template v-for="item in customFields">
+    <template v-for="item in $sessions.current.$customFields">
       <custom-field
         :key="'custom-' + item.name"
         :settings="item"
@@ -137,8 +137,7 @@ export default {
         categories: [],
         details: ''
       },
-      saveConfirmed: false,
-      customFields: []
+      saveConfirmed: false
     }
   },
   methods: {
@@ -290,17 +289,11 @@ export default {
       .then(() => {
         that.fetchAutocompleteData()
 
-        that.$sessions.current.db
-          .get('custom_fields')
-          .then(doc => {
-            that.customFields = doc.fields
-
-            doc.fields.forEach(field => {
-              if (that.dbData[field.name] === undefined) {
-                that.$set(that.dbData, field.name, '')
-              }
-            })
-          })
+        that.$sessions.current.$customFields.forEach(field => {
+          if (that.dbData[field.name] === undefined) {
+            that.$set(that.dbData, field.name, '')
+          }
+        })
       })
   },
   destroyed () {

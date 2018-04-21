@@ -11,7 +11,8 @@ let sessions = {
     _id: 'ikiliptus',
     name: 'default',
     color: '#1976D2',
-    db: new PouchDB('ikiliptus')
+    db: new PouchDB('ikiliptus'),
+    $customFields: []
   },
   mount (id) {
     let simpleID = id.split('-').join('')
@@ -19,14 +20,14 @@ let sessions = {
   },
   setCurrent (doc, vuetify) {
     doc.db = sessions.mount(doc._id)
-    sessions.current = doc
+    Vue.set(sessions, 'current', doc)
 
     vuetify.theme.primary = doc.color
 
     tools.setCookie('last_session', doc._id)
 
     if (doc.remote !== undefined && doc.remote !== null && doc.remote !== '') {
-      sessions.current.$remote = sessions.current.db.sync(new PouchDB(doc.remote), {live: true})
+      Vue.set(sessions.current, '$remote', sessions.current.db.sync(new PouchDB(doc.remote), {live: true}))
 
       sessions.current.$remote
         .on('complete', function () {
@@ -41,6 +42,12 @@ let sessions = {
           sessions.eventBus.$emit('dbupdate', change)
         })
     }
+
+    sessions.current.db
+      .get('custom_fields')
+      .then(doc => {
+        Vue.set(sessions.current, '$customFields', doc.fields)
+      })
   },
   refresh () {
     return new Promise((resolve, reject) => {

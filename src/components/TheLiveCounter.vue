@@ -62,7 +62,7 @@
         <v-container v-if="!loaded">
           <v-progress-linear :indeterminate="true"></v-progress-linear>
         </v-container>
-        <v-list dense two-line subheader v-else>
+        <v-list three-line subheader v-else>
 
           <div class="text-xs-center" style="padding:10px;">
             <v-text-field
@@ -105,23 +105,25 @@
                   </router-link>
                 </v-list-tile-title>
                 <v-list-tile-sub-title>
-                  <v-chip small disabled>
+                  <v-chip small color="primary" disabled>
                     <v-avatar>
                       <v-icon>alarm</v-icon>
                     </v-avatar>
                     <span>{{ deltaTime(item) }}</span>
                   </v-chip>
-                  <v-chip small disabled v-if="item.medium && item.medium !== ''">
+                  <v-chip small dark disabled v-for="category in item.categories" v-bind:key="'chip-' + item._id + '-' + category">
                     <v-avatar>
-                      <v-icon>phone</v-icon>
+                      <v-icon>move_to_inbox</v-icon>
                     </v-avatar>
-                    <span>{{item.medium}}</span>
+                    <span>{{ category }}</span>
                   </v-chip>
-                  <v-chip small disabled v-if="item.actor && item.actor !== ''">
+                </v-list-tile-sub-title>
+                <v-list-tile-sub-title>
+                  <v-chip small disabled v-if="item[field.name] && item[field.name] !== '' && field.type !== 'checkbox'" v-for="field in $sessions.current.$customFields" v-bind:key="'chip-' + item._id + '-' + field.name">
                     <v-avatar>
-                      <v-icon>people</v-icon>
+                      <v-icon>{{field.icon}}</v-icon>
                     </v-avatar>
-                    <span>{{item.actor}}</span>
+                    <span>{{item[field.name]}}</span>
                   </v-chip>
                 </v-list-tile-sub-title>
               </v-list-tile-content>

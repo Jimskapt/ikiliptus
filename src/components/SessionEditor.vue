@@ -294,12 +294,7 @@ export default {
         })
         .catch(err => { alert('IKE0025:\n' + err) })
 
-      let that = this
-      this.$sessions.mount(this.id)
-        .get('custom_fields')
-        .then(doc => {
-          that.dbDataFields = doc
-        })
+      this.$set(this.dbDataFields, 'fields', this.$sessions.current.$customFields)
     }
   }
 }

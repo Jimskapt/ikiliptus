@@ -16,10 +16,10 @@
           <time-selector type="day" :label="$t('To')" v-model="toDate"></time-selector>
         </v-container>
 
-        <div v-if="customFields.length > 0">
+        <div v-if="customSettings !== undefined && Object.keys(customSettings).length > 0">
           <v-divider></v-divider>
           <v-container>
-            <template v-for="(item, i) in customFields">
+            <template v-for="(item, i) in $sessions.current.$customFields">
               <v-layout row :key="'row-' + i">
                 <v-flex xs1>
                   <v-switch v-model="customSettings[item.name].enabled"></v-switch>
@@ -223,7 +223,6 @@ export default {
       durationsPerCategory: {},
       durationsPerCategoryAndDay: {},
       categoriesPowers: {},
-      customFields: [],
       customSettings: {}
     }
   },
@@ -266,16 +265,18 @@ export default {
           result &= (that.$moment(activity.stop_date, 'YYYY-MM-DD') < that.$moment(that.toDate, 'YYYY-MM-DD'))
         }
 
-        that.customFields.forEach(customField => {
-          if (that.customSettings[customField.name].enabled) {
-            if (activity[customField.name] !== undefined) {
-              let value = that.customSettings[customField.name].value
-              if (customField.type === 'checkbox' && value === false) {
-                value = ''
+        that.$sessions.current.$customFields.forEach(customField => {
+          if (that.customSettings[customField.name] !== undefined) {
+            if (that.customSettings[customField.name].enabled) {
+              if (activity[customField.name] !== undefined) {
+                let value = that.customSettings[customField.name].value
+                if (customField.type === 'checkbox' && value === false) {
+                  value = ''
+                }
+                result &= (activity[customField.name] === value)
+              } else {
+                result &= false
               }
-              result &= (activity[customField.name] === value)
-            } else {
-              result &= false
             }
           }
         })
@@ -488,22 +489,18 @@ export default {
             that.loaded = true
           })
           .catch(err => alert('IKE0030:\n' + err))
-
-        that.$sessions.current.db
-          .get('custom_fields')
-          .then(doc => {
-            that.customFields = doc.fields
-
-            that.customSettings = {}
-            doc.fields.forEach(field => {
-              Vue.set(that.customSettings, field.name, {
-                enabled: false,
-                value: ((field.type === 'checkbox') ? false : '')
-              })
-            })
-          })
       })
       .catch(err => alert('IKE0031:\n' + err))
+
+    setTimeout(() => {
+      Vue.set(that, 'customSettings', {})
+      that.$sessions.current.$customFields.forEach(field => {
+        Vue.set(that.customSettings, field.name, {
+          enabled: false,
+          value: ((field.type === 'checkbox') ? false : '')
+        })
+      })
+    }, 1500)
   }
 }
 </script>
