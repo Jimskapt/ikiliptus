@@ -16,14 +16,36 @@
           <v-progress-linear :indeterminate="true" v-if="!loaded"></v-progress-linear>
           <div v-else>
             <div v-if="runningCounter">
-              <v-layout row>
-                <v-spacer></v-spacer>
-                <v-btn @click="$eventBus.$emit('save', {origin: 'save', time: new Date()})" color="primary">
+
+              <v-container grid-list-md>
+                <v-layout row>
+                  <v-flex xs6>
+                    <v-btn block @click="stopCounter" :disabled="!runningCounter" color="error">
+                      <v-icon>stop</v-icon>
+                      <span>{{ $t("STOP") }}</span>
+                    </v-btn>
+                  </v-flex>
+                  <v-flex xs6>
+                    <v-btn block @click="nextCounter" :disabled="!runningCounter" color="warning">
+                      <v-icon>skip_next</v-icon>
+                      <span>{{ $t("NEXT") }}</span>
+                    </v-btn>
+                  </v-flex>
+                </v-layout>
+
+                <v-btn block @click="$eventBus.$emit('save', {origin: 'save', time: new Date()})" color="primary">
                   <v-icon>save</v-icon>
                   <span>{{ $t("Save") }}</span>
                 </v-btn>
-              </v-layout>
+              </v-container>
+
               <activity-form :id="currentID" :locked="['stop_date','stop_hour']" :showCounter="true"></activity-form>
+
+              <v-btn block @click="$eventBus.$emit('save', {origin: 'save', time: new Date()})" color="primary">
+                <v-icon>save</v-icon>
+                <span>{{ $t("Save") }}</span>
+              </v-btn>
+
             </div>
             <v-alert v-else color="info" outline icon="info" :value="true">
               {{ $t("Counter is not started") }}.
@@ -408,7 +430,8 @@ export default {
         activity.start_seconds,
         activity.stop_date,
         activity.stop_hour,
-        activity.stop_seconds)
+        activity.stop_seconds,
+        true)
     },
     goToTop () {
       window.scrollTo(0, 0)

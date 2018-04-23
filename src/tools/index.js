@@ -46,7 +46,7 @@ export default {
 
     return result
   },
-  deltaT ($moment, startDate, startHour, startSeconds, stopDate, stopHour, stopSeconds) {
+  deltaT ($moment, startDate, startHour, startSeconds, stopDate, stopHour, stopSeconds, hideHoursIfZero) {
     if (stopDate === undefined) {
       stopDate = null
     }
@@ -55,6 +55,9 @@ export default {
     }
     if (stopSeconds === undefined) {
       stopSeconds = null
+    }
+    if (hideHoursIfZero === undefined) {
+      hideHoursIfZero = false
     }
 
     if (startDate !== null && startHour !== null && startSeconds !== null) {
@@ -76,7 +79,7 @@ export default {
 
       let diff = $moment(delta)
 
-      if (diff.hours() > 0) {
+      if (diff.hours() > 0 || !hideHoursIfZero) {
         return diff.format('HH:mm:ss')
       } else {
         return diff.format('mm:ss')
