@@ -82,12 +82,15 @@ export default {
   data () {
     return {
       showMenu: false,
-      copyValue: this.value
+      copyValue: null
     }
   },
   watch: {
     copyValue (newValue) {
       this.$emit('change', newValue)
+    },
+    value (newValue) {
+      this.copyValue = newValue
     }
   },
   computed: {
