@@ -1,30 +1,28 @@
 # ikiliptus
 
-> An offline and mobile-friendly time tracker (webapp)
+> An offline and mobile-friendly, serverless time tracker and analyzer
 
-## Build Setup
+## User informations
+
+***WIP***
+
+## Developper informations
+
+### Quickstart
 
 ``` bash
 # install dependencies
-npm install
+yarn install
 
-# serve with hot reload at localhost:8080
+# serve with hot reload in your browser at localhost:8080
 npm run dev
-
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
-
-# run unit tests
-npm run unit
-
-# run e2e tests
-npm run e2e
-
-# run all tests
-npm test
 ```
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+### Main technologies used
+
+Part | Name
+--- | ---
+Reactive frontend system | [Vue.js](https://vuejs.org)
+Frontend design and structure | [Vuetify](https://vuetifyjs.com)
+Local database | [PouchDB](https://pouchdb.com/)
+Mobile App wrapping | [Apache Cordova](https://cordova.apache.org/)
