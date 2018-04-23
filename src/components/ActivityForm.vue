@@ -235,10 +235,14 @@ export default {
   },
   computed: {
     subjectsFound () {
-      return this.findText(this.subjectsList, this.dbData.subject)
+      return this
+        .findText(this.subjectsList, this.dbData.subject)
+        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
     },
     categoriesFound () {
-      return this.categoriesList.filter(e => !this.dbData.categories.includes(e))
+      return this.categoriesList
+        .filter(e => !this.dbData.categories.includes(e))
+        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
     },
     newStartDateDisplay () {
       if (this.dbData.start_date && this.dbData.start_date != null) {

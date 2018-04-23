@@ -83,9 +83,11 @@ export default {
         return []
       }
 
-      return this.list.filter(e => {
-        return e.toLowerCase().includes(this.valueCopy.toLowerCase()) && e !== this.valueCopy
-      })
+      return this.list
+        .filter(e => {
+          return e.toLowerCase().includes(this.valueCopy.toLowerCase()) && e !== this.valueCopy
+        })
+        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
     }
   },
   mounted () {
