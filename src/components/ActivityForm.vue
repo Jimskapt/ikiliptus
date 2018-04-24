@@ -58,7 +58,7 @@
       v-model="dbData.categories"
     ></suggestions-list>
 
-    <template v-for="item in $sessions.current.$customFields">
+    <template v-for="item in $sessions.available[$sessions.current].$customFields.fields">
       <custom-field
         :key="'custom-' + item.name"
         :settings="item"
@@ -143,7 +143,7 @@ export default {
   methods: {
     save (payload) {
       let that = this
-      this.$sessions.current.db
+      this.$sessions.available[this.$sessions.current].$db
         .put(this.dbData, function (err, res) {
           if (err) {
             alert('IKE0001:\n' + err)
@@ -170,7 +170,7 @@ export default {
     },
     refreshData (relaunchCounter) {
       let that = this
-      this.$sessions.current.db
+      this.$sessions.available[this.$sessions.current].$db
         .get(this.id, function (err, doc) {
           if (err) {
             alert('IKE0003:\n' + err)
@@ -185,7 +185,7 @@ export default {
     fetchAutocompleteData () {
       let that = this
 
-      this.$sessions.current.db
+      this.$sessions.available[this.$sessions.current].$db
         .query('subjects_powers/subjects_powers', {group: true})
         .then(res => {
           that.subjectsList = []
@@ -195,7 +195,7 @@ export default {
         })
         .catch(err => { alert('IKE0005:\n' + err) })
 
-      this.$sessions.current.db
+      this.$sessions.available[this.$sessions.current].$db
         .query('categories_powers/categories_powers', {group: true})
         .then(res => {
           that.categoriesList = []
@@ -293,7 +293,7 @@ export default {
       .then(() => {
         that.fetchAutocompleteData()
 
-        that.$sessions.current.$customFields.forEach(field => {
+        that.$sessions.available[that.$sessions.current].$customFields.fields.forEach(field => {
           if (that.dbData[field.name] === undefined) {
             that.$set(that.dbData, field.name, '')
           }

@@ -34,11 +34,7 @@ let settings = {
       this.databases
         .refresh()
         .then(() => {
-          that.databases.available.forEach(e => {
-            if (e._id === cookies.last_session) {
-              that.databases.setCurrent(e, that.vuetify)
-            }
-          })
+          that.databases.setCurrent(that.databases.available[cookies.last_session], that.vuetify)
         })
     }
   }

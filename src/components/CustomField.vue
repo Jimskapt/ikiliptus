@@ -58,7 +58,7 @@ export default {
 
         this.$sessions.checkAndCreateViews()
           .then(() => {
-            that.$sessions.current.db
+            that.$sessions.available[that.$sessions.current].$db
               .query('all_activities/all_activities', {include_docs: true})
               .then(res => {
                 let temp = {}

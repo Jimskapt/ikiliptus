@@ -142,7 +142,7 @@
                 </v-list-tile-sub-title>
                 <v-list-tile-sub-title>
                   <v-layout row>
-                    <v-chip small disabled v-if="item[field.name] && item[field.name] !== '' && field.type !== 'checkbox'" v-for="field in $sessions.current.$customFields" v-bind:key="'chip-' + item._id + '-' + field.name">
+                    <v-chip small disabled v-if="item[field.name] && item[field.name] !== '' && field.type !== 'checkbox'" v-for="field in $sessions.available[$sessions.current].$customFields.fields" v-bind:key="'chip-' + item._id + '-' + field.name">
                       <v-avatar>
                         <v-icon>{{field.icon}}</v-icon>
                       </v-avatar>
@@ -270,7 +270,7 @@ export default {
         document.data_version = 1
       }
 
-      this.$sessions.current.db
+      this.$sessions.available[this.$sessions.current].$db
         .post(document, {}, function (err, res) {
           if (err) {
             alert('IKE0013:\n' + err)
@@ -328,7 +328,7 @@ export default {
 
       that.$sessions.checkAndCreateViews()
         .then(() => {
-          that.$sessions.current.db
+          that.$sessions.available[that.$sessions.current].$db
             .query('all_activities/all_activities', {include_docs: true})
             .then(res => {
               that.activities = []
@@ -359,7 +359,7 @@ export default {
     confirmDeleteActivity () {
       let that = this
 
-      this.$sessions.current.db
+      this.$sessions.available[this.$sessions.current].$db
         .remove(this.askedDeleteDocument)
         .then(() => {
           that.askedDelete = false
@@ -388,7 +388,7 @@ export default {
         document.data_version = 1
       }
 
-      this.$sessions.current.db
+      this.$sessions.available[this.$sessions.current].$db
         .get(that.currentID, function (err, doc) {
           return new Promise((resolve, reject) => {
             if (err) {
@@ -404,7 +404,7 @@ export default {
           })
         })
         .then(() => {
-          that.$sessions.current.db
+          that.$sessions.available[that.$sessions.current].$db
             .put(document, {}, function (err, res) {
               if (err) {
                 alert('IKE0036:\n' + err)
@@ -779,7 +779,7 @@ categories:aaa, bbb ,ccc test
     let that = this
     this.$sessions.checkAndCreateViews()
       .then(() => {
-        that.$sessions.current.db
+        that.$sessions.available[that.$sessions.current].$db
           .query('all_activities/all_activities', {include_docs: true})
           .then(res => {
             let unstoppedList = res.rows.filter(e => e.doc.stop_date === undefined || e.doc.stop_hour === undefined)

@@ -221,16 +221,16 @@ export default {
 
       new Promise((resolve, reject) => {
         if (that.thereIsID) {
-          that.$sessions.db
+          that.$sessions.$db
             .put(that.newData, function (err, res) {
               if (err) {
                 throw new Error(err)
               } else {
-                if (that.newData._id === that.$sessions.current._id) {
+                if (that.newData._id === that.$sessions.available[that.$sessions.current]._id) {
                   that.$vuetify.theme.primary = that.newData.color
 
-                  if (that.newData.remote === '' && that.$sessions.current.$remote !== undefined && that.$sessions.current.$remote !== null) {
-                    that.$sessions.current.$remote.cancel()
+                  if (that.newData.remote === '' && that.$sessions.available[that.$sessions.current].$remote !== undefined && that.$sessions.available[that.$sessions.current].$remote !== null) {
+                    that.$sessions.available[that.$sessions.current].$remote.cancel()
                   }
                 }
 
@@ -240,7 +240,7 @@ export default {
             })
             .catch(err => { throw new Error(err) })
         } else {
-          that.$sessions.db
+          that.$sessions.$db
             .post(that.newData, function (err, res) {
               if (err) {
                 throw new Error(err)
@@ -290,7 +290,7 @@ export default {
     if (this.thereIsID) {
       this.hasSelectedColor = true
 
-      this.$sessions.db
+      this.$sessions.$db
         .get(this.id)
         .then(doc => {
           this.dbData = doc
@@ -302,7 +302,7 @@ export default {
         })
         .catch(err => { alert('IKE0025:\n' + err) })
 
-      this.$set(this.dbDataFields, 'fields', this.$sessions.current.$customFields)
+      this.dbDataFields = this.$sessions.available[this.id].$customFields
     }
   }
 }

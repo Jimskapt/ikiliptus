@@ -96,7 +96,6 @@ export default {
     }
   },
   methods: {
-    nothing () {},
     goToEdit (id) {
       this.$router.push({name: 'SessionEditor', params: {id: id}})
     },
@@ -108,15 +107,11 @@ export default {
       if (this.typedDeleteConfirm === this.deleteConfirmObj.name) {
         let that = this
 
-        this.$sessions.db
+        this.$sessions.$db
           .remove(that.deleteConfirmObj)
           .then(result => {
-            if (that.$sessions.current._id === that.deleteConfirmObj._id) {
-              that.$sessions.available.forEach(e => {
-                if (e._id === 'ikiliptus') {
-                  that.$sessions.setCurrent(e, that.$vuetify)
-                }
-              })
+            if (that.$sessions.available[that.$sessions.current]._id === that.deleteConfirmObj._id) {
+              that.$sessions.setCurrent(that.$sessions.available.ikiliptus, that.$vuetify)
             }
 
             new PouchDB(that.deleteConfirmObj._id.split('-').join(''))

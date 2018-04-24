@@ -50,7 +50,7 @@ export default {
 
       data.forEach(e => delete e._rev)
 
-      that.$sessions.current.db
+      that.$sessions.available[that.$sessions.current].$db
         .bulkDocs(data)
         .then(res => console.log(res))
         .catch(err => alert('IKE0011:\n' + err))

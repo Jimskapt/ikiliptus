@@ -19,7 +19,7 @@
         <div v-if="customSettings !== undefined && Object.keys(customSettings).length > 0">
           <v-divider></v-divider>
           <v-container>
-            <template v-for="(item, i) in $sessions.current.$customFields">
+            <template v-for="(item, i) in $sessions.available[$sessions.current].$customFields.fields">
               <v-layout align-baseline row :key="'row-' + i">
                 <v-flex xs2 sm1>
                   <v-switch v-model="customSettings[item.name].enabled"></v-switch>
@@ -265,7 +265,7 @@ export default {
           result &= (that.$moment(activity.stop_date, 'YYYY-MM-DD') < that.$moment(that.toDate, 'YYYY-MM-DD'))
         }
 
-        that.$sessions.current.$customFields.forEach(customField => {
+        that.$sessions.available[that.$sessions.current].$customFields.fields.forEach(customField => {
           if (that.customSettings[customField.name] !== undefined) {
             if (that.customSettings[customField.name].enabled) {
               if (activity[customField.name] !== undefined) {
@@ -474,7 +474,7 @@ export default {
     let that = this
     that.$sessions.checkAndCreateViews()
       .then(() => {
-        that.$sessions.current.db
+        that.$sessions.available[that.$sessions.current].$db
           .query('all_activities/all_activities', {include_docs: true})
           .then(res => {
             that.activities = []
@@ -494,7 +494,7 @@ export default {
 
     setTimeout(() => {
       Vue.set(that, 'customSettings', {})
-      that.$sessions.current.$customFields.forEach(field => {
+      that.$sessions.available[that.$sessions.current].$customFields.fields.forEach(field => {
         Vue.set(that.customSettings, field.name, {
           enabled: false,
           value: ((field.type === 'checkbox') ? false : '')

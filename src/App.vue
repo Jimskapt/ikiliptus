@@ -14,7 +14,7 @@
       </v-btn>
       <v-btn small dark flat :to="{name: 'SessionManager'}">
         <v-icon>folder</v-icon>
-        <span>&nbsp;{{$sessions.current.name}}</span>
+        <span>&nbsp;{{$sessions.available[$sessions.current].name}}</span>
       </v-btn>
     </v-toolbar>
 

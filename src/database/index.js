@@ -4,57 +4,33 @@ import PouchDB from 'pouchdb-browser'
 import tools from '../tools/index.js'
 
 let sessions = {
-  db: new PouchDB('sessions'),
-  available: [],
-  eventBus: null,
-  current: {
-    _id: 'ikiliptus',
-    name: 'default',
-    color: '#1976D2',
-    db: new PouchDB('ikiliptus'),
-    $customFields: []
+  $db: new PouchDB('sessions'),
+  available: {
+    ikiliptus: {
+      _id: 'ikiliptus',
+      name: 'default',
+      color: '#1976D2',
+      $db: new PouchDB('ikiliptus'),
+      $customFields: []
+    }
   },
+  eventBus: null,
+  current: 'ikiliptus',
   mount (id) {
     let simpleID = id.split('-').join('')
     return new PouchDB(simpleID)
   },
   setCurrent (doc, vuetify) {
-    doc.db = sessions.mount(doc._id)
-    Vue.set(sessions, 'current', doc)
-
+    Vue.set(sessions, 'current', doc._id)
     vuetify.theme.primary = doc.color
-
     tools.setCookie('last_session', doc._id)
-
-    if (doc.remote !== undefined && doc.remote !== null && doc.remote !== '') {
-      Vue.set(sessions.current, '$remote', sessions.current.db.sync(new PouchDB(doc.remote), {live: true}))
-
-      sessions.current.$remote
-        .on('complete', function () {
-          console.log('Sync on local CouchDB success.')
-          sessions.eventBus.$emit('dbupdate')
-        })
-        .on('error', function (err) {
-          console.log('ERROR while sync on local couchDB :', err)
-        })
-        .on('change', function (change) {
-          console.log('Sync event : ', change)
-          sessions.eventBus.$emit('dbupdate', change)
-        })
-    }
-
-    sessions.current.db
-      .get('custom_fields')
-      .then(doc => {
-        Vue.set(sessions.current, '$customFields', doc.fields)
-      })
   },
   refresh () {
     return new Promise((resolve, reject) => {
-      sessions.db
+      sessions.$db
         .get('ikiliptus')
         .catch(() => {
-          return sessions.db
+          return sessions.$db
             .put({
               _id: 'ikiliptus',
               name: 'default',
@@ -62,13 +38,37 @@ let sessions = {
             })
         })
         .then(() => {
-          sessions.db
+          sessions.$db
             .allDocs({include_docs: true})
             .then(result => {
-              Vue.set(sessions, 'available', [])
-
+              Vue.set(sessions, 'available', {})
               result.rows.forEach(e => {
-                sessions.available.push(e.doc)
+                Vue.set(e.doc, '$db', sessions.mount(e.doc._id))
+
+                if (e.doc.remote !== undefined && e.doc.remote !== null && e.doc.remote !== '') {
+                  Vue.set(e.doc, '$remote', e.doc.$db.sync(new PouchDB(e.doc.remote), {live: true}))
+
+                  e.doc.$remote
+                    .on('complete', function () {
+                      console.log('Sync on local CouchDB success.')
+                      sessions.eventBus.$emit('dbupdate')
+                    })
+                    .on('error', function (err) {
+                      console.log('ERROR while sync on local couchDB :', err)
+                    })
+                    .on('change', function (change) {
+                      console.log('Sync event : ', change)
+                      sessions.eventBus.$emit('dbupdate', change)
+                    })
+                }
+
+                e.doc.$db
+                  .get('custom_fields')
+                  .then(fieldsDoc => {
+                    Vue.set(e.doc, '$customFields', fieldsDoc)
+                  })
+
+                Vue.set(sessions.available, e.doc._id, e.doc)
               })
 
               resolve()
@@ -79,7 +79,7 @@ let sessions = {
   },
   checkAndCreateViews () {
     let allActivitiesPromise = new Promise((resolve, reject) => {
-      sessions.current.db
+      sessions.available[sessions.current].$db
         .query('all_activities/all_activities')
         .then(() => { resolve() })
         .catch(() => {
@@ -100,7 +100,7 @@ let sessions = {
           }
           /* eslint-enable */
 
-          sessions.current.db
+          sessions.available[sessions.current].$db
             .put(ddoc)
             .then(() => { resolve() })
             .catch(function (err) { throw new Error(err) })
@@ -108,7 +108,7 @@ let sessions = {
     })
 
     let subjectsPointsPromise = new Promise((resolve, reject) => {
-      sessions.current.db
+      sessions.available[sessions.current].$db
         .query('subjects_powers/subjects_powers')
         .then(res => { resolve() })
         .catch(() => {
@@ -130,7 +130,7 @@ let sessions = {
           }
           /* eslint-enable */
 
-          sessions.current.db
+          sessions.available[sessions.current].$db
             .put(ddoc)
             .then(() => { resolve() })
             .catch(function (err) { throw new Error(err) })
@@ -138,7 +138,7 @@ let sessions = {
     })
 
     let mediumsPointsPromise = new Promise((resolve, reject) => {
-      sessions.current.db
+      sessions.available[sessions.current].$db
         .query('mediums_powers/mediums_powers')
         .then(res => { resolve() })
         .catch(() => {
@@ -160,7 +160,7 @@ let sessions = {
           }
           /* eslint-enable */
 
-          sessions.current.db
+          sessions.available[sessions.current].$db
             .put(ddoc)
             .then(() => { resolve() })
             .catch(function (err) { throw new Error(err) })
@@ -168,7 +168,7 @@ let sessions = {
     })
 
     let actorsPointsPromise = new Promise((resolve, reject) => {
-      sessions.current.db
+      sessions.available[sessions.current].$db
         .query('actors_powers/actors_powers')
         .then(res => { resolve() })
         .catch(() => {
@@ -190,7 +190,7 @@ let sessions = {
           }
           /* eslint-enable */
 
-          sessions.current.db
+          sessions.available[sessions.current].$db
             .put(ddoc)
             .then(() => { resolve() })
             .catch(function (err) { throw new Error(err) })
@@ -198,7 +198,7 @@ let sessions = {
     })
 
     let categoriesPointsPromise = new Promise((resolve, reject) => {
-      sessions.current.db
+      sessions.available[sessions.current].$db
         .query('categories_powers/categories_powers')
         .then(res => { resolve() })
         .catch(() => {
@@ -222,7 +222,7 @@ let sessions = {
           }
           /* eslint-enable */
 
-          sessions.current.db
+          sessions.available[sessions.current].$db
             .put(ddoc)
             .then(() => { resolve() })
             .catch(function (err) { throw new Error(err) })
@@ -230,7 +230,7 @@ let sessions = {
     })
 
     let activitiesPerDayPromise = new Promise((resolve, reject) => {
-      sessions.current.db
+      sessions.available[sessions.current].$db
         .query('activities_per_day/activities_per_day')
         .then(res => { resolve() })
         .catch(() => {
@@ -254,7 +254,7 @@ let sessions = {
           }
           /* eslint-enable */
 
-          sessions.current.db
+          sessions.available[sessions.current].$db
             .put(ddoc)
             .then(() => { resolve() })
             .catch(function (err) { throw new Error(err) })
@@ -262,7 +262,7 @@ let sessions = {
     })
 
     let durationPerDayPromise = new Promise((resolve, reject) => {
-      sessions.current.db
+      sessions.available[sessions.current].$db
         .query('duration_per_day/duration_per_day')
         .then(res => { resolve() })
         .catch(() => {
@@ -307,7 +307,7 @@ let sessions = {
           }
           /* eslint-enable */
 
-          sessions.current.db
+          sessions.available[sessions.current].$db
             .put(ddoc)
             .then(() => { resolve() })
             .catch(function (err) { throw new Error(err) })
@@ -315,7 +315,7 @@ let sessions = {
     })
 
     let durationPerCategoryAndDayPromise = new Promise((resolve, reject) => {
-      sessions.current.db
+      sessions.available[sessions.current].$db
         .query('duration_per_category_and_day/duration_per_category_and_day')
         .then(res => { resolve() })
         .catch(() => {
@@ -362,7 +362,7 @@ let sessions = {
           }
           /* eslint-enable */
 
-          sessions.current.db
+          sessions.available[sessions.current].$db
             .put(ddoc)
             .then(() => { resolve() })
             .catch(function (err) { throw new Error(err) })
