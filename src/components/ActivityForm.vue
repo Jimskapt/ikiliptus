@@ -58,7 +58,7 @@
       v-model="dbData.categories"
     ></suggestions-list>
 
-    <template v-for="item in $sessions.available[$sessions.current].$customFields.fields">
+    <template v-for="item in $store.getters.current.customFields.fields">
       <custom-field
         :key="'custom-' + item.name"
         :settings="item"
@@ -101,7 +101,6 @@ export default {
   },
   props: {
     id: {
-      type: String,
       required: true
     },
     locked: {
@@ -143,19 +142,16 @@ export default {
   methods: {
     save (payload) {
       let that = this
-      this.$sessions.available[this.$sessions.current].$db
-        .put(this.dbData, function (err, res) {
-          if (err) {
-            alert('IKE0001:\n' + err)
+      this.$store
+        .dispatch('saveActivity', {sessionID: this.$store.getters.current.doc._id, doc: that.dbData})
+        .then(() => {
+          if (payload !== undefined && payload.origin !== undefined) {
+            that.$eventBus.$emit('saveconfirm', payload.origin)
           } else {
-            if (payload !== undefined) {
-              that.$eventBus.$emit('saveconfirm', payload.origin)
-            } else {
-              that.$eventBus.$emit('saveconfirm')
-            }
+            that.$eventBus.$emit('saveconfirm')
           }
         })
-        .catch(err => { alert('IKE0002:\n' + err) })
+        .catch(err => alert('IKE0046:\n' + err))
     },
     setStop (args) {
       if (args === undefined) {
@@ -168,24 +164,15 @@ export default {
 
       this.save({origin: 'stop'})
     },
-    refreshData (relaunchCounter) {
-      let that = this
-      this.$sessions.available[this.$sessions.current].$db
-        .get(this.id, function (err, doc) {
-          if (err) {
-            alert('IKE0003:\n' + err)
-          } else {
-            Object.keys(doc).forEach(key => {
-              that.$set(that.dbData, key, doc[key])
-            })
-          }
-        })
-        .catch(err => { alert('IKE0004:\n' + err) })
+    refreshData () {
+      if (this.id !== undefined) {
+        this.$set(this, 'dbData', this.$store.state.available[this.$store.getters.current.doc._id].activities[this.id])
+      }
     },
     fetchAutocompleteData () {
       let that = this
 
-      this.$sessions.available[this.$sessions.current].$db
+      this.$store.getters.current.$db
         .query('subjects_powers/subjects_powers', {group: true})
         .then(res => {
           that.subjectsList = []
@@ -193,9 +180,9 @@ export default {
             that.subjectsList.push(e.key)
           })
         })
-        .catch(err => { alert('IKE0005:\n' + err) })
+        // .catch(err => { alert('IKE0005:\n' + err) })
 
-      this.$sessions.available[this.$sessions.current].$db
+      this.$store.getters.current.$db
         .query('categories_powers/categories_powers', {group: true})
         .then(res => {
           that.categoriesList = []
@@ -203,7 +190,7 @@ export default {
             that.categoriesList.push(e.key)
           })
         })
-        .catch(err => { alert('IKE0008:\n' + err) })
+        // .catch(err => { alert('IKE0008:\n' + err) })
     },
     findText (array, value) {
       if (value === undefined || array === undefined) {
@@ -273,6 +260,11 @@ export default {
       return ''
     }
   },
+  watch: {
+    id (newValue, oldValue) {
+      this.refreshData()
+    }
+  },
   mounted () {
     this.$eventBus.$on('setStop', this.setStop)
     this.$eventBus.$on('save', this.save)
@@ -289,16 +281,12 @@ export default {
       }
     }, 750)
 
-    this.$sessions.checkAndCreateViews()
-      .then(() => {
-        that.fetchAutocompleteData()
-
-        that.$sessions.available[that.$sessions.current].$customFields.fields.forEach(field => {
-          if (that.dbData[field.name] === undefined) {
-            that.$set(that.dbData, field.name, '')
-          }
-        })
-      })
+    that.fetchAutocompleteData()
+    that.$store.getters.current.customFields.fields.forEach(field => {
+      if (that.dbData[field.name] === undefined) {
+        that.$set(that.dbData, field.name, '')
+      }
+    })
   },
   destroyed () {
     this.$eventBus

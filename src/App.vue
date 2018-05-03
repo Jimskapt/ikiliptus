@@ -14,7 +14,7 @@
       </v-btn>
       <v-btn small dark flat :to="{name: 'SessionManager'}">
         <v-icon>folder</v-icon>
-        <span>&nbsp;{{$sessions.available[$sessions.current].name}}</span>
+        <span>&nbsp;{{$store.getters.current.doc.name}}</span>
       </v-btn>
     </v-toolbar>
 
@@ -81,6 +81,8 @@
 <script>
 import Package from '../package.json'
 
+import tools from './tools/index.js'
+
 export default {
   name: 'App',
   data () {
@@ -89,8 +91,24 @@ export default {
       menu: false
     }
   },
+  watch: {
+    '$store.getters.current.doc.color': function (newValue, oldValue) {
+      this.$set(this.$vuetify.theme, 'primary', newValue)
+    }
+  },
   mounted () {
     this.release = Package.version
+
+    this.$store.dispatch('fetchAvailable')
+
+    let that = this
+    // TODO
+    setTimeout(() => {
+      let id = tools.getCookies().last_session
+      if (Object.keys(that.$store.state.available).includes(id)) {
+        that.$store.commit('setCurrent', {sessionID: id})
+      }
+    }, 1000)
   },
   methods: {
     openGithub () {

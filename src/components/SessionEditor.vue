@@ -89,6 +89,7 @@
                   <custom-field
                     :settings="item"
                     :disabled="true"
+                    :autocomplete="false"
                   ></custom-field>
                 </div>
               </v-container>
@@ -216,53 +217,15 @@ export default {
     },
     save () {
       let that = this
-      let goBack = false
-      let dbID = that.id
-
-      new Promise((resolve, reject) => {
-        if (that.thereIsID) {
-          that.$sessions.$db
-            .put(that.newData, function (err, res) {
-              if (err) {
-                throw new Error(err)
-              } else {
-                if (that.newData._id === that.$sessions.available[that.$sessions.current]._id) {
-                  that.$vuetify.theme.primary = that.newData.color
-
-                  if (that.newData.remote === '' && that.$sessions.available[that.$sessions.current].$remote !== undefined && that.$sessions.available[that.$sessions.current].$remote !== null) {
-                    that.$sessions.available[that.$sessions.current].$remote.cancel()
-                  }
-                }
-
-                goBack = true
-                resolve()
-              }
-            })
-            .catch(err => { throw new Error(err) })
-        } else {
-          that.$sessions.$db
-            .post(that.newData, function (err, res) {
-              if (err) {
-                throw new Error(err)
-              } else {
-                dbID = res.id
-                goBack = true
-                resolve()
-              }
-            })
-            .catch(err => { throw new Error(err) })
-        }
-      })
-        .then(() => {
-          that.$sessions.mount(dbID)
-            .put(that.dbDataFields)
-            .catch(err => { throw new Error(err) })
-
-          if (goBack) {
-            that.$router.go(-1)
-          }
+      this.$store
+        .dispatch('saveSession', {doc: this.newData})
+        .then(res => {
+          that.$store
+            .dispatch('saveCustomFields', {sessionID: res.id, doc: this.dbDataFields})
+            .then(() => { that.$router.go(-1) })
+            .catch(err => { alert('IKE0049:\n' + err) })
         })
-        .catch(err => { alert('IKE0037:\n' + err) })
+        .catch(err => { alert('IKE0048:\n' + err) })
     },
     toggleFieldSettings (fieldID) {
       if (this.fieldView === 'panel-' + fieldID) {
@@ -290,19 +253,13 @@ export default {
     if (this.thereIsID) {
       this.hasSelectedColor = true
 
-      this.$sessions.$db
-        .get(this.id)
-        .then(doc => {
-          this.dbData = doc
+      this.dbData = this.$store.state.available[this.id].doc
+      this.newSessionName = this.dbData.name
+      this.newSessionColor = this.dbData.color
+      this.refreshNewSessionColor()
+      this.newSessionRemote = this.dbData.remote
 
-          this.newSessionName = doc.name
-          this.newSessionColor = doc.color
-          this.refreshNewSessionColor()
-          this.newSessionRemote = doc.remote
-        })
-        .catch(err => { alert('IKE0025:\n' + err) })
-
-      this.dbDataFields = this.$sessions.available[this.id].$customFields
+      this.dbDataFields = this.$store.state.available[this.id].customFields
     }
   }
 }

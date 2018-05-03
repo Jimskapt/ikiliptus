@@ -36,7 +36,7 @@ export default {
     prop: 'value',
     event: 'change'
   },
-  props: ['settings', 'value', 'disabled'],
+  props: ['settings', 'value', 'disabled', 'autocomplete'],
   data () {
     return {
       valueCopy: '',
@@ -56,24 +56,20 @@ export default {
       if (this.settings.type !== 'checkbox') {
         let that = this
 
-        this.$sessions.checkAndCreateViews()
-          .then(() => {
-            that.$sessions.available[that.$sessions.current].$db
-              .query('all_activities/all_activities', {include_docs: true})
-              .then(res => {
-                let temp = {}
+        that.$store.getters.current.$db
+          .query('all_activities/all_activities', {include_docs: true})
+          .then(res => {
+            let temp = {}
 
-                res.rows.forEach(item => {
-                  if (item.doc[that.settings.name] !== undefined && item.doc[that.settings.name] !== null && item.doc[that.settings.name] !== '') {
-                    that.$set(temp, item.doc[that.settings.name], true)
-                  }
-                })
+            res.rows.forEach(item => {
+              if (item.doc[that.settings.name] !== undefined && item.doc[that.settings.name] !== null && item.doc[that.settings.name] !== '') {
+                that.$set(temp, item.doc[that.settings.name], true)
+              }
+            })
 
-                that.list = Object.keys(temp)
-              })
-              .catch(err => { alert('IKE0038:\n' + err) })
+            that.list = Object.keys(temp)
           })
-          .catch(err => { alert('IKE0039:\n' + err) })
+          .catch(err => { alert('IKE0038:\n' + err) })
       }
     }
   },
@@ -93,7 +89,9 @@ export default {
   mounted () {
     this.valueCopy = this.value
 
-    this.fetchAutocompleteData()
+    if (this.autocomplete) {
+      this.fetchAutocompleteData()
+    }
   }
 }
 </script>

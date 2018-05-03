@@ -19,27 +19,27 @@
 
           <v-list two-line subheader>
             <v-subheader>{{ $t('Available sessions') }}</v-subheader>
-            <template v-for="session in $sessions.available">
-              <v-divider :key="'divider-' + session._id"></v-divider>
-              <v-list-tile avatar :key="'list-' + session._id" @click="$sessions.setCurrent(session, $vuetify)">
+            <template v-for="session in $store.state.available">
+              <v-divider :key="'divider-' + session.doc._id"></v-divider>
+              <v-list-tile avatar :key="'list-' + session.doc._id" @click="$store.commit('setCurrent', {sessionID: session.doc._id})">
                 <v-list-tile-avatar>
                   <div
-                    :style="'cursor:pointer; width:100%; height:100%; border-radius:10px; background-color:' + session.color"
+                    :style="'cursor:pointer; width:100%; height:100%; border-radius:10px; background-color:' + session.doc.color"
                   ></div>
                 </v-list-tile-avatar>
                 <v-list-tile-content>
-                  <v-list-tile-title style="font-weight:bold;">{{session.name}}</v-list-tile-title>
-                  <v-list-tile-sub-title>{{session.remote}}</v-list-tile-sub-title>
+                  <v-list-tile-title style="font-weight:bold;">{{session.doc.name}}</v-list-tile-title>
+                  <v-list-tile-sub-title>{{session.doc.remote}}</v-list-tile-sub-title>
                 </v-list-tile-content>
                 <v-list-tile-action>
                   <v-layout row>
                     <v-flex xs6>
-                      <v-btn flat icon @click.stop="goToEdit(session._id)">
+                      <v-btn flat icon @click.stop="goToEdit(session.doc._id)">
                         <v-icon>edit</v-icon>
                       </v-btn>
                     </v-flex>
                     <v-flex xs6>
-                      <v-btn flat icon @click.stop="askToDelete(session)" :disabled="session._id === 'ikiliptus'">
+                      <v-btn flat icon @click.stop="askToDelete(session.doc)" :disabled="session.doc._id === 'ikiliptus'">
                         <v-icon>delete</v-icon>
                       </v-btn>
                     </v-flex>
@@ -83,13 +83,10 @@
 </template>
 
 <script>
-import PouchDB from 'pouchdb-browser'
-
 export default {
   name: 'SessionManager',
   data () {
     return {
-      available: [],
       confirmDeleteDialog: false,
       deleteConfirmObj: null,
       typedDeleteConfirm: null
@@ -104,41 +101,16 @@ export default {
       this.confirmDeleteDialog = true
     },
     confirmDeleteSession () {
+      let that = this
       if (this.typedDeleteConfirm === this.deleteConfirmObj.name) {
-        let that = this
-
-        this.$sessions.$db
-          .remove(that.deleteConfirmObj)
-          .then(result => {
-            if (that.$sessions.available[that.$sessions.current]._id === that.deleteConfirmObj._id) {
-              that.$sessions.setCurrent(that.$sessions.available.ikiliptus, that.$vuetify)
-            }
-
-            new PouchDB(that.deleteConfirmObj._id.split('-').join(''))
-              .destroy()
-              .catch(err => { alert('IKE0028:\n' + err) })
-
+        this.$store.dispatch('deleteSession', {doc: that.deleteConfirmObj})
+          .then(() => {
             that.deleteConfirmObj = null
             that.typedDeleteConfirm = null
             that.confirmDeleteDialog = false
-
-            that.$sessions
-              .refresh()
-              .then(() => {
-                that.$forceUpdate()
-              })
-              .catch(err => { alert('IKE0029:\n' + err) })
           })
-          .catch(err => { alert('IKE0026:\n' + err) })
       }
     }
-  },
-  mounted () {
-    let that = this
-    this.$sessions
-      .refresh()
-      .then(res => that.$forceUpdate())
-      .catch(err => { alert('IKE0027:\n' + err) })
   }
 }
 </script>

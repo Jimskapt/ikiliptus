@@ -1,6 +1,7 @@
 <template>
   <div>
 
+    <!-- <pre>{{$store.getters.current.activities}}</pre> -->
     <v-container>
       <v-card>
         <v-toolbar dark color="primary">
@@ -15,18 +16,18 @@
         <v-container>
           <v-progress-linear :indeterminate="true" v-if="!loaded"></v-progress-linear>
           <div v-else>
-            <div v-if="runningCounter">
+            <div v-if="currentID !== null">
 
               <v-container grid-list-md>
                 <v-layout row>
                   <v-flex xs6>
-                    <v-btn block @click="stopCounter" :disabled="!runningCounter" color="error">
+                    <v-btn block @click="stopCounter" :disabled="currentID === null" color="error">
                       <v-icon>stop</v-icon>
                       <span>{{ $t("STOP") }}</span>
                     </v-btn>
                   </v-flex>
                   <v-flex xs6>
-                    <v-btn block @click="nextCounter" :disabled="!runningCounter" color="warning">
+                    <v-btn block @click="nextCounter" :disabled="currentID === null" color="warning">
                       <v-icon>skip_next</v-icon>
                       <span>{{ $t("NEXT") }}</span>
                     </v-btn>
@@ -54,15 +55,15 @@
         </v-container>
 
         <v-card-actions v-if="loaded">
-          <v-btn block @click="startCounter(undefined, new Date())" :disabled="runningCounter" color="primary">
+          <v-btn block @click="startCounter(undefined, new Date())" :disabled="currentID !== null" color="primary">
             <v-icon>play_arrow</v-icon>
             <span>{{ $t("START") }}</span>
           </v-btn>
-          <v-btn block @click="stopCounter" :disabled="!runningCounter" color="error">
+          <v-btn block @click="stopCounter" :disabled="currentID === null" color="error">
             <v-icon>stop</v-icon>
             <span>{{ $t("STOP") }}</span>
           </v-btn>
-          <v-btn block @click="nextCounter" :disabled="!runningCounter" color="warning">
+          <v-btn block @click="nextCounter" :disabled="currentID === null" color="warning">
             <v-icon>skip_next</v-icon>
             <span>{{ $t("NEXT") }}</span>
           </v-btn>
@@ -142,7 +143,7 @@
                 </v-list-tile-sub-title>
                 <v-list-tile-sub-title>
                   <v-layout row>
-                    <v-chip small disabled v-if="item[field.name] && item[field.name] !== '' && field.type !== 'checkbox'" v-for="field in $sessions.available[$sessions.current].$customFields.fields" v-bind:key="'chip-' + item._id + '-' + field.name">
+                    <v-chip small disabled v-if="item[field.name] && item[field.name] !== '' && field.type !== 'checkbox'" v-for="field in $store.getters.current.customFields.fields" v-bind:key="'chip-' + item._id + '-' + field.name">
                       <v-avatar>
                         <v-icon>{{field.icon}}</v-icon>
                       </v-avatar>
@@ -154,7 +155,7 @@
               <v-list-tile-action>
                 <v-layout row>
                   <v-flex xs6>
-                    <v-btn flat icon @click.stop="copyActivity(item);goToTop();">
+                    <v-btn flat icon @click.stop="copyActivity(Object.assign({}, item));goToTop();">
                       <v-icon>content_copy</v-icon>
                     </v-btn>
                   </v-flex>
@@ -229,8 +230,6 @@ export default {
   },
   data () {
     return {
-      currentID: '',
-      runningCounter: false,
       nextAction: '',
       activities: [],
       dialog: false,
@@ -241,53 +240,40 @@ export default {
       lastActivitiesPage: 1,
       activitiesPerPage: 10,
       activitiesSearch: '',
-      loaded: false
+      loaded: true
     }
   },
   methods: {
     startCounter (document, now) {
-      let that = this
+      // let that = this
 
       if (document === undefined) {
         document = {}
       }
-
-      delete document._id
-      delete document._rev
       if (now === undefined || now === null) {
         now = new Date()
       }
-      document.start_date = this.$moment(now).format('YYYY-MM-DD')
-      document.start_hour = this.$moment(now).format('HH:mm')
-      document.start_seconds = now.getSeconds()
-      delete document.stop_date
-      delete document.stop_hour
-      delete document.stop_seconds
+
+      Vue.delete(document, '_id')
+      Vue.delete(document, '_rev')
+      Vue.set(document, 'start_date', this.$moment(now).format('YYYY-MM-DD'))
+      Vue.set(document, 'start_hour', this.$moment(now).format('HH:mm'))
+      Vue.set(document, 'start_seconds', now.getSeconds())
+      Vue.delete(document, 'stop_date')
+      Vue.delete(document, 'stop_hour')
+      Vue.delete(document, 'stop_seconds')
       if (!document.data_type) {
-        document.data_type = 'subject'
+        Vue.set(document, 'data_type', 'subject')
       }
       if (!document.data_version) {
-        document.data_version = 1
+        Vue.set(document, 'data_version', 1)
       }
 
-      this.$sessions.available[this.$sessions.current].$db
-        .post(document, {}, function (err, res) {
-          if (err) {
-            alert('IKE0013:\n' + err)
-          }
-
-          if (res.ok === true) {
-            that.currentID = res.id
-            that.runningCounter = true
-            that.fetchAllSubjects()
-          } else {
-            alert('IKE0014:\n' + res)
-          }
-        })
-        .catch(err => alert('IKE0015:\n' + err))
+      this.$store
+        .dispatch('saveActivity', {sessionID: this.$store.getters.current.doc._id, doc: document})
+        .catch(err => alert('IKE0045:\n' + err))
     },
     stopCounter () {
-      this.runningCounter = false
       this.$eventBus.$emit('setStop', new Date())
     },
     liveSaveConfirm (payload) {
@@ -301,56 +287,24 @@ export default {
         this.nextAction = ''
         this.nextActionDocument = undefined
       }
-      this.fetchAllSubjects()
     },
     nextCounter (document) {
       this.nextAction = 'start'
       this.nextActionDocument = document
 
-      if (this.runningCounter) {
+      if (this.currentID !== null) {
         this.stopCounter(document)
       } else {
         this.liveSaveConfirm()
       }
     },
     copyActivity (document) {
-      if (this.runningCounter) {
+      if (this.currentID !== null) {
         this.askedCopyDocument = document
         this.askedCopy = true
       } else {
         this.nextCounter(document)
       }
-    },
-    fetchAllSubjects () {
-      let that = this
-
-      that.loaded = false
-
-      that.$sessions.checkAndCreateViews()
-        .then(() => {
-          that.$sessions.available[that.$sessions.current].$db
-            .query('all_activities/all_activities', {include_docs: true})
-            .then(res => {
-              that.activities = []
-
-              let sorted = res.rows
-                .filter(e => e.doc.stop_date !== undefined && e.doc.stop_hour !== undefined)
-                .sort((a, b) => {
-                  let bTime = that.$moment(b.doc.stop_date + ' ' + b.doc.stop_hour + ':' + b.doc.stop_seconds, 'YYYY-MM-DD HH:mm:ss').toDate()
-                  let aTime = that.$moment(a.doc.stop_date + ' ' + a.doc.stop_hour + ':' + a.doc.stop_seconds, 'YYYY-MM-DD HH:mm:ss').toDate()
-
-                  return bTime - aTime
-                })
-
-              for (let i = 0; i < sorted.length; i++) {
-                that.activities.push(sorted[i].doc)
-              }
-
-              that.loaded = true
-            })
-            .catch(err => alert('IKE0016:\n' + err))
-        })
-        .catch(err => alert('IKE0017:\n' + err))
     },
     askDeleteActivity (document) {
       this.askedDelete = true
@@ -358,69 +312,40 @@ export default {
     },
     confirmDeleteActivity () {
       let that = this
-
-      this.$sessions.available[this.$sessions.current].$db
-        .remove(this.askedDeleteDocument)
+      this.$store.dispatch('deleteActivity', {sessionID: that.$store.getters.current.doc._id, doc: that.askedDeleteDocument})
         .then(() => {
           that.askedDelete = false
           that.askedDeleteDocument = null
-
-          that.fetchAllSubjects()
         })
-        .catch(err => alert('IKE0018:\n' + err))
+        .catch(err => alert('IKE0052:\n' + err))
     },
     confirmActivityCopy () {
       let that = this
-      let document = this.askedCopyDocument
+      let document = {}
+      Object.assign(document, this.askedCopyDocument)
 
-      delete document._id
-      delete document._rev
-      delete document.start_date
-      delete document.start_hour
-      delete document.start_seconds
-      delete document.stop_date
-      delete document.stop_hour
-      delete document.stop_seconds
-      if (!document.data_type) {
+      Vue.delete(document, '_id')
+      Vue.delete(document, '_rev')
+      Vue.delete(document, 'start_date')
+      Vue.delete(document, 'start_hour')
+      Vue.delete(document, 'start_seconds')
+      Vue.delete(document, 'stop_date')
+      Vue.delete(document, 'stop_hour')
+      Vue.delete(document, 'stop_seconds')
+      if (document.data_type === undefined) {
         document.data_type = 'subject'
       }
-      if (!document.data_version) {
+      if (document.data_version === undefined) {
         document.data_version = 1
       }
 
-      this.$sessions.available[this.$sessions.current].$db
-        .get(that.currentID, function (err, doc) {
-          return new Promise((resolve, reject) => {
-            if (err) {
-              throw new Error(err)
-            } else {
-              Object.keys(doc).forEach(key => {
-                if (document[key] === undefined) {
-                  that.$set(document, key, doc[key])
-                }
-              })
-              resolve()
-            }
-          })
-        })
+      this.$store
+        .dispatch('saveActivity', {sessionID: this.$store.getters.current.doc._id, doc: document})
         .then(() => {
-          that.$sessions.available[that.$sessions.current].$db
-            .put(document, {}, function (err, res) {
-              if (err) {
-                alert('IKE0036:\n' + err)
-              }
-
-              if (res.ok === true) {
-                that.fetchAllSubjects()
-                that.askedCopyDocument = null
-                that.askedCopy = false
-              } else {
-                alert('IKE0035:\n' + res)
-              }
-            })
-            .catch(err => alert('IKE0034:\n' + err))
+          that.askedCopy = false
+          that.askedCopyDocument = null
         })
-        .catch(err => { alert('IKE0033:\n' + err) })
+        .catch(err => alert('IKE0047:\n' + err))
     },
     deltaTime (activity) {
       return tools.deltaT(
@@ -449,7 +374,7 @@ export default {
       }
 
       let searchText = this.activitiesSearch
-      let res = this.activities
+      let res = this.$store.getters.finishedActivities(this.$store.getters.current.doc._id)
 
       /*
 TESTS :
@@ -761,40 +686,36 @@ categories:aaa, bbb ,ccc test
       }
 
       return parseInt(Math.ceil(this.searchedActivities.length / this.activitiesPerPage))
+    },
+    currentID () {
+      let running = this.$store.getters.runningActivities(this.$store.getters.current.doc._id)
+      if (running.length > 0) {
+        return running[0]._id
+      } else {
+        return null
+      }
     }
   },
   mounted () {
     this.$eventBus
       .$on('saveconfirm', this.liveSaveConfirm)
+      /*
+      TODO
       .$on('dbupdate', this.fetchAllSubjects)
-
-    this.fetchAllSubjects()
+      */
 
     let cookies = tools.getCookies()
     if (cookies.research) {
       this.activitiesSearch = cookies.research
     }
-
-    // searching unstopped activities, and using the first of them in the live counter
-    let that = this
-    this.$sessions.checkAndCreateViews()
-      .then(() => {
-        that.$sessions.available[that.$sessions.current].$db
-          .query('all_activities/all_activities', {include_docs: true})
-          .then(res => {
-            let unstoppedList = res.rows.filter(e => e.doc.stop_date === undefined || e.doc.stop_hour === undefined)
-            if (unstoppedList.length > 0) {
-              that.currentID = unstoppedList[0].doc._id
-              that.runningCounter = true
-            }
-          })
-          .catch(err => alert('IKE0019:\n' + err))
-      })
   },
   destroyed () {
     this.$eventBus
       .$off('saveconfirm', this.saveConfirmation)
+      /*
+      TODO
       .$off('dbupdate', this.fetchAllSubjects)
+      */
   }
 }
 </script>

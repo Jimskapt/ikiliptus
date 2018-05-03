@@ -45,15 +45,14 @@ export default {
   },
   methods: {
     save () {
-      let that = this
+      let sessionID = this.$store.getters.current.doc._id
+
       let data = JSON.parse(this.input)
 
-      data.forEach(e => delete e._rev)
-
-      that.$sessions.available[that.$sessions.current].$db
-        .bulkDocs(data)
-        .then(res => console.log(res))
-        .catch(err => alert('IKE0011:\n' + err))
+      data.forEach(e => {
+        this.$delete(e, '_rev')
+        this.$store.dispatch('saveActivity', {sessionID: sessionID, doc: e})
+      })
     }
   }
 }

@@ -19,7 +19,7 @@
         <div v-if="customSettings !== undefined && Object.keys(customSettings).length > 0">
           <v-divider></v-divider>
           <v-container>
-            <template v-for="(item, i) in $sessions.available[$sessions.current].$customFields.fields">
+            <template v-for="(item, i) in $store.getters.current.customFields.fields">
               <v-layout align-baseline row :key="'row-' + i">
                 <v-flex xs2 sm1>
                   <v-switch v-model="customSettings[item.name].enabled"></v-switch>
@@ -135,7 +135,6 @@ export default {
       toDate: null,
       wantVoluntary: true,
       wantNotVoluntary: true,
-      activities: [],
       viewTab: null,
       activitiesOptions: {
         scales: {
@@ -252,6 +251,9 @@ export default {
     }
   },
   computed: {
+    activities () {
+      return this.$store.getters.activitiesSortedByTime(this.$store.getters.current.doc._id)
+    },
     filteredActivities () {
       let that = this
       return this.activities.filter(activity => {
@@ -265,7 +267,7 @@ export default {
           result &= (that.$moment(activity.stop_date, 'YYYY-MM-DD') < that.$moment(that.toDate, 'YYYY-MM-DD'))
         }
 
-        that.$sessions.available[that.$sessions.current].$customFields.fields.forEach(customField => {
+        that.$store.getters.current.customFields.fields.forEach(customField => {
           if (that.customSettings[customField.name] !== undefined) {
             if (that.customSettings[customField.name].enabled) {
               if (activity[customField.name] !== undefined) {
@@ -472,29 +474,10 @@ export default {
   },
   mounted () {
     let that = this
-    that.$sessions.checkAndCreateViews()
-      .then(() => {
-        that.$sessions.available[that.$sessions.current].$db
-          .query('all_activities/all_activities', {include_docs: true})
-          .then(res => {
-            that.activities = []
-
-            let filtered = res.rows
-              .filter(e => e.doc.stop_date !== undefined && e.doc.stop_hour !== undefined)
-
-            for (let i = 0; i < filtered.length; i++) {
-              that.activities.push(filtered[i].doc)
-            }
-
-            that.loaded = true
-          })
-          .catch(err => alert('IKE0030:\n' + err))
-      })
-      .catch(err => alert('IKE0031:\n' + err))
 
     setTimeout(() => {
       Vue.set(that, 'customSettings', {})
-      that.$sessions.available[that.$sessions.current].$customFields.fields.forEach(field => {
+      that.$store.getters.current.customFields.fields.forEach(field => {
         Vue.set(that.customSettings, field.name, {
           enabled: false,
           value: ((field.type === 'checkbox') ? false : '')

@@ -18,7 +18,7 @@ export default new Router({
       path: '/',
       name: 'Home',
       redirect: {
-        name: 'LiveCounter'
+        name: 'SessionManager'
       }
     },
     {

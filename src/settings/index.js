@@ -28,15 +28,6 @@ let settings = {
     if (cookies.locale !== undefined) {
       this.locale.set(cookies.locale)
     }
-
-    if (cookies.last_session !== undefined) {
-      let that = this
-      this.databases
-        .refresh()
-        .then(() => {
-          that.databases.setCurrent(that.databases.available[cookies.last_session], that.vuetify)
-        })
-    }
   }
 }
 
