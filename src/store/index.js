@@ -18,6 +18,8 @@ export default new Vuex.Store({
           remote: ''
         },
         $db: new PouchDB('ikiliptus'),
+        $sync: null,
+        $remote: null,
         customFields: {fields: []},
         activities: {}
       }
@@ -31,9 +33,20 @@ export default new Vuex.Store({
       tools.setCookie('last_session', payload.sessionID)
     },
     setAvailable (state, payload) {
+      let $db = new PouchDB(payload.doc._id.split('-').join(''))
+
+      let $sync = null
+      let $remote = null
+      if (payload.doc.remote !== undefined && payload.doc.remote !== null && payload.doc.remote.trim() !== '') {
+        $remote = new PouchDB(payload.doc.remote)
+        $sync = $remote.sync($db, { live: true })
+      }
+
       Vue.set(state.available, payload.doc._id, {
         doc: payload.doc,
-        $db: new PouchDB(payload.doc._id.split('-').join('')),
+        $db: $db,
+        $sync: $sync,
+        $remote: $remote,
         customFields: {fields: []},
         activities: {}
       })
@@ -80,6 +93,30 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    setCurrent (context, payload) {
+      context.commit('setCurrent', payload)
+      context.dispatch('fetchActivities', payload)
+      context.dispatch('checkAndCreateViews', payload)
+
+      if (context.state.available[payload.sessionID].$sync !== null) {
+        context.state.available[payload.sessionID].$sync
+          .on('complete', (info) => {
+            console.log('Sync on local CouchDB ' + context.state.available[payload.sessionID].doc.name + ' success.', info, arguments)
+          })
+          .on('change', (change) => {
+            console.log('Sync event on ' + context.state.available[payload.sessionID].doc.name + ' :', change)
+
+            if (change.direction === 'push') {
+              change.change.docs.forEach(doc => {
+                context.commit('setActivity', {sessionID: payload.sessionID, doc: doc})
+              })
+            }
+          })
+          .on('error', (err) => {
+            console.log('ERROR while sync on local couchDB ' + context.state.available[payload.sessionID].doc.name + ' :', err, arguments)
+          })
+      }
+    },
     fetchAvailable (context) {
       context.state.$sessionsDB
         .allDocs({include_docs: true})
@@ -87,8 +124,6 @@ export default new Vuex.Store({
           res.rows.forEach(row => {
             context.commit('setAvailable', {doc: row.doc})
             context.dispatch('fetchCustomFields', {sessionID: row.doc._id})
-            context.dispatch('fetchActivities', {sessionID: row.doc._id})
-            context.dispatch('checkAndCreateViews', {sessionID: row.doc._id})
           })
         })
         .catch(err => { alert(err) })
@@ -196,7 +231,7 @@ export default new Vuex.Store({
     deleteSession (context, payload) {
       return new Promise((resolve, reject) => {
         if (context.getters.current.doc._id === payload.doc._id) {
-          context.commit('setCurrent', {sessionID: 'ikiliptus'})
+          context.dispatch('setCurrent', {sessionID: 'ikiliptus'})
         }
 
         context.state.available[payload.doc._id].$db

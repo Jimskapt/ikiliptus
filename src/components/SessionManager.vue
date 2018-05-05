@@ -21,7 +21,7 @@
             <v-subheader>{{ $t('Available sessions') }}</v-subheader>
             <template v-for="session in $store.state.available">
               <v-divider :key="'divider-' + session.doc._id"></v-divider>
-              <v-list-tile avatar :key="'list-' + session.doc._id" @click="$store.commit('setCurrent', {sessionID: session.doc._id})">
+              <v-list-tile avatar :key="'list-' + session.doc._id" @click="$store.dispatch('setCurrent', {sessionID: session.doc._id})">
                 <v-list-tile-avatar>
                   <div
                     :style="'cursor:pointer; width:100%; height:100%; border-radius:10px; background-color:' + session.doc.color"

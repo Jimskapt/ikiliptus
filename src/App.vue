@@ -106,7 +106,7 @@ export default {
     setTimeout(() => {
       let id = tools.getCookies().last_session
       if (Object.keys(that.$store.state.available).includes(id)) {
-        that.$store.commit('setCurrent', {sessionID: id})
+        that.$store.dispatch('setCurrent', {sessionID: id})
       }
     }, 1000)
   },
