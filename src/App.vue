@@ -14,7 +14,7 @@
       </v-btn>
       <v-btn small dark flat :to="{name: 'SessionManager'}">
         <v-icon>folder</v-icon>
-        <span>&nbsp;{{$store.getters.current.doc.name}}</span>
+        <span>&nbsp;{{current.name}}</span>
       </v-btn>
     </v-toolbar>
 
@@ -92,21 +92,26 @@ export default {
     }
   },
   watch: {
-    '$store.getters.current.doc.color': function (newValue, oldValue) {
-      this.$set(this.$vuetify.theme, 'primary', newValue)
+    current (newValue, oldValue) {
+      this.$set(this.$vuetify.theme, 'primary', newValue.color)
+    }
+  },
+  computed: {
+    current () {
+      return this.$store.getters['manager/current']
     }
   },
   mounted () {
     this.release = Package.version
 
-    this.$store.dispatch('fetchAvailable')
+    this.$store.dispatch('manager/fetchAvailable')
 
     let that = this
     // TODO
     setTimeout(() => {
       let id = tools.getCookies().last_session
-      if (Object.keys(that.$store.state.available).includes(id)) {
-        that.$store.dispatch('setCurrent', {sessionID: id})
+      if (Object.keys(that.$store.state.manager.available).includes(id)) {
+        that.$store.dispatch('manager/setCurrent', {sessionID: id}, {root: true})
       }
     }, 1000)
   },

@@ -19,7 +19,7 @@
         <div v-if="customSettings !== undefined && Object.keys(customSettings).length > 0">
           <v-divider></v-divider>
           <v-container>
-            <template v-for="(item, i) in $store.getters.current.customFields.fields">
+            <template v-for="(item, i) in $store.state[$store.state.manager.current].customFields.fields">
               <v-layout align-baseline row :key="'row-' + i">
                 <v-flex xs2 sm1>
                   <v-switch v-model="customSettings[item.name].enabled"></v-switch>
@@ -252,7 +252,7 @@ export default {
   },
   computed: {
     activities () {
-      return this.$store.getters.activitiesSortedByTime(this.$store.getters.current.doc._id)
+      return this.$store.getters[this.$store.getters['manager/current']._id + '/activitiesSortedByTime'] || []
     },
     filteredActivities () {
       let that = this
@@ -267,7 +267,7 @@ export default {
           result &= (that.$moment(activity.stop_date, 'YYYY-MM-DD') < that.$moment(that.toDate, 'YYYY-MM-DD'))
         }
 
-        that.$store.getters.current.customFields.fields.forEach(customField => {
+        that.$store.state[that.$store.state.manager.current].customFields.fields.forEach(customField => {
           if (that.customSettings[customField.name] !== undefined) {
             if (that.customSettings[customField.name].enabled) {
               if (activity[customField.name] !== undefined) {
@@ -477,13 +477,13 @@ export default {
 
     setTimeout(() => {
       Vue.set(that, 'customSettings', {})
-      that.$store.getters.current.customFields.fields.forEach(field => {
+      that.$store.state[that.$store.getters['manager/current']._id].customFields.fields.forEach(field => {
         Vue.set(that.customSettings, field.name, {
           enabled: false,
           value: ((field.type === 'checkbox') ? false : '')
         })
       })
-    }, 1500)
+    }, 500)
   }
 }
 </script>

@@ -23,7 +23,7 @@
               {{ $t('In order to save your data, just copy and paste the following data in an text editor (like notepad), and then save it as *.json file') }}.
             </v-alert>
             <v-alert type="warning" :value="true">
-              {{ $t('This is only the data for the current session X', {name: $store.getters.current.doc.name}) }}.<br />
+              {{ $t('This is only the data for the current session X', {name: $store.state[$store.state.manager.current].doc.name}) }}.<br />
               {{ $t('You have to do that for each session if you want to save all of them') }}.
             </v-alert>
             <v-container>
@@ -52,7 +52,7 @@ export default {
   mounted () {
     let that = this
 
-    this.$store.getters.current.$db
+    this.$store.state[this.$store.state.manager.current].$db
       .allDocs({include_docs: true})
       .then(res => {
         that.json = []

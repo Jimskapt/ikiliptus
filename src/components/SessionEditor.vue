@@ -218,10 +218,10 @@ export default {
     save () {
       let that = this
       this.$store
-        .dispatch('saveSession', {doc: this.newData})
+        .dispatch('manager/saveSession', {doc: this.newData}, {root: true})
         .then(res => {
           that.$store
-            .dispatch('saveCustomFields', {sessionID: res.id, doc: this.dbDataFields})
+            .dispatch(res.id + '/saveCustomFields', {doc: this.dbDataFields}, {root: true})
             .then(() => { that.$router.go(-1) })
             .catch(err => { alert('IKE0049:\n' + err) })
         })
@@ -253,13 +253,13 @@ export default {
     if (this.thereIsID) {
       this.hasSelectedColor = true
 
-      this.dbData = this.$store.state.available[this.id].doc
+      this.dbData = this.$store.state[this.id].doc
       this.newSessionName = this.dbData.name
       this.newSessionColor = this.dbData.color
       this.refreshNewSessionColor()
       this.newSessionRemote = this.dbData.remote
 
-      this.dbDataFields = this.$store.state.available[this.id].customFields
+      this.dbDataFields = this.$store.state[this.id].customFields
     }
   }
 }

@@ -7,146 +7,80 @@ import tools from '../tools/index.js'
 
 Vue.use(Vuex)
 
-export default new Vuex.Store({
+const session = {
+  namespaced: true,
   state: {
-    available: {
-      ikiliptus: {
-        doc: {
-          _id: 'ikiliptus',
-          name: 'default',
-          color: '#1976D2',
-          remote: ''
-        },
-        $db: new PouchDB('ikiliptus'),
-        $sync: null,
-        $remote: null,
-        customFields: {fields: []},
-        activities: {}
-      }
+    doc: {
+      _id: 'ikiliptus',
+      name: 'default',
+      color: '#1976D2',
+      remote: ''
     },
-    current: 'ikiliptus',
-    $sessionsDB: new PouchDB('sessions')
+    $db: new PouchDB('ikiliptus'),
+    $sync: null,
+    $remote: null,
+    customFields: {
+      _id: 'custom_fields',
+      fields: []
+    },
+    activities: {}
   },
   mutations: {
-    setCurrent (state, payload) {
-      Vue.set(state, 'current', payload.sessionID)
-      tools.setCookie('last_session', payload.sessionID)
-    },
-    setAvailable (state, payload) {
-      let $db = new PouchDB(payload.doc._id.split('-').join(''))
-
-      let $sync = null
-      let $remote = null
-      if (payload.doc.remote !== undefined && payload.doc.remote !== null && payload.doc.remote.trim() !== '') {
-        $remote = new PouchDB(payload.doc.remote)
-        $sync = $remote.sync($db, { live: true })
-      }
-
-      Vue.set(state.available, payload.doc._id, {
-        doc: payload.doc,
-        $db: $db,
-        $sync: $sync,
-        $remote: $remote,
-        customFields: {fields: []},
-        activities: {}
-      })
-    },
     setCustomFields (state, payload) {
-      Vue.set(state.available[payload.sessionID], 'customFields', payload.doc)
+      Vue.set(state, 'customFields', payload.doc)
     },
     setActivity (state, payload) {
       if (payload.doc._id !== undefined) {
         if (payload.doc.categories === undefined) {
           Vue.set(payload.doc, 'categories', [])
         }
-        Vue.set(state.available[payload.sessionID].activities, payload.doc._id, payload.doc)
+        Vue.set(state.activities, payload.doc._id, payload.doc)
       }
     },
     removeActivity (state, payload) {
-      Vue.delete(state.available[payload.sessionID].activities, payload.doc._id)
-    },
-    removeSession (state, payload) {
-      Vue.delete(state.available, payload.sessionID)
+      Vue.delete(state.activities, payload.doc._id)
     }
   },
   getters: {
-    current: state => {
-      return state.available[state.current]
-    },
-    activitiesSortedByTime: state => sessionID => {
-      return Object.values(state.available[sessionID].activities)
+    activitiesSortedByTime (state) {
+      return Object.values(state.activities)
         .sort((a, b) => {
           let bTime = moment(b.start_date + ' ' + b.start_hour + ':' + b.start_seconds, 'YYYY-MM-DD HH:mm:ss').toDate()
           let aTime = moment(a.start_date + ' ' + a.start_hour + ':' + a.start_seconds, 'YYYY-MM-DD HH:mm:ss').toDate()
 
-          return bTime - aTime
+          return aTime - bTime
         })
     },
-    finishedActivities: (state, getters) => sessionID => {
-      return getters.activitiesSortedByTime(sessionID)
+    finishedActivities (state, getters) {
+      return getters.activitiesSortedByTime
         .filter(e => e.stop_date !== undefined && e.stop_hour !== undefined && e._id !== undefined)
     },
-    runningActivities: (state, getters) => sessionID => {
-      return getters.activitiesSortedByTime(sessionID)
+    runningActivities (state, getters) {
+      return getters.activitiesSortedByTime
         .reverse()
         .filter(e => (e.stop_date === undefined || e.stop_hour === undefined) && e._id !== undefined)
     }
   },
   actions: {
-    setCurrent (context, payload) {
-      context.commit('setCurrent', payload)
-      context.dispatch('fetchActivities', payload)
-      context.dispatch('checkAndCreateViews', payload)
-
-      if (context.state.available[payload.sessionID].$sync !== null) {
-        context.state.available[payload.sessionID].$sync
-          .on('complete', (info) => {
-            console.log('Sync on local CouchDB ' + context.state.available[payload.sessionID].doc.name + ' success.', info, arguments)
-          })
-          .on('change', (change) => {
-            console.log('Sync event on ' + context.state.available[payload.sessionID].doc.name + ' :', change)
-
-            if (change.direction === 'push') {
-              change.change.docs.forEach(doc => {
-                context.commit('setActivity', {sessionID: payload.sessionID, doc: doc})
-              })
-            }
-          })
-          .on('error', (err) => {
-            console.log('ERROR while sync on local couchDB ' + context.state.available[payload.sessionID].doc.name + ' :', err, arguments)
-          })
-      }
-    },
-    fetchAvailable (context) {
-      context.state.$sessionsDB
-        .allDocs({include_docs: true})
-        .then(res => {
-          res.rows.forEach(row => {
-            context.commit('setAvailable', {doc: row.doc})
-            context.dispatch('fetchCustomFields', {sessionID: row.doc._id})
-          })
-        })
-        .catch(err => { alert(err) })
-    },
     fetchCustomFields (context, payload) {
-      context.state.available[payload.sessionID].$db
+      context.state.$db
         .get('custom_fields')
         .then(fieldsDoc => {
-          context.commit('setCustomFields', {sessionID: payload.sessionID, doc: fieldsDoc})
+          context.commit('setCustomFields', {doc: fieldsDoc})
         })
         .catch(() => {}) // error(s) about this, is/are not important
     },
-    fetchActivities (context, payload) {
-      context.state.available[payload.sessionID].$db
+    fetchActivities (context) {
+      context.state.$db
         .query('all_activities/all_activities', {include_docs: true})
         .then(res => {
           res.rows.forEach(row => {
-            context.commit('setActivity', {sessionID: payload.sessionID, doc: row.doc})
+            context.commit('setActivity', {doc: row.doc})
           })
         })
     },
     saveActivity (context, payload) {
-      let db = context.state.available[payload.sessionID].$db
+      let db = context.state.$db
 
       return new Promise((resolve, reject) => {
         let errorFunc = err => { throw new Error(err) }
@@ -181,7 +115,7 @@ export default new Vuex.Store({
     },
     deleteActivity (context, payload) {
       return new Promise((resolve, reject) => {
-        context.state.available[payload.sessionID].$db
+        context.state.$db
           .remove(payload.doc)
           .then(res => {
             if (res.ok) {
@@ -189,63 +123,6 @@ export default new Vuex.Store({
               resolve()
             } else {
               throw new Error('IKE0042')
-            }
-          })
-          .catch(err => { throw new Error(err) })
-      })
-    },
-    saveSession (context, payload) {
-      return new Promise((resolve, reject) => {
-        let errorFunc = err => { throw new Error(err) }
-
-        let callBack = res => {
-          if (!res.ok) {
-            throw new Error()
-          } else {
-            context.state.$sessionsDB
-              .get(res.id)
-              .then(doc => {
-                Vue.set(payload, 'doc', doc)
-                context.commit('setAvailable', payload)
-                context.dispatch('fetchActivities', {sessionID: res.id})
-                context.dispatch('checkAndCreateViews', {sessionID: res.id})
-                resolve(res)
-              })
-              .catch(errorFunc)
-          }
-        }
-
-        if (payload.doc._id === undefined) {
-          context.state.$sessionsDB
-            .post(payload.doc)
-            .then(callBack)
-            .catch(errorFunc)
-        } else {
-          context.state.$sessionsDB
-            .put(payload.doc)
-            .then(callBack)
-            .catch(errorFunc)
-        }
-      })
-    },
-    deleteSession (context, payload) {
-      return new Promise((resolve, reject) => {
-        if (context.getters.current.doc._id === payload.doc._id) {
-          context.dispatch('setCurrent', {sessionID: 'ikiliptus'})
-        }
-
-        context.state.available[payload.doc._id].$db
-          .destroy()
-          .catch(err => { alert('IKE0050:\n' + err) }) // not realy a problem
-
-        context.state.$sessionsDB
-          .remove(payload.doc)
-          .then(res => {
-            if (res.ok) {
-              context.commit('removeSession', {sessionID: payload.doc._id})
-              resolve()
-            } else {
-              throw new Error('IKE0051')
             }
           })
           .catch(err => { throw new Error(err) })
@@ -259,7 +136,7 @@ export default new Vuex.Store({
           if (!res.ok) {
             throw new Error()
           } else {
-            context.state.available[payload.sessionID].$db
+            context.state.$db
               .get(res.id)
               .then(doc => {
                 Vue.set(payload, 'doc', doc)
@@ -274,7 +151,7 @@ export default new Vuex.Store({
           payload.doc._id = 'custom_fields'
         }
 
-        context.state.available[payload.sessionID].$db
+        context.state.$db
           .put(payload.doc)
           .then(callBack)
           .catch(errorFunc)
@@ -282,7 +159,7 @@ export default new Vuex.Store({
     },
     checkAndCreateViews (context, payload) {
       let allActivitiesPromise = new Promise((resolve, reject) => {
-        context.state.available[payload.sessionID].$db
+        context.state.$db
           .query('all_activities/all_activities')
           .then(() => { resolve() })
           .catch(() => {
@@ -303,7 +180,7 @@ if (doc.data_type) {
             }
             /* eslint-enable */
 
-            context.state.available[payload.sessionID].$db
+            context.state.$db
               .put(ddoc)
               .then(() => { resolve() })
               .catch(function (err) { throw new Error(err) })
@@ -311,7 +188,7 @@ if (doc.data_type) {
       })
 
       let subjectsPointsPromise = new Promise((resolve, reject) => {
-        context.state.available[payload.sessionID].$db
+        context.state.$db
           .query('subjects_powers/subjects_powers')
           .then(res => { resolve() })
           .catch(() => {
@@ -333,7 +210,7 @@ return sum(values);
             }
             /* eslint-enable */
 
-            context.state.available[payload.sessionID].$db
+            context.state.$db
               .put(ddoc)
               .then(() => { resolve() })
               .catch(function (err) { throw new Error(err) })
@@ -341,7 +218,7 @@ return sum(values);
       })
 
       let categoriesPointsPromise = new Promise((resolve, reject) => {
-        context.state.available[payload.sessionID].$db
+        context.state.$db
           .query('categories_powers/categories_powers')
           .then(res => { resolve() })
           .catch(() => {
@@ -365,7 +242,7 @@ return sum(values);
             }
             /* eslint-enable */
 
-            context.state.available[payload.sessionID].$db
+            context.state.$db
               .put(ddoc)
               .then(() => { resolve() })
               .catch(function (err) { throw new Error(err) })
@@ -379,4 +256,168 @@ return sum(values);
       ])
     }
   }
+}
+
+const manager = {
+  namespaced: true,
+  state: {
+    $db: new PouchDB('sessions'),
+    current: 'ikiliptus',
+    available: {
+      ikiliptus: {
+        _id: 'ikiliptus',
+        name: 'default',
+        color: '#1976D2',
+        remote: ''
+      }
+    }
+  },
+  getters: {
+    current (state) {
+      return state.available[state.current]
+    }
+  },
+  mutations: {
+    setAvailable (state, payload) {
+      let $db = new PouchDB(payload.doc._id.split('-').join(''))
+
+      let $sync = null
+      let $remote = null
+      if (payload.doc.remote !== undefined && payload.doc.remote !== null && payload.doc.remote.trim() !== '') {
+        $remote = new PouchDB(payload.doc.remote)
+        $sync = $remote.sync($db, { live: true })
+      }
+
+      Vue.set(state.available, payload.doc._id, payload.doc)
+
+      let newSession = Object.assign(session, {
+        state: {
+          doc: payload.doc,
+          $db: $db,
+          $sync: $sync,
+          $remote: $remote,
+          customFields: {
+            _id: 'custom_fields',
+            fields: []
+          },
+          activities: {}
+        }
+      })
+
+      store.registerModule(payload.doc._id, newSession)
+    },
+    setCurrent (state, payload) {
+      Vue.set(state, 'current', payload.sessionID)
+      tools.setCookie('last_session', payload.sessionID)
+    },
+    removeSession (state, payload) {
+      Vue.delete(state.available, payload.sessionID)
+
+      store.unregisterModule(payload.sessionID)
+    }
+  },
+  actions: {
+    fetchAvailable (context) {
+      context.state.$db
+        .allDocs({include_docs: true})
+        .then(res => {
+          res.rows.forEach(row => {
+            context.commit('setAvailable', {doc: row.doc})
+            context.dispatch(row.doc._id + '/fetchCustomFields', null, {root: true})
+          })
+        })
+        .catch(err => { alert(err) })
+    },
+    setCurrent (context, payload) {
+      context.commit('setCurrent', payload)
+      context.dispatch(payload.sessionID + '/fetchActivities', null, {root: true})
+      context.dispatch(payload.sessionID + '/checkAndCreateViews', null, {root: true})
+
+      if (store.state[payload.sessionID].$sync !== null) {
+        store.state[payload.sessionID].$sync
+          .on('complete', (info) => {
+            console.log('Sync on local CouchDB ' + store.state[payload.sessionID].doc.name + ' success.', info, arguments)
+          })
+          .on('change', (change) => {
+            console.log('Sync event on ' + store.state[payload.sessionID].doc.name + ' :', change)
+
+            if (change.direction === 'push') {
+              change.change.docs.forEach(doc => {
+                context.commit(payload.sessionID + '/setActivity', {doc: doc}, {root: true})
+              })
+            }
+          })
+          .on('error', (err) => {
+            console.log('ERROR while sync on local couchDB ' + store.state[payload.sessionID].doc.name + ' :', err, arguments)
+          })
+      }
+    },
+    saveSession (context, payload) {
+      return new Promise((resolve, reject) => {
+        let errorFunc = err => { throw new Error(err) }
+
+        let callBack = res => {
+          if (!res.ok) {
+            throw new Error()
+          } else {
+            context.state.$db
+              .get(res.id)
+              .then(doc => {
+                Vue.set(payload, 'doc', doc)
+                context.commit('setAvailable', payload)
+                context.dispatch(res.id + '/fetchActivities', null, {root: true})
+                context.dispatch(res.id + '/fetchCustomFields', null, {root: true})
+                context
+                  .dispatch(res.id + '/checkAndCreateViews', null, {root: true})
+                  .then(() => resolve(res))
+              })
+              .catch(errorFunc)
+          }
+        }
+
+        if (payload.doc._id === undefined) {
+          context.state.$db
+            .post(payload.doc)
+            .then(callBack)
+            .catch(errorFunc)
+        } else {
+          context.state.$db
+            .put(payload.doc)
+            .then(callBack)
+            .catch(errorFunc)
+        }
+      })
+    },
+    deleteSession (context, payload) {
+      return new Promise((resolve, reject) => {
+        if (context.state.current === payload.doc._id) {
+          context.dispatch('setCurrent', {sessionID: 'ikiliptus'})
+        }
+
+        store.state[payload.doc._id].$db
+          .destroy()
+          .catch(err => { alert('IKE0050:\n' + err) }) // not realy a problem
+
+        context.state.$db
+          .remove(payload.doc)
+          .then(res => {
+            if (res.ok) {
+              context.commit('removeSession', {sessionID: payload.doc._id})
+              resolve()
+            } else {
+              throw new Error('IKE0051')
+            }
+          })
+          .catch(err => { throw new Error(err) })
+      })
+    }
+  }
+}
+
+const store = new Vuex.Store({
+  modules: {
+    manager: manager
+  }
 })
+
+export default store

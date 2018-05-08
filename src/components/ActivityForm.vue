@@ -58,7 +58,7 @@
       v-model="dbData.categories"
     ></suggestions-list>
 
-    <template v-for="item in $store.getters.current.customFields.fields">
+    <template v-for="item in $store.state[$store.state.manager.current].customFields.fields">
       <custom-field
         :key="'custom-' + item.name"
         :settings="item"
@@ -143,7 +143,7 @@ export default {
     save (payload) {
       let that = this
       this.$store
-        .dispatch('saveActivity', {sessionID: this.$store.getters.current.doc._id, doc: that.dbData})
+        .dispatch(this.$store.getters['manager/current']._id + '/saveActivity', {doc: that.dbData}, {root: true})
         .then(() => {
           if (payload !== undefined && payload.origin !== undefined) {
             that.$eventBus.$emit('saveconfirm', payload.origin)
@@ -166,13 +166,13 @@ export default {
     },
     refreshData () {
       if (this.id !== undefined) {
-        this.$set(this, 'dbData', this.$store.state.available[this.$store.getters.current.doc._id].activities[this.id])
+        this.$set(this, 'dbData', this.$store.state[this.$store.state.manager.current].activities[this.id])
       }
     },
     fetchAutocompleteData () {
       let that = this
 
-      this.$store.getters.current.$db
+      this.$store.state[this.$store.state.manager.current].$db
         .query('subjects_powers/subjects_powers', {group: true})
         .then(res => {
           that.subjectsList = []
@@ -182,7 +182,7 @@ export default {
         })
         // .catch(err => { alert('IKE0005:\n' + err) })
 
-      this.$store.getters.current.$db
+      this.$store.state[this.$store.state.manager.current].$db
         .query('categories_powers/categories_powers', {group: true})
         .then(res => {
           that.categoriesList = []
@@ -282,7 +282,7 @@ export default {
     }, 750)
 
     that.fetchAutocompleteData()
-    that.$store.getters.current.customFields.fields.forEach(field => {
+    that.$store.state[that.$store.state.manager.current].customFields.fields.forEach(field => {
       if (that.dbData[field.name] === undefined) {
         that.$set(that.dbData, field.name, '')
       }

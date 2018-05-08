@@ -19,27 +19,27 @@
 
           <v-list two-line subheader>
             <v-subheader>{{ $t('Available sessions') }}</v-subheader>
-            <template v-for="session in $store.state.available">
-              <v-divider :key="'divider-' + session.doc._id"></v-divider>
-              <v-list-tile avatar :key="'list-' + session.doc._id" @click="$store.dispatch('setCurrent', {sessionID: session.doc._id})">
+            <template v-for="session in $store.state.manager.available">
+              <v-divider :key="'divider-' + session._id"></v-divider>
+              <v-list-tile avatar :key="'list-' + session._id" @click="$store.dispatch('manager/setCurrent', {sessionID: session._id}, {root: true})">
                 <v-list-tile-avatar>
                   <div
-                    :style="'cursor:pointer; width:100%; height:100%; border-radius:10px; background-color:' + session.doc.color"
+                    :style="'cursor:pointer; width:100%; height:100%; border-radius:10px; background-color:' + session.color"
                   ></div>
                 </v-list-tile-avatar>
                 <v-list-tile-content>
-                  <v-list-tile-title style="font-weight:bold;">{{session.doc.name}}</v-list-tile-title>
-                  <v-list-tile-sub-title>{{session.doc.remote}}</v-list-tile-sub-title>
+                  <v-list-tile-title style="font-weight:bold;">{{session.name}}</v-list-tile-title>
+                  <v-list-tile-sub-title>{{session.remote}}</v-list-tile-sub-title>
                 </v-list-tile-content>
                 <v-list-tile-action>
                   <v-layout row>
                     <v-flex xs6>
-                      <v-btn flat icon @click.stop="goToEdit(session.doc._id)">
+                      <v-btn flat icon @click.stop="goToEdit(session._id)">
                         <v-icon>edit</v-icon>
                       </v-btn>
                     </v-flex>
                     <v-flex xs6>
-                      <v-btn flat icon @click.stop="askToDelete(session.doc)" :disabled="session.doc._id === 'ikiliptus'">
+                      <v-btn flat icon @click.stop="askToDelete(session)" :disabled="session._id === 'ikiliptus'">
                         <v-icon>delete</v-icon>
                       </v-btn>
                     </v-flex>
@@ -103,7 +103,7 @@ export default {
     confirmDeleteSession () {
       let that = this
       if (this.typedDeleteConfirm === this.deleteConfirmObj.name) {
-        this.$store.dispatch('deleteSession', {doc: that.deleteConfirmObj})
+        this.$store.dispatch('manager/deleteSession', {doc: that.deleteConfirmObj}, {root: true})
           .then(() => {
             that.deleteConfirmObj = null
             that.typedDeleteConfirm = null

@@ -143,7 +143,7 @@
                 </v-list-tile-sub-title>
                 <v-list-tile-sub-title>
                   <v-layout row>
-                    <v-chip small disabled v-if="item[field.name] && item[field.name] !== '' && field.type !== 'checkbox'" v-for="field in $store.getters.current.customFields.fields" v-bind:key="'chip-' + item._id + '-' + field.name">
+                    <v-chip small disabled v-if="item[field.name] && item[field.name] !== '' && field.type !== 'checkbox'" v-for="field in $store.state[$store.state.manager.current].customFields.fields" v-bind:key="'chip-' + item._id + '-' + field.name">
                       <v-avatar>
                         <v-icon>{{field.icon}}</v-icon>
                       </v-avatar>
@@ -270,7 +270,7 @@ export default {
       }
 
       this.$store
-        .dispatch('saveActivity', {sessionID: this.$store.getters.current.doc._id, doc: document})
+        .dispatch(this.$store.getters['manager/current']._id + '/saveActivity', {doc: document}, {root: true})
         .catch(err => alert('IKE0045:\n' + err))
     },
     stopCounter () {
@@ -312,7 +312,7 @@ export default {
     },
     confirmDeleteActivity () {
       let that = this
-      this.$store.dispatch('deleteActivity', {sessionID: that.$store.getters.current.doc._id, doc: that.askedDeleteDocument})
+      this.$store.dispatch(this.$store.getters['manager/current']._id + '/deleteActivity', {doc: that.askedDeleteDocument}, {root: true})
         .then(() => {
           that.askedDelete = false
           that.askedDeleteDocument = null
@@ -340,7 +340,7 @@ export default {
       }
 
       this.$store
-        .dispatch('saveActivity', {sessionID: this.$store.getters.current.doc._id, doc: document})
+        .dispatch(this.$store.getters['manager/current']._id + '/saveActivity', {doc: document}, {root: true})
         .then(() => {
           that.askedCopy = false
           that.askedCopyDocument = null
@@ -374,7 +374,7 @@ export default {
       }
 
       let searchText = this.activitiesSearch
-      let res = this.$store.getters.finishedActivities(this.$store.getters.current.doc._id)
+      let res = this.$store.getters[this.$store.state.manager.current + '/finishedActivities'] || []
 
       /*
 TESTS :
@@ -688,7 +688,7 @@ categories:aaa, bbb ,ccc test
       return parseInt(Math.ceil(this.searchedActivities.length / this.activitiesPerPage))
     },
     currentID () {
-      let running = this.$store.getters.runningActivities(this.$store.getters.current.doc._id)
+      let running = this.$store.getters[this.$store.state.manager.current + '/runningActivities'] || []
       if (running.length > 0) {
         return running[0]._id
       } else {

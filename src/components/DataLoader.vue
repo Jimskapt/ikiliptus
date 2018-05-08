@@ -45,13 +45,13 @@ export default {
   },
   methods: {
     save () {
-      let sessionID = this.$store.getters.current.doc._id
+      let sessionID = this.$store.getters['manager/current']._id
 
       let data = JSON.parse(this.input)
 
       data.forEach(e => {
         this.$delete(e, '_rev')
-        this.$store.dispatch('saveActivity', {sessionID: sessionID, doc: e})
+        this.$store.dispatch(sessionID + '/saveActivity', {doc: e}, {root: true})
       })
     }
   }

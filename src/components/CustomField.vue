@@ -56,7 +56,7 @@ export default {
       if (this.settings.type !== 'checkbox') {
         let that = this
 
-        that.$store.getters.current.$db
+        that.$store.state[that.$store.state.manager.current].$db
           .query('all_activities/all_activities', {include_docs: true})
           .then(res => {
             let temp = {}
