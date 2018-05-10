@@ -23,7 +23,11 @@ const session = {
       _id: 'custom_fields',
       fields: []
     },
-    activities: {}
+    activities: [],
+    cachedSortedActivities: {
+      refresh: true,
+      value: []
+    }
   },
   mutations: {
     setCustomFields (state, payload) {
@@ -34,22 +38,60 @@ const session = {
         if (payload.doc.categories === undefined) {
           Vue.set(payload.doc, 'categories', [])
         }
-        Vue.set(state.activities, payload.doc._id, payload.doc)
+
+        let found = false
+        for (let i = 0; i < state.activities.length; i++) {
+          if (state.activities[i]._id && state.activities[i]._id === payload.doc._id) {
+            Vue.set(state.activities, i, payload.doc)
+            found = true
+            break
+          }
+        }
+
+        if (!found) {
+          state.activities.push(payload.doc)
+        }
+
+        Vue.set(state.cachedSortedActivities, 'refresh', true)
       }
     },
     removeActivity (state, payload) {
-      Vue.delete(state.activities, payload.doc._id)
+      for (let i = 0; i < state.activities.length; i++) {
+        if (state.activities[i]._id && state.activities[i]._id === payload.doc._id) {
+          state.activities.splice(i, 1)
+          Vue.set(state.cachedSortedActivities, 'refresh', true)
+          break
+        }
+      }
     }
   },
   getters: {
-    activitiesSortedByTime (state) {
-      return Object.values(state.activities)
+    activitiesByID (state, getters) {
+      let result = {}
+
+      state.activities.forEach(activity => {
+        if (activity._id && activity._id.trim() !== '') {
+          Vue.set(result, activity._id, activity)
+        }
+      })
+
+      return result
+    },
+    activitiesSortedByTime (state, getters) {
+      if (!state.cachedSortedActivities.refresh) {
+        return state.cachedSortedActivities.value
+      }
+
+      Vue.set(state.cachedSortedActivities, 'value', state.activities
         .sort((a, b) => {
           let bTime = moment(b.start_date + ' ' + b.start_hour + ':' + b.start_seconds, 'YYYY-MM-DD HH:mm:ss').toDate()
           let aTime = moment(a.start_date + ' ' + a.start_hour + ':' + a.start_seconds, 'YYYY-MM-DD HH:mm:ss').toDate()
 
-          return aTime - bTime
+          return bTime - aTime
         })
+      )
+      Vue.set(state.cachedSortedActivities, 'refresh', false)
+      return state.cachedSortedActivities.value
     },
     finishedActivities (state, getters) {
       return getters.activitiesSortedByTime
@@ -57,7 +99,6 @@ const session = {
     },
     runningActivities (state, getters) {
       return getters.activitiesSortedByTime
-        .reverse()
         .filter(e => (e.stop_date === undefined || e.stop_hour === undefined) && e._id !== undefined)
     }
   },
@@ -300,7 +341,11 @@ const manager = {
             _id: 'custom_fields',
             fields: []
           },
-          activities: {}
+          activities: [],
+          cachedSortedActivities: {
+            refresh: true,
+            value: []
+          }
         }
       })
 

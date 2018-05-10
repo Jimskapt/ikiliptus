@@ -240,12 +240,13 @@ export default {
       lastActivitiesPage: 1,
       activitiesPerPage: 10,
       activitiesSearch: '',
-      loaded: true
+      loaded: true,
+      currentID: null
     }
   },
   methods: {
     startCounter (document, now) {
-      // let that = this
+      let that = this
 
       if (document === undefined) {
         document = {}
@@ -271,6 +272,7 @@ export default {
 
       this.$store
         .dispatch(this.$store.getters['manager/current']._id + '/saveActivity', {doc: document}, {root: true})
+        .then(res => { that.currentID = res.id })
         .catch(err => alert('IKE0045:\n' + err))
     },
     stopCounter () {
@@ -279,7 +281,7 @@ export default {
     liveSaveConfirm (payload) {
       if (payload !== undefined) {
         if (payload.origin === 'stop') {
-          this.currentID = ''
+          this.currentID = null
         }
       }
       if (this.nextAction === 'start') {
@@ -686,14 +688,6 @@ categories:aaa, bbb ,ccc test
       }
 
       return parseInt(Math.ceil(this.searchedActivities.length / this.activitiesPerPage))
-    },
-    currentID () {
-      let running = this.$store.getters[this.$store.state.manager.current + '/runningActivities'] || []
-      if (running.length > 0) {
-        return running[0]._id
-      } else {
-        return null
-      }
     }
   },
   mounted () {
@@ -708,6 +702,13 @@ categories:aaa, bbb ,ccc test
     if (cookies.research) {
       this.activitiesSearch = cookies.research
     }
+
+    setTimeout(() => {
+      let running = this.$store.getters[this.$store.state.manager.current + '/runningActivities'] || []
+      if (running.length > 0) {
+        this.currentID = running[0]._id
+      }
+    }, 500)
   },
   destroyed () {
     this.$eventBus

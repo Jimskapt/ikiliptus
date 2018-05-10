@@ -146,7 +146,7 @@ export default {
         .dispatch(this.$store.getters['manager/current']._id + '/saveActivity', {doc: that.dbData}, {root: true})
         .then(() => {
           if (payload !== undefined && payload.origin !== undefined) {
-            that.$eventBus.$emit('saveconfirm', payload.origin)
+            that.$eventBus.$emit('saveconfirm', payload)
           } else {
             that.$eventBus.$emit('saveconfirm')
           }
@@ -166,7 +166,7 @@ export default {
     },
     refreshData () {
       if (this.id !== undefined) {
-        this.$set(this, 'dbData', this.$store.state[this.$store.state.manager.current].activities[this.id])
+        this.$set(this, 'dbData', this.$store.getters[this.$store.state.manager.current + '/activitiesByID'][this.id])
       }
     },
     fetchAutocompleteData () {
