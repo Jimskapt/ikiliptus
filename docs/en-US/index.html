@@ -6,6 +6,12 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/grids-responsive-old-ie-min.css">
+    <![endif]-->
+    <!--[if gt IE 8]><!-->
+        <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/grids-responsive-min.css">
+    <!--<![endif]-->
     <title>Ikiliptus</title>
     <style>
         body {
@@ -14,11 +20,17 @@
         .center {
           text-align:center;
         }
-        .headericon {
+        .tile .headericon {
             text-align:center;
         }
-        .headericon img {
+        .tile .headericon img {
             max-height: 10em;
+        }
+        .tile {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            padding: 1em;
         }
     </style>
 </head>
@@ -36,7 +48,7 @@
 
     <div>
         <div class="pure-g">
-            <div class="pure-u-1-3">
+            <div class="tile pure-u-1 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4">
                 <p class="headericon">
                     <!-- https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Open_Source_Initiative_keyhole.svg/512px-Open_Source_Initiative_keyhole.svg.png -->
                     <img alt="" src="../illustrations/Open_Source_Initiative_keyhole.svg.png" />
@@ -47,7 +59,7 @@
                 <p>So, you can get, check and edit the recipe of this software !</p>
                 <p>And use it as you want thanks to the MIT licence !</p>
             </div>
-            <div class="pure-u-1-3">
+            <div class="tile pure-u-1 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4">
                 <p class="headericon">
                     <!-- https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Offline_logo.svg/2000px-Offline_logo.svg.png -->
                     <img alt="" src="../illustrations/Offline_logo.svg.png" />
@@ -56,7 +68,7 @@
                 <h3>Offline-first credo</h3>
                 <p>The application is designed to work offline, so you can track you time even offline.</p>
             </div>
-            <div class="pure-u-1-3">
+            <div class="tile pure-u-1 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4">
                 <p class="headericon">
                     <!-- https://cdn.pixabay.com/photo/2016/12/28/09/36/web-1935737_960_720.png -->
                     <img alt="" src="../illustrations/web-1935737_960_720.png" />
@@ -65,7 +77,7 @@
                 <h3>Based on web technologies</h3>
                 <p>The application is <i>portable</i> : you can make it run on all the platform you need : Windows, Linux, Android, iOS, ...</p>
             </div>
-            <div class="pure-u-1-3">
+            <div class="tile pure-u-1 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4">
                 <p class="headericon">
                     <!-- https://cdn.pixabay.com/photo/2014/11/08/06/28/silo-521761_960_720.jpg -->
                     <img alt="" src="../illustrations/silo-521761_960_720.jpg" />
@@ -80,7 +92,7 @@
                     <li>...</li>
                 </ul>
             </div>
-            <div class="pure-u-1-3">
+            <div class="tile pure-u-1 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4">
                 <p class="headericon">
                     <!-- https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Pixel_51_icon_cursor_click_top_right.svg/2000px-Pixel_51_icon_cursor_click_top_right.svg.png -->
                     <img alt="" src="../illustrations/2000px-Pixel_51_icon_cursor_click_top_right.svg.png" />
@@ -90,7 +102,7 @@
                 <p>You just need to download static files (like html) and open it in your web-browser.</p>
                 <p>No need of a <i>backend</i> because data is stored in your browser.</p>
             </div>
-            <div class="pure-u-1-3">
+            <div class="tile pure-u-1 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4">
                 <p class="headericon">
                     <!-- https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Document-save.svg/2000px-Document-save.svg.png -->
                     <img alt="" src="../illustrations/2000px-Document-save.svg.png" />
@@ -100,7 +112,7 @@
                 <p>You can save your activities in a file or use CouchDB replication protocol.</p>
                 <p>We can't see your data, so always keep in mind that you are responsible of your data !</p>
             </div>
-            <div class="pure-u-1-3">
+            <div class="tile pure-u-1 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4">
                 <p class="headericon">
                     <img alt="" src="../screenshots/live_counter.png" />
                 </p>
@@ -108,7 +120,7 @@
                 <h3>Google's Material Design</h3>
                 <p>Build with a <i>Material Design</i> framework, the application looks like to be like any other.</p>
             </div>
-            <div class="pure-u-1-3">
+            <div class="tile pure-u-1 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4">
                 <p class="headericon">
                     <!-- https://cdn.pixabay.com/photo/2016/10/19/03/59/socialmedia-1752079_960_720.png -->
                     <img alt="" src="../illustrations/socialmedia-1752079_960_720.png" />
@@ -122,7 +134,7 @@
                     <li>...</li>
                 </ul>
             </div>
-            <div class="pure-u-1-3">
+            <div class="tile pure-u-1 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4">
                 <p class="headericon">
                     <img alt="" src="../screenshots/analytics2.png" />
                 </p>
@@ -131,7 +143,7 @@
                 <p>Filter your data with your <i>custom fields</i> and render them in sweet charts.</p>
                 <p><i>Otherwise, why collect all this data ?</i></p>
             </div>
-            <div class="pure-u-1-3">
+            <div class="tile pure-u-1 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4">
                 <p class="headericon">
                     <!-- https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Symbol_Translate.svg/583px-Symbol_Translate.svg.png -->
                     <img alt="" src="../illustrations/Symbol_Translate.svg.png" />
