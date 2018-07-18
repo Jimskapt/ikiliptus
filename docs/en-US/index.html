@@ -14,14 +14,11 @@
     <!--<![endif]-->
     <title>Ikiliptus</title>
     <style>
-        body {
-          margin: auto 2em;
-        }
         .center {
-          text-align:center;
+            text-align: center;
         }
         .tile .headericon {
-            text-align:center;
+            text-align: center;
         }
         .tile .headericon img {
             max-height: 10em;
@@ -32,6 +29,15 @@
             box-sizing: border-box;
             padding: 1em;
         }
+        .download-button {
+            margin: 4em auto;
+            padding: 4em;
+            border-radius: 2em;
+            border: 5px solid black;
+        }
+        hr {
+            border: 1px solid #1976d2;
+        }
     </style>
 </head>
 <body>
@@ -39,44 +45,78 @@
     <p class="center">An offline and mobile-friendly, time tracker and analyzer, without server needed.</p>
     <p class="center"><img alt="[preview of the UI]" src="../screenshots/live_counter.png" style="max-width:80%;margin:3em auto;border:1px solid #AAA;" /></p>
 
-    <p class="center">
-      <a href="https://github.com/Jimskapt/ikiliptus/releases" class="button-xlarge pure-button pure-button-primary" style="margin:5em auto;padding:3em;border-radius:1em;">
-        <i class="fa fa-download fa-lg"></i>
-        <strong>Download ikiliptus</strong>
-      </a>
-    </p>
+    <div class="pure-g">
+      <div class="center pure-u-1 pure-u-md-1-2">
+          <a href="../application/index.html" class="download-button button-xlarge pure-button pure-button-primary">
+            <i class="fa fa-play-circle fa-lg"></i>
+            <strong>Use it, now !</strong>
+          </a>
+      </div>
+      <div class="center pure-u-1 pure-u-md-1-2">
+          <a href="https://github.com/Jimskapt/ikiliptus/releases" class="download-button button-xlarge pure-button">
+            <i class="fa fa-download fa-lg"></i>
+            <strong>Download ikiliptus</strong>
+          </a>
+      </div>
+    </div>
 
     <div>
         <div class="pure-g">
             <div class="tile pure-u-1 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4">
+                <hr>
                 <p class="headericon">
-                    <!-- https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Open_Source_Initiative_keyhole.svg/512px-Open_Source_Initiative_keyhole.svg.png -->
-                    <img alt="" src="../illustrations/Open_Source_Initiative_keyhole.svg.png" />
+                    <!-- https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Pixel_51_icon_cursor_click_top_right.svg/2000px-Pixel_51_icon_cursor_click_top_right.svg.png -->
+                    <img alt="" src="../illustrations/2000px-Pixel_51_icon_cursor_click_top_right.svg.png" />
                 </p>
-                <h2>Free and open-source</h2>
-                <p>We cannot assure you that we cannot touch your data if we cannot prove it to you !</p>
-                <p>So, you can get, check and edit the source-code of this software !</p>
-                <p>And you use it as you want thanks to the MIT licence !</p>
+                <h2>Easy to run</h2>
+                <h3>As simple as a click !</h3>
+                <p>You just need to download the static files (like html, css and javascript) and open it in your (modern) web-browser.</p>
+                <p>You don't need of a <i>backend</i> because all your data is stored in your browser.</p>
             </div>
             <div class="tile pure-u-1 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4">
+                <hr>
                 <p class="headericon">
                     <!-- https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Offline_logo.svg/2000px-Offline_logo.svg.png -->
                     <img alt="" src="../illustrations/Offline_logo.svg.png" />
                 </p>
                 <h2>No need of network</h2>
                 <h3><i>Offline-first</i> credo</h3>
-                <p>The application is designed to work offline, so you can track you time even offline !</p>
+                <p>The application has its own embedded database, so you can keep tracking your time even when you are offline !</p>
             </div>
             <div class="tile pure-u-1 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4">
+                <hr>
+                <p class="headericon">
+                    <!-- https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Open_Source_Initiative_keyhole.svg/512px-Open_Source_Initiative_keyhole.svg.png -->
+                    <img alt="" src="../illustrations/Open_Source_Initiative_keyhole.svg.png" />
+                </p>
+                <h2>Free and open-source</h2>
+                <p>We cannot assure you that we are take a look on your data if we cannot prove it to you !</p>
+                <p>So, you can get the source-code of this software to check it, and even modify it !</p>
+                <p>And you can use it as you want thanks to the MIT licence !</p>
+            </div>
+            <div class="tile pure-u-1 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4">
+                <hr>
                 <p class="headericon">
                     <!-- https://cdn.pixabay.com/photo/2016/12/28/09/36/web-1935737_960_720.png -->
                     <img alt="" src="../illustrations/web-1935737_960_720.png" />
                 </p>
                 <h2>A portable application</h2>
                 <h3>Based on web technologies</h3>
-                <p>The application is <i>portable</i>. Thank to web interoperability, you can make it run on all the platform you need : Windows, Linux, Mac OS, Android, iOS, ...</p>
+                <p>Thank to the interoperability of the web technologies, you can run this application on all the platform you need : Windows, Linux, Mac OS, Android, iOS, ...</p>
             </div>
             <div class="tile pure-u-1 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4">
+                <hr>
+                <p class="headericon">
+                    <!-- https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Document-save.svg/2000px-Document-save.svg.png -->
+                    <img alt="" src="../illustrations/2000px-Document-save.svg.png" />
+                </p>
+                <h2>Easy to save</h2>
+                <h3>Backup is the <i>crux of the battle</i> !</h3>
+                <p>You can save your activities of your session in a single file, and/or save them in your CouchDB server.</p>
+                <p>We cannot take a look on your data, so always keep in mind that you are responsible of your data !</p>
+            </div>
+            <div class="tile pure-u-1 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4">
+                <hr>
                 <p class="headericon">
                     <!-- https://cdn.pixabay.com/photo/2014/11/08/06/28/silo-521761_960_720.jpg -->
                     <img alt="" src="../illustrations/silo-521761_960_720.jpg" />
@@ -90,36 +130,10 @@
                     <li>use a <i style="color:green;">session</i> for your <i style="color:green;">sport activity</i></li>
                     <li>...</li>
                 </ul>
+                <p>This allow to save only the data from your <i style="color:red;">professionnal activities</i> on your <i style="color:red;">employer's servers</i>, by example.</p>
             </div>
             <div class="tile pure-u-1 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4">
-                <p class="headericon">
-                    <!-- https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Pixel_51_icon_cursor_click_top_right.svg/2000px-Pixel_51_icon_cursor_click_top_right.svg.png -->
-                    <img alt="" src="../illustrations/2000px-Pixel_51_icon_cursor_click_top_right.svg.png" />
-                </p>
-                <h2>Easy to run</h2>
-                <h3>As simple as a click !</h3>
-                <p>You just need to download the static files (like html, css and javascript) and open it in your (modern) web-browser.</p>
-                <p>You don't need of a <i>backend</i> because all your data is stored in your browser.</p>
-            </div>
-            <div class="tile pure-u-1 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4">
-                <p class="headericon">
-                    <!-- https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Document-save.svg/2000px-Document-save.svg.png -->
-                    <img alt="" src="../illustrations/2000px-Document-save.svg.png" />
-                </p>
-                <h2>Easy to save</h2>
-                <h3>Backup and portability is the <i>crux of the battle</i> !</h3>
-                <p>You can save your activities of your session in a single file, and/or save them in your CouchDB server.</p>
-                <p>We cannot touch see your data, so always keep in mind that you are responsible of your data !</p>
-            </div>
-            <div class="tile pure-u-1 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4">
-                <p class="headericon">
-                    <img alt="" src="../screenshots/live_counter.png" />
-                </p>
-                <h2>Easy to understand</h2>
-                <h3>Based on Google's Material Design</h3>
-                <p>Build with a <i>Material Design</i> framework, the application looks like to any other.</p>
-            </div>
-            <div class="tile pure-u-1 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4">
+                <hr>
                 <p class="headericon">
                     <!-- https://cdn.pixabay.com/photo/2016/10/19/03/59/socialmedia-1752079_960_720.png -->
                     <img alt="" src="../illustrations/socialmedia-1752079_960_720.png" />
@@ -134,6 +148,7 @@
                 </ul>
             </div>
             <div class="tile pure-u-1 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4">
+                <hr>
                 <p class="headericon">
                     <img alt="" src="../screenshots/analytics2.png" />
                 </p>
@@ -143,6 +158,16 @@
                 <p><i>Otherwise, why collect all this data ?</i></p>
             </div>
             <div class="tile pure-u-1 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4">
+                <hr>
+                <p class="headericon">
+                    <img alt="" src="../screenshots/live_counter.png" />
+                </p>
+                <h2>Easy to understand</h2>
+                <h3>Based on Google's Material Design</h3>
+                <p>Build with a <i>Material Design</i> framework, the application looks like to any other.</p>
+            </div>
+            <div class="tile pure-u-1 pure-u-md-1-2 pure-u-lg-1-3 pure-u-xl-1-4">
+                <hr>
                 <p class="headericon">
                     <!-- https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Symbol_Translate.svg/583px-Symbol_Translate.svg.png -->
                     <img alt="" src="../illustrations/Symbol_Translate.svg.png" />
@@ -154,11 +179,19 @@
         </div>
     </div>
 
-    <p class="center">
-      <a href="https://github.com/Jimskapt/ikiliptus/releases" class="button-xlarge pure-button pure-button-primary" style="margin:5em auto;padding:3em;border-radius:1em;">
-        <i class="fa fa-download fa-lg"></i>
-        <strong>Download ikiliptus</strong>
-      </a>
-    </p>
+    <div class="pure-g">
+      <div class="center pure-u-1 pure-u-md-1-2">
+          <a href="../application/index.html" class="download-button button-xlarge pure-button pure-button-primary">
+            <i class="fa fa-play-circle fa-lg"></i>
+            <strong>Use it, now !</strong>
+          </a>
+      </div>
+      <div class="center pure-u-1 pure-u-md-1-2">
+          <a href="https://github.com/Jimskapt/ikiliptus/releases" class="download-button button-xlarge pure-button">
+            <i class="fa fa-download fa-lg"></i>
+            <strong>Download ikiliptus</strong>
+          </a>
+      </div>
+    </div>
 </body>
 </html>
