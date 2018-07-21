@@ -43,27 +43,27 @@
 <script>
 export default {
   name: 'DataDisplay',
-  data () {
+  data() {
     return {
       json: [],
-      pretify: true
-    }
+      pretify: true,
+    };
   },
-  mounted () {
-    let that = this
+  mounted() {
+    const that = this;
 
     this.$store.state[this.$store.state.manager.current].$db
       .allDocs({include_docs: true})
-      .then(res => {
-        that.json = []
-        res.rows.forEach(e => that.json.push(e.doc))
+      .then((res) => {
+        that.json = [];
+        res.rows.forEach((e) => { that.json.push(e.doc); });
       })
-      .catch(err => alert('IKE0010:\n' + err))
+      .catch((err) => { alert('IKE0010:\n' + err); });
   },
   computed: {
-    jsonText () {
-      return JSON.stringify(this.json, null, (this.pretify) ? '\t' : '')
-    }
-  }
-}
+    jsonText() {
+      return JSON.stringify(this.json, null, (this.pretify) ? '\t' : '');
+    },
+  },
+};
 </script>

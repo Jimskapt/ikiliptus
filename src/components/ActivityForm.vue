@@ -87,38 +87,38 @@
 </template>
 
 <script>
-import tools from '../tools/index.js'
-import CustomField from '@/components/CustomField'
-import TimeSelector from '@/components/TimeSelector'
-import SuggestionsList from '@/components/SuggestionsList'
+import tools from '../tools';
+import CustomField from '@/components/CustomField';
+import TimeSelector from '@/components/TimeSelector';
+import SuggestionsList from '@/components/SuggestionsList';
 
 export default {
   name: 'ActivityForm',
   components: {
     suggestionsList: SuggestionsList,
     customField: CustomField,
-    timeSelector: TimeSelector
+    timeSelector: TimeSelector,
   },
   props: {
     id: {
-      required: true
+      required: true,
     },
     locked: {
       type: Array,
       required: false,
-      default () {
-        return []
-      }
+      default() {
+        return [];
+      },
     },
     showCounter: {
       type: Boolean,
       required: false,
-      default () {
-        return false
-      }
-    }
+      default() {
+        return false;
+      },
+    },
   },
-  data () {
+  data() {
     return {
       subjectsList: [],
       categoriesList: [],
@@ -134,79 +134,90 @@ export default {
         stop_seconds: null,
         subject: '',
         categories: [],
-        details: ''
+        details: '',
       },
-      saveConfirmed: false
-    }
+      saveConfirmed: false,
+    };
   },
   methods: {
-    save (payload) {
-      let that = this
+    save(payload) {
+      const that = this;
+
       this.$store
-        .dispatch(this.$store.getters['manager/current']._id + '/saveActivity', {doc: that.dbData}, {root: true})
+        .dispatch(
+          this.$store.getters['manager/current']._id + '/saveActivity',
+          {doc: that.dbData},
+          {root: true})
         .then(() => {
           if (payload !== undefined && payload.origin !== undefined) {
-            that.$eventBus.$emit('saveconfirm', payload)
+            that.$eventBus.$emit('saveconfirm', payload);
           } else {
-            that.$eventBus.$emit('saveconfirm')
+            that.$eventBus.$emit('saveconfirm');
           }
         })
-        .catch(err => alert('IKE0046:\n' + err))
+        .catch((err) => { alert('IKE0046:\n' + err); });
     },
-    setStop (args) {
+    setStop(args) {
       if (args === undefined) {
-        args = new Date()
+        args = new Date();
       }
 
-      this.dbData.stop_date = this.$moment(args).format('YYYY-MM-DD')
-      this.dbData.stop_hour = this.$moment(args).format('HH:mm')
-      this.dbData.stop_seconds = args.getSeconds()
+      this.dbData.stop_date = this.$moment(args).format('YYYY-MM-DD');
+      this.dbData.stop_hour = this.$moment(args).format('HH:mm');
+      this.dbData.stop_seconds = args.getSeconds();
 
-      this.save({origin: 'stop'})
+      this.save({origin: 'stop'});
     },
-    refreshData () {
+    refreshData() {
       if (this.id !== undefined) {
-        this.$set(this, 'dbData', this.$store.getters[this.$store.state.manager.current + '/activitiesByID'][this.id])
+        this.$set(  this,
+                    'dbData',
+                    this.$store.getters[
+                      this.$store.state.manager.current + '/activitiesByID'
+                    ][this.id],
+                );
       }
     },
-    fetchAutocompleteData () {
-      let that = this
+    fetchAutocompleteData() {
+      const that = this;
 
       this.$store.state[this.$store.state.manager.current].$db
         .query('subjects_powers/subjects_powers', {group: true})
-        .then(res => {
-          that.subjectsList = []
-          res.rows.forEach(e => {
-            that.subjectsList.push(e.key)
-          })
-        })
+        .then((res) => {
+          that.subjectsList = [];
+          res.rows.forEach((e) => {
+            that.subjectsList.push(e.key);
+          });
+        });
         // .catch(err => { alert('IKE0005:\n' + err) })
 
       this.$store.state[this.$store.state.manager.current].$db
         .query('categories_powers/categories_powers', {group: true})
-        .then(res => {
-          that.categoriesList = []
-          res.rows.forEach(e => {
-            that.categoriesList.push(e.key)
-          })
-        })
+        .then((res) => {
+          that.categoriesList = [];
+          res.rows.forEach((e) => {
+            that.categoriesList.push(e.key);
+          });
+        });
         // .catch(err => { alert('IKE0008:\n' + err) })
     },
-    findText (array, value) {
+    findText(array, value) {
       if (value === undefined || array === undefined) {
-        return []
+        return [];
       }
 
       if (value.trim() === '') {
-        return []
+        return [];
       }
 
-      return array.filter(e => e.toLowerCase().includes(value.trim().toLowerCase()) && e !== value)
+      return array.filter((e) => {
+        return e.toLowerCase().includes(value.trim().toLowerCase()) && e !== value;
+      });
     },
-    removeCategory (value) {
-      this.dbData.categories.splice(this.dbData.categories.indexOf(value), 1)
+    removeCategory(value) {
+      this.dbData.categories.splice(this.dbData.categories.indexOf(value), 1);
     },
-    refreshCounter () {
+    refreshCounter() {
       this.timeAgo = tools.deltaT(
         this.$moment,
         this.dbData.start_date,
@@ -214,85 +225,93 @@ export default {
         this.dbData.start_seconds,
         this.dbData.stop_date,
         this.dbData.stop_hour,
-        this.dbData.stop_seconds)
+        this.dbData.stop_seconds);
     },
-    saveconfirmed () {
-      this.saveConfirmed = true
-    }
+    saveconfirmed() {
+      this.saveConfirmed = true;
+    },
   },
   computed: {
-    subjectsFound () {
+    subjectsFound() {
       return this
         .findText(this.subjectsList, this.dbData.subject)
-        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+        .sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
     },
-    categoriesFound () {
+    categoriesFound() {
       return this.categoriesList
-        .filter(e => !this.dbData.categories.includes(e))
-        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
+        .filter((e) => { return !this.dbData.categories.includes(e); })
+        .sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
     },
-    newStartDateDisplay () {
+    newStartDateDisplay() {
       if (this.dbData.start_date && this.dbData.start_date != null) {
-        return this.$moment(this.dbData.start_date, 'YYYY-MM-DD').format(this.$t('date_format'))
+        return this.$moment(this.dbData.start_date, 'YYYY-MM-DD').format(this.$t('date_format'));
       }
 
-      return ''
+      return '';
     },
-    newStartHourDisplay () {
+    newStartHourDisplay() {
       if (this.dbData.start_hour && this.dbData.start_hour != null) {
-        return this.$moment(this.dbData.start_hour + ':' + this.dbData.start_seconds, 'HH:mm:ss').format(this.$t('hour_format'))
+        return this.$moment(
+          this.dbData.start_hour + ':' + this.dbData.start_seconds,
+          'HH:mm:ss',
+        ).format(this.$t('hour_format'));
       }
 
-      return ''
+      return '';
     },
-    newStopDateDisplay () {
+    newStopDateDisplay() {
       if (this.dbData.stop_date && this.dbData.stop_date != null) {
-        return this.$moment(this.dbData.stop_date, 'YYYY-MM-DD').format(this.$t('date_format'))
+        return this.$moment(this.dbData.stop_date, 'YYYY-MM-DD').format(this.$t('date_format'));
       }
 
-      return ''
+      return '';
     },
-    newStopHourDisplay () {
+    newStopHourDisplay() {
       if (this.dbData.stop_hour && this.dbData.stop_hour != null) {
-        return this.$moment(this.dbData.stop_hour + ':' + this.dbData.stop_seconds, 'HH:mm:ss').format(this.$t('hour_format'))
+        return this.$moment(
+          this.dbData.stop_hour + ':' + this.dbData.stop_seconds,
+          'HH:mm:ss',
+        ).format(this.$t('hour_format'));
       }
 
-      return ''
-    }
+      return '';
+    },
   },
   watch: {
-    id (newValue, oldValue) {
-      this.refreshData()
-    }
+    id(newValue, oldValue) {
+      this.refreshData();
+    },
   },
-  mounted () {
-    this.$eventBus.$on('setStop', this.setStop)
-    this.$eventBus.$on('save', this.save)
-    this.$eventBus.$on('saveconfirm', this.saveconfirmed)
+  mounted() {
+    this.$eventBus.$on('setStop', this.setStop);
+    this.$eventBus.$on('save', this.save);
+    this.$eventBus.$on('saveconfirm', this.saveconfirmed);
 
-    this.refreshData()
+    this.refreshData();
 
-    let that = this
+    const that = this;
     setTimeout(() => {
-      if (that.dbData.stop_date === null && that.dbData.stop_hour === null && that.dbData.stop_seconds === null) {
-        setInterval(that.refreshCounter, 1000)
+      if (  that.dbData.stop_date === null &&
+            that.dbData.stop_hour === null &&
+            that.dbData.stop_seconds === null) {
+        setInterval(that.refreshCounter, 1000);
       } else {
-        that.refreshCounter()
+        that.refreshCounter();
       }
-    }, 750)
+    }, 750);
 
-    that.fetchAutocompleteData()
-    that.$store.state[that.$store.state.manager.current].customFields.fields.forEach(field => {
+    that.fetchAutocompleteData();
+    that.$store.state[that.$store.state.manager.current].customFields.fields.forEach((field) => {
       if (that.dbData[field.name] === undefined) {
-        that.$set(that.dbData, field.name, '')
+        that.$set(that.dbData, field.name, '');
       }
-    })
+    });
   },
-  destroyed () {
+  destroyed() {
     this.$eventBus
       .$off('setStop', this.setStop)
       .$off('save', this.save)
-      .$off('saveconfirm', this.saveconfirmed)
-  }
-}
+      .$off('saveconfirm', this.saveconfirmed);
+  },
+};
 </script>

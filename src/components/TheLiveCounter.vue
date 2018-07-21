@@ -109,18 +109,18 @@
                   </span>
                   <span v-else>
                     <span v-if="item.start_date != item.stop_date">
-                    {{$t('From')}}
+                    {{ $t('From') }}
                     {{ $moment(item.start_date, 'YYYY-MM-DD').format($t('date_format')) }}
                     {{ $moment(item.start_hour + ':' + item.start_seconds, 'HH:mm:ss', 'HH:mm:ss').format($t('hour_format')) }}
-                    {{$t('To').toLowerCase()}}
+                    {{ $t('To').toLowerCase() }}
                     {{ $moment(item.stop_date, 'YYYY-MM-DD').format($t('date_format')) }}
                     {{ $moment(item.stop_hour + ':' + item.stop_seconds, 'HH:mm:ss').format($t('hour_format')) }}
                     </span>
                     <span v-else>
                       {{ $moment(item.start_date, 'YYYY-MM-DD').format($t('date_format')) }} :
-                      {{$t('From').toLowerCase()}}
+                      {{ $t('From').toLowerCase() }}
                       {{ $moment(item.start_hour + ':' + item.start_seconds, 'HH:mm:ss', 'HH:mm:ss').format($t('hour_format')) }}
-                      {{$t('To').toLowerCase()}}
+                      {{ $t('To').toLowerCase() }}
                       {{ $moment(item.stop_hour + ':' + item.stop_seconds, 'HH:mm:ss').format($t('hour_format')) }}
                     </span>
                   </span>
@@ -184,11 +184,11 @@
         <v-card-actions>
           <v-btn block color="success" @click="askedDeleteDocument=null;askedDelete=false;">
             <v-icon>close</v-icon>
-            {{$t('Abort')}}
+            {{ $t('Abort') }}
           </v-btn>
           <v-btn block color="error" @click="confirmDeleteActivity">
             <v-icon>delete</v-icon>
-            {{$t('Delete')}}
+            {{ $t('Delete') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -205,11 +205,11 @@
         <v-card-actions>
           <v-btn block color="success" @click="askedCopyDocument=null;askedCopy=false;">
             <v-icon>close</v-icon>
-            {{$t('Abort')}}
+            {{ $t('Abort') }}
           </v-btn>
           <v-btn block color="primary" @click="confirmActivityCopy">
             <v-icon>content_copy</v-icon>
-            {{$t('Copy')}}
+            {{ $t('Copy') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -219,16 +219,16 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import tools from '../tools/index.js'
-import ActivityForm from '@/components/ActivityForm'
+import Vue from 'vue';
+import tools from '../tools';
+import ActivityForm from '@/components/ActivityForm';
 
 export default {
   name: 'TheLiveCounter',
   components: {
-    activityForm: ActivityForm
+    activityForm: ActivityForm,
   },
-  data () {
+  data() {
     return {
       nextAction: '',
       activities: [],
@@ -241,115 +241,121 @@ export default {
       activitiesPerPage: 10,
       activitiesSearch: '',
       loaded: true,
-      currentID: null
-    }
+      currentID: null,
+    };
   },
   methods: {
-    startCounter (document, now) {
-      let that = this
+    startCounter(document, now) {
+      const that = this;
 
       if (document === undefined) {
-        document = {}
+        document = {};
       }
       if (now === undefined || now === null) {
-        now = new Date()
+        now = new Date();
       }
 
-      Vue.delete(document, '_id')
-      Vue.delete(document, '_rev')
-      Vue.set(document, 'start_date', this.$moment(now).format('YYYY-MM-DD'))
-      Vue.set(document, 'start_hour', this.$moment(now).format('HH:mm'))
-      Vue.set(document, 'start_seconds', now.getSeconds())
-      Vue.delete(document, 'stop_date')
-      Vue.delete(document, 'stop_hour')
-      Vue.delete(document, 'stop_seconds')
+      Vue.delete(document, '_id');
+      Vue.delete(document, '_rev');
+      Vue.set(document, 'start_date', this.$moment(now).format('YYYY-MM-DD'));
+      Vue.set(document, 'start_hour', this.$moment(now).format('HH:mm'));
+      Vue.set(document, 'start_seconds', now.getSeconds());
+      Vue.delete(document, 'stop_date');
+      Vue.delete(document, 'stop_hour');
+      Vue.delete(document, 'stop_seconds');
       if (!document.data_type) {
-        Vue.set(document, 'data_type', 'subject')
+        Vue.set(document, 'data_type', 'subject');
       }
       if (!document.data_version) {
-        Vue.set(document, 'data_version', 1)
+        Vue.set(document, 'data_version', 1);
       }
 
       this.$store
-        .dispatch(this.$store.getters['manager/current']._id + '/saveActivity', {doc: document}, {root: true})
-        .then(res => { that.currentID = res.id })
-        .catch(err => alert('IKE0045:\n' + err))
+        .dispatch(  this.$store.getters['manager/current']._id + '/saveActivity',
+                    {doc: document},
+                    {root: true})
+        .then((res) => { that.currentID = res.id; })
+        .catch((err) => { alert('IKE0045:\n' + err); });
     },
-    stopCounter () {
-      this.$eventBus.$emit('setStop', new Date())
+    stopCounter() {
+      this.$eventBus.$emit('setStop', new Date());
     },
-    liveSaveConfirm (payload) {
+    liveSaveConfirm(payload) {
       if (payload !== undefined) {
         if (payload.origin === 'stop') {
-          this.currentID = null
+          this.currentID = null;
         }
       }
       if (this.nextAction === 'start') {
-        this.startCounter(this.nextActionDocument, new Date())
-        this.nextAction = ''
-        this.nextActionDocument = undefined
+        this.startCounter(this.nextActionDocument, new Date());
+        this.nextAction = '';
+        this.nextActionDocument = undefined;
       }
     },
-    nextCounter (document) {
-      this.nextAction = 'start'
-      this.nextActionDocument = document
+    nextCounter(document) {
+      this.nextAction = 'start';
+      this.nextActionDocument = document;
 
       if (this.currentID !== null) {
-        this.stopCounter(document)
+        this.stopCounter(document);
       } else {
-        this.liveSaveConfirm()
+        this.liveSaveConfirm();
       }
     },
-    copyActivity (document) {
+    copyActivity(document) {
       if (this.currentID !== null) {
-        this.askedCopyDocument = document
-        this.askedCopy = true
+        this.askedCopyDocument = document;
+        this.askedCopy = true;
       } else {
-        this.nextCounter(document)
+        this.nextCounter(document);
       }
     },
-    askDeleteActivity (document) {
-      this.askedDelete = true
-      this.askedDeleteDocument = document
+    askDeleteActivity(document) {
+      this.askedDelete = true;
+      this.askedDeleteDocument = document;
     },
-    confirmDeleteActivity () {
-      let that = this
-      this.$store.dispatch(this.$store.getters['manager/current']._id + '/deleteActivity', {doc: that.askedDeleteDocument}, {root: true})
+    confirmDeleteActivity() {
+      const that = this;
+      this.$store.dispatch( this.$store.getters['manager/current']._id + '/deleteActivity',
+                            {doc: that.askedDeleteDocument},
+                            {root: true})
         .then(() => {
-          that.askedDelete = false
-          that.askedDeleteDocument = null
+          that.askedDelete = false;
+          that.askedDeleteDocument = null;
         })
-        .catch(err => alert('IKE0052:\n' + err))
+        .catch((err) => { alert('IKE0052:\n' + err); });
     },
-    confirmActivityCopy () {
-      let that = this
-      let document = {}
-      Object.assign(document, this.askedCopyDocument)
+    confirmActivityCopy() {
+      const that = this;
+      const document = {};
+      Object.assign(document, this.askedCopyDocument);
 
-      Vue.delete(document, '_id')
-      Vue.delete(document, '_rev')
-      Vue.delete(document, 'start_date')
-      Vue.delete(document, 'start_hour')
-      Vue.delete(document, 'start_seconds')
-      Vue.delete(document, 'stop_date')
-      Vue.delete(document, 'stop_hour')
-      Vue.delete(document, 'stop_seconds')
+      Vue.delete(document, '_id');
+      Vue.delete(document, '_rev');
+      Vue.delete(document, 'start_date');
+      Vue.delete(document, 'start_hour');
+      Vue.delete(document, 'start_seconds');
+      Vue.delete(document, 'stop_date');
+      Vue.delete(document, 'stop_hour');
+      Vue.delete(document, 'stop_seconds');
       if (document.data_type === undefined) {
-        document.data_type = 'subject'
+        document.data_type = 'subject';
       }
       if (document.data_version === undefined) {
-        document.data_version = 1
+        document.data_version = 1;
       }
 
       this.$store
-        .dispatch(this.$store.getters['manager/current']._id + '/saveActivity', {doc: document}, {root: true})
+        .dispatch(  this.$store.getters['manager/current']._id + '/saveActivity',
+                    {doc: document},
+                    {root: true})
         .then(() => {
-          that.askedCopy = false
-          that.askedCopyDocument = null
+          that.askedCopy = false;
+          that.askedCopyDocument = null;
         })
-        .catch(err => alert('IKE0047:\n' + err))
+        .catch((err) => {alert('IKE0047:\n' + err); });
     },
-    deltaTime (activity) {
+    deltaTime(activity) {
       return tools.deltaT(
         this.$moment,
         activity.start_date,
@@ -358,25 +364,29 @@ export default {
         activity.stop_date,
         activity.stop_hour,
         activity.stop_seconds,
-        true)
+        true);
     },
-    goToTop () {
-      window.scrollTo(0, 0)
-    }
+    goToTop() {
+      window.scrollTo(0, 0);
+    },
   },
   watch: {
-    activitiesSearch (newValue, oldValue) {
-      tools.setCookie('research', newValue)
-    }
+    activitiesSearch(newValue, oldValue) {
+      tools.setCookie('research', newValue);
+    },
   },
   computed: {
-    searchedActivities () {
-      if (this.activities === undefined || this.activities === null || this.activities === []) {
-        return []
+    searchedActivities() {
+      if (  this.activities === undefined ||
+            this.activities === null ||
+            this.activities === []) {
+        return [];
       }
 
-      let searchText = this.activitiesSearch
-      let res = this.$store.getters[this.$store.state.manager.current + '/finishedActivities'] || []
+      let searchText = this.activitiesSearch;
+      let res = this.$store.getters[
+        this.$store.state.manager.current + '/finishedActivities'
+      ] || [];
 
       /*
 TESTS :
@@ -417,46 +427,55 @@ start:now 14:14:14
       */
 
       if (searchText !== undefined && searchText !== null && searchText.trim() !== '') {
-        let dayRegex = this.$t('date_format').split('DD').join('[0-9]{1,2}').split('MM').join('[0-9]{1,2}').split('YYYY').join('[0-9]{4}')
-        let hourRegex = this.$t('hour_format').split('hh').join('[0-9]{1,2}').split('HH').join('[0-9]{1,2}').split('mm').join('[0-9]{1,2}').split('ss').join('[0-9]{1,2}').split('A').join('A|PM')
+        let dayRegex = this.$t('date_format');
+        dayRegex = dayRegex.split('DD').join('[0-9]{1,2}');
+        dayRegex = dayRegex.split('MM').join('[0-9]{1,2}');
+        dayRegex = dayRegex.split('YYYY').join('[0-9]{4}');
+        let hourRegex = this.$t('hour_format');
+        hourRegex = hourRegex.split('hh').join('[0-9]{1,2}');
+        hourRegex = hourRegex.split('HH').join('[0-9]{1,2}');
+        hourRegex = hourRegex.split('mm').join('[0-9]{1,2}');
+        hourRegex = hourRegex.split('ss').join('[0-9]{1,2}');
+        hourRegex = hourRegex.split('A').join('A|PM');
 
-        let dateRegex = '((start)|(stop))(:|<=?|>=?)((((' + dayRegex + ')|(today))( ' + hourRegex + ')?)|(now))'
-        let dateMatch = searchText.match(new RegExp(dateRegex, 'g'))
+        let dateRegex = '((start)|(stop))(:|<=?|>=?)';
+        dateRegex += '((((' + dayRegex + ')|(today))( ' + hourRegex + ')?)|(now))';
+        const dateMatch = searchText.match(new RegExp(dateRegex, 'g'));
 
-        let operations = {}
-        let that = this
+        const operations = {};
+        const that = this;
 
-        let dayFormat = 'DD/MM/YYYY'
-        let hourFormat = dayFormat + ' HH:mm:ss'
+        const dayFormat = 'DD/MM/YYYY';
+        const hourFormat = dayFormat + ' HH:mm:ss';
 
         if (dateMatch !== null && dateMatch.length > 0) {
-          dateMatch.forEach(match => {
-            searchText = searchText.split(match).join('').trim()
+          dateMatch.forEach((match) => {
+            searchText = searchText.split(match).join('').trim();
 
-            let items = new RegExp(dateRegex, 'g').exec(match)
+            const items = new RegExp(dateRegex, 'g').exec(match);
 
             if (items !== null) {
-              let field = items[1]
-              let operator = items[4]
-              let time = items[5]
+              const field = items[1];
+              const operator = items[4];
+              let time = items[5];
 
               if (time === 'now') {
-                time = that.$moment().format(hourFormat)
+                time = that.$moment().format(hourFormat);
               } else if (time.includes('today')) {
-                time = time.split('today').join(that.$moment().format(dayFormat))
+                time = time.split('today').join(that.$moment().format(dayFormat));
               }
 
               if (time.length === dayFormat.length) {
-                time = that.$moment(time, dayFormat).format(hourFormat)
+                time = that.$moment(time, dayFormat).format(hourFormat);
               }
 
               Vue.set(operations, field, {
                 operator: operator,
                 time: time,
-                $time: that.$moment(time, hourFormat)
-              })
+                $time: that.$moment(time, hourFormat),
+              });
             }
-          })
+          });
         }
 
         /*
@@ -475,27 +494,27 @@ actor:"test bis"
 // should fail :
 subject:test bis
       */
-        let metadataRegex = '((subject)|(medium)|(actor))(:=?)(("[^"]+")|([^\n ]+))'
-        let metadataMatch = searchText.match(new RegExp(metadataRegex, 'g'))
+        const metadataRegex = '((subject)|(medium)|(actor))(:=?)(("[^"]+")|([^\n ]+))';
+        const metadataMatch = searchText.match(new RegExp(metadataRegex, 'g'));
 
         if (metadataMatch !== null && metadataMatch.length > 0) {
-          metadataMatch.forEach(match => {
-            searchText = searchText.split(match).join('').trim()
+          metadataMatch.forEach((match) => {
+            searchText = searchText.split(match).join('').trim();
 
-            let items = new RegExp(metadataRegex, 'g').exec(match)
+            const items = new RegExp(metadataRegex, 'g').exec(match);
 
             if (items !== null) {
-              let field = items[1]
-              let operator = items[5]
-              let metadata = items[6]
-              metadata = metadata.split('"').join('')
+              const field = items[1];
+              const operator = items[5];
+              let metadata = items[6];
+              metadata = metadata.split('"').join('');
 
               Vue.set(operations, field, {
                 operator: operator,
-                metadata: metadata
-              })
+                metadata: metadata,
+              });
             }
-          })
+          });
         }
 
         /*
@@ -516,100 +535,102 @@ categories:"a a a", bbb
 categories:aaa, bbb ,ccc
 categories:aaa, bbb ,ccc test
       */
-        let categoriesRegex = '(categories)(:=?)((,?(("[^"]+")|([^ \n]+)))+)'
-        let categoriesMatch = searchText.match(new RegExp(categoriesRegex, 'g'))
+        const categoriesRegex = '(categories)(:=?)((,?(("[^"]+")|([^ \n]+)))+)';
+        const categoriesMatch = searchText.match(new RegExp(categoriesRegex, 'g'));
 
         if (categoriesMatch !== null && categoriesMatch.length > 0) {
-          categoriesMatch.forEach(match => {
-            searchText = searchText.split(match).join('').trim()
+          categoriesMatch.forEach((match) => {
+            searchText = searchText.split(match).join('').trim();
 
-            let items = new RegExp(categoriesRegex, 'g').exec(match)
+            const items = new RegExp(categoriesRegex, 'g').exec(match);
 
             if (items !== null) {
-              let field = items[1]
-              let operator = items[2]
-              let categories = items[3]
+              const field = items[1];
+              const operator = items[2];
+              let categories = items[3];
               categories = categories
                 .split(',')
-                .map(e => e.split('"').join('').trim())
+                .map((e) => e.split('"').join('').trim());
 
               Vue.set(operations, field, {
                 operator: operator,
-                categories: categories
-              })
+                categories: categories,
+              });
             }
-          })
+          });
         }
 
-        let voluntaryRegex = '(!?)(voluntary)'
-        let voluntaryMatch = searchText.match(new RegExp(voluntaryRegex, 'g'))
+        const voluntaryRegex = '(!?)(voluntary)';
+        const voluntaryMatch = searchText.match(new RegExp(voluntaryRegex, 'g'));
 
         if (voluntaryMatch !== null && voluntaryMatch.length > 0) {
-          voluntaryMatch.forEach(match => {
-            searchText = searchText.split(match).join('').trim()
+          voluntaryMatch.forEach((match) => {
+            searchText = searchText.split(match).join('').trim();
 
-            let items = new RegExp(voluntaryRegex, 'g').exec(match)
+            const items = new RegExp(voluntaryRegex, 'g').exec(match);
 
             if (items !== null) {
-              let field = items[2]
-              let operator = items[1]
-              let value = (operator === '!') ? '' : true
+              const field = items[2];
+              const operator = items[1];
+              const value = (operator === '!') ? '' : true;
 
               Vue.set(operations, field, {
                 operator: operator,
-                value: value
-              })
+                value: value,
+              });
             }
-          })
+          });
         }
 
         if (Object.keys(operations).length > 0) {
-          res = res.filter(e => {
-            let check = true
+          res = res.filter((e) => {
+            let check = true;
 
             if (operations.start !== undefined) {
-              let elementDate = e.start_date + ' ' + e.start_hour + ':' + ((e.start_seconds === undefined) ? '00' : e.start_seconds)
-              elementDate = that.$moment(elementDate, 'YYYY-MM-DD HH:mm:ss')
+              let elementDate = e.start_date + ' ' + e.start_hour + ':';
+              elementDate += ((e.start_seconds === undefined) ? '00' : e.start_seconds);
+              elementDate = that.$moment(elementDate, 'YYYY-MM-DD HH:mm:ss');
 
               if (operations.start.operator === ':') {
-                check &= elementDate === operations.start.$time
+                check &= (elementDate === operations.start.$time);
               } else if (operations.start.operator === '>') {
-                check &= elementDate > operations.start.$time
+                check &= (elementDate > operations.start.$time);
               } else if (operations.start.operator === '<') {
-                check &= elementDate < operations.start.$time
+                check &= (elementDate < operations.start.$time);
               } else if (operations.start.operator === '>=') {
-                check &= elementDate >= operations.start.$time
+                check &= (elementDate >= operations.start.$time);
               } else if (operations.start.operator === '<=') {
-                check &= elementDate <= operations.start.$time
+                check &= (elementDate <= operations.start.$time);
               }
             }
 
             if (operations.stop !== undefined) {
-              let elementDate = e.stop_date + ' ' + e.stop_hour + ':' + ((e.stop_seconds === undefined) ? '00' : e.stop_seconds)
-              elementDate = that.$moment(elementDate, 'YYYY-MM-DD HH:mm:ss')
+              let elementDate = e.stop_date + ' ' + e.stop_hour + ':';
+              elementDate += ((e.stop_seconds === undefined) ? '00' : e.stop_seconds);
+              elementDate = that.$moment(elementDate, 'YYYY-MM-DD HH:mm:ss');
 
               if (operations.stop.operator === ':') {
-                check &= elementDate === operations.stop.$time
+                check &= (elementDate === operations.stop.$time);
               } else if (operations.stop.operator === '>') {
-                check &= elementDate > operations.stop.$time
+                check &= (elementDate > operations.stop.$time);
               } else if (operations.stop.operator === '<') {
-                check &= elementDate < operations.stop.$time
+                check &= (elementDate < operations.stop.$time);
               } else if (operations.stop.operator === '>=') {
-                check &= elementDate >= operations.stop.$time
+                check &= (elementDate >= operations.stop.$time);
               } else if (operations.stop.operator === '<=') {
-                check &= elementDate <= operations.stop.$time
+                check &= (elementDate <= operations.stop.$time);
               }
             }
 
             if (operations.subject !== undefined) {
               if (e.subject) {
                 if (operations.subject.operator === ':') {
-                  check &= e.subject.includes(operations.subject.metadata)
+                  check &= (e.subject.includes(operations.subject.metadata));
                 } else if (operations.subject.operator === ':=') {
-                  check &= e.subject === operations.subject.metadata
+                  check &= (e.subject === operations.subject.metadata);
                 }
               } else {
-                check = false
+                check = false;
               }
             }
 
@@ -617,106 +638,118 @@ categories:aaa, bbb ,ccc test
             if (operations.medium !== undefined) {
               if (e.medium) {
                 if (operations.medium.operator === ':') {
-                  check &= e.medium.includes(operations.medium.metadata)
+                  check &= (e.medium.includes(operations.medium.metadata));
                 } else if (operations.medium.operator === ':=') {
-                  check &= e.medium === operations.medium.metadata
+                  check &= (e.medium === operations.medium.metadata);
                 }
               } else {
-                check = false
+                check = false;
               }
             }
 
             if (operations.actor !== undefined) {
               if (e.actor) {
                 if (operations.actor.operator === ':') {
-                  check &= e.actor.includes(operations.actor.metadata)
+                  check &= (e.actor.includes(operations.actor.metadata));
                 } else if (operations.actor.operator === ':=') {
-                  check &= e.actor === operations.actor.metadata
+                  check &= (e.actor === operations.actor.metadata);
                 }
               } else {
-                check = false
+                check = false;
               }
             }
 
             if (operations.categories !== undefined) {
               if (e.categories && e.categories.length > 0) {
                 if (operations.categories.operator === ':') {
-                  operations.categories.categories.forEach(category => {
-                    check &= e.categories.includes(category)
-                  })
+                  operations.categories.categories.forEach((category) => {
+                    check &= (e.categories.includes(category));
+                  });
                 } else if (operations.categories.operator === ':=') {
-                  check &= e.categories.every(e => operations.categories.categories.includes(e))
+                  check &= (e.categories.every((el) => {
+                    return operations.categories.categories.includes(el);
+                  }));
                 }
               } else {
-                check = false
+                check = false;
               }
             }
 
             if (operations.voluntary !== undefined) {
               if (e.voluntary !== undefined) {
-                check &= e.voluntary === operations.voluntary.value
+                check &= (e.voluntary === operations.voluntary.value);
               } else {
-                check = false
+                check = false;
               }
             }
 
-            return check
-          })
+            return check;
+          });
         }
       }
 
-      searchText = searchText.trim()
+      searchText = searchText.trim();
 
-      return res
+      return res;
     },
-    paginatedActivities () {
-      let result = []
+    paginatedActivities() {
+      const result = [];
 
-      if (this.searchedActivities === undefined || this.searchedActivities === null || this.searchedActivities === []) {
-        return result
+      if (  this.searchedActivities === undefined ||
+            this.searchedActivities === null ||
+            this.searchedActivities === []) {
+        return result;
       }
 
-      for (let i = 0; i < this.activitiesPerPage && ((this.lastActivitiesPage - 1) * this.activitiesPerPage + i) < this.searchedActivities.length; i++) {
-        result.push(this.searchedActivities[(this.lastActivitiesPage - 1) * this.activitiesPerPage + i])
+      for ( let i = 0;
+            i < this.activitiesPerPage &&
+            ((this.lastActivitiesPage - 1) * this.activitiesPerPage + i) < this.searchedActivities.length;
+            i++) {
+        result.push(
+          this.searchedActivities[(this.lastActivitiesPage - 1) * this.activitiesPerPage + i]);
       }
 
-      return result
+      return result;
     },
-    pagesCount () {
-      if (this.searchedActivities === undefined || this.searchedActivities === null || this.searchedActivities === []) {
-        return 1
+    pagesCount() {
+      if (  this.searchedActivities === undefined ||
+            this.searchedActivities === null ||
+            this.searchedActivities === []) {
+        return 1;
       }
 
-      return parseInt(Math.ceil(this.searchedActivities.length / this.activitiesPerPage))
-    }
+      return parseInt(Math.ceil(this.searchedActivities.length / this.activitiesPerPage), 10);
+    },
   },
-  mounted () {
+  mounted() {
     this.$eventBus
-      .$on('saveconfirm', this.liveSaveConfirm)
+      .$on('saveconfirm', this.liveSaveConfirm);
       /*
       TODO
       .$on('dbupdate', this.fetchAllSubjects)
       */
 
-    let cookies = tools.getCookies()
+    const cookies = tools.getCookies();
     if (cookies.research) {
-      this.activitiesSearch = cookies.research
+      this.activitiesSearch = cookies.research;
     }
 
     setTimeout(() => {
-      let running = this.$store.getters[this.$store.state.manager.current + '/runningActivities'] || []
+      const running = this.$store.getters[
+        this.$store.state.manager.current + '/runningActivities'
+      ] || [];
       if (running.length > 0) {
-        this.currentID = running[0]._id
+        this.currentID = running[0]._id;
       }
-    }, 500)
+    }, 500);
   },
-  destroyed () {
+  destroyed() {
     this.$eventBus
-      .$off('saveconfirm', this.saveConfirmation)
+      .$off('saveconfirm', this.saveConfirmation);
       /*
       TODO
       .$off('dbupdate', this.fetchAllSubjects)
       */
-  }
-}
+  },
+};
 </script>

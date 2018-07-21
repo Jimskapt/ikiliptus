@@ -1,0 +1,26 @@
+{
+  "defaultSeverity": "warning",
+  "extends": [
+    "tslint:recommended"
+  ],
+  "linterOptions": {
+    "exclude": [
+      "node_modules/**"
+    ]
+  },
+  "rules": {
+    "quotemark": [true, "single"],
+    "indent": [true, "spaces", 2],
+    "interface-name": false,
+    "ordered-imports": false,
+    "object-literal-sort-keys": false,
+    "no-consecutive-blank-lines": false,
+    "max-line-length": [true, 110],
+    "object-literal-shorthand": false,
+    "arrow-return-shorthand": false,
+    "no-console": [false],
+    // "no-bitwise" is a temporary fix for tslinter
+    // https://stackoverflow.com/questions/50847522/tslint-not-recognizing-proper-bitwise-operators
+    "no-bitwise": false
+  }
+}

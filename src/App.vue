@@ -79,46 +79,46 @@
 </template>
 
 <script>
-import Package from '../package.json'
+import Package from '../package.json';
 
-import tools from './tools/index.js'
+import tools from './tools';
 
 export default {
   name: 'App',
-  data () {
+  data() {
     return {
       release: '0.0.0',
-      menu: false
-    }
+      menu: false,
+    };
   },
   watch: {
-    current (newValue, oldValue) {
-      this.$set(this.$vuetify.theme, 'primary', newValue.color)
-    }
+    current(newValue, oldValue) {
+      this.$set(this.$vuetify.theme, 'primary', newValue.color);
+    },
   },
   computed: {
-    current () {
-      return this.$store.getters['manager/current']
-    }
+    current() {
+      return this.$store.getters['manager/current'];
+    },
   },
-  mounted () {
-    this.release = Package.version
+  mounted() {
+    this.release = Package.version;
 
-    this.$store.dispatch('manager/fetchAvailable')
+    this.$store.dispatch('manager/fetchAvailable');
 
-    let that = this
+    const that = this;
     // TODO
     setTimeout(() => {
-      let id = tools.getCookies().last_session
+      const id = tools.getCookies().last_session;
       if (Object.keys(that.$store.state.manager.available).includes(id)) {
-        that.$store.dispatch('manager/setCurrent', {sessionID: id}, {root: true})
+        that.$store.dispatch('manager/setCurrent', {sessionID: id}, {root: true});
       }
-    }, 1000)
+    }, 1000);
   },
   methods: {
-    openGithub () {
-      window.open('https://github.com/jimskapt/ikiliptus', '_blank')
-    }
-  }
-}
+    openGithub() {
+      window.open('https://github.com/jimskapt/ikiliptus', '_blank');
+    },
+  },
+};
 </script>

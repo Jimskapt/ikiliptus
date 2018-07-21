@@ -86,12 +86,12 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import tools from '../tools/index.js'
-import CustomField from '@/components/CustomField'
-import TimeSelector from '@/components/TimeSelector'
-import { Line, Pie, Bar, mixins } from 'vue-chartjs'
-const { reactiveProp } = mixins
+import Vue from 'vue';
+import tools from '../tools';
+import CustomField from '@/components/CustomField';
+import TimeSelector from '@/components/TimeSelector';
+import { Line, Pie, Bar, mixins } from 'vue-chartjs';
+const { reactiveProp } = mixins;
 
 export default {
   name: 'AnalyticsPage',
@@ -102,29 +102,29 @@ export default {
       extends: Line,
       mixins: [reactiveProp],
       props: ['options'],
-      mounted () {
-        this.renderChart(this.chartData, this.options)
-      }
+      mounted() {
+        this.renderChart(this.chartData, this.options);
+      },
     },
     pieChart: {
       extends: Pie,
       mixins: [reactiveProp],
       props: ['options'],
-      mounted () {
-        this.renderChart(this.chartData, this.options)
-      }
+      mounted() {
+        this.renderChart(this.chartData, this.options);
+      },
     },
     barChart: {
       extends: Bar,
       mixins: [reactiveProp],
       props: ['options'],
-      mounted () {
-        this.renderChart(this.chartData, this.options)
-      }
-    }
+      mounted() {
+        this.renderChart(this.chartData, this.options);
+      },
+    },
   },
-  data () {
-    let that = this
+  data() {
+    const that = this;
 
     return {
       from: false,
@@ -145,53 +145,55 @@ export default {
               position: 'left',
               ticks: {
                 beginAtZero: true,
-                callback (value, index, values) {
-                  return that.secondsDurationToFormatedHours(value)
-                }
-              }
+                callback(value, index, values) {
+                  return that.secondsDurationToFormatedHours(value);
+                },
+              },
             },
             {
               id: 'counter-axis',
               type: 'linear',
               position: 'right',
               ticks: {
-                beginAtZero: true
-              }
-            }
-          ]
+                beginAtZero: true,
+              },
+            },
+          ],
         },
         tooltips: {
           callbacks: {
-            label (tooltipItem, data) {
+            label(tooltipItem, data) {
               if (tooltipItem.datasetIndex === 0) {
-                return that.secondsDurationToFormatedHours(tooltipItem.yLabel)
+                return that.secondsDurationToFormatedHours(tooltipItem.yLabel);
               } else {
-                return tooltipItem.yLabel
+                return tooltipItem.yLabel;
               }
-            }
-          }
-        }
+            },
+          },
+        },
       },
       categoriesOptions: {
         legend: {
-          display: false
+          display: false,
         },
         tooltips: {
           callbacks: {
-            label (tooltipItem, data) {
+            label(tooltipItem, data) {
               if (tooltipItem.datasetIndex === 0) {
                 return data.labels[tooltipItem.index] + ' : ' +
-                that.secondsDurationToFormatedHours(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index])
+                  that.secondsDurationToFormatedHours(
+                    data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]);
               } else {
-                return data.labels[tooltipItem.index] + ' : ' + data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]
+                return data.labels[tooltipItem.index] + ' : ' +
+                  data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
               }
-            }
-          }
-        }
+            },
+          },
+        },
       },
       categoriesPerDayOptions: {
         legend: {
-          display: false
+          display: false,
         },
         scales: {
           yAxes: [
@@ -201,128 +203,147 @@ export default {
               position: 'left',
               ticks: {
                 beginAtZero: true,
-                callback (value, index, values) {
-                  return that.secondsDurationToFormatedHours(value)
-                }
-              }
-            }
-          ]
+                callback(value, index, values) {
+                  return that.secondsDurationToFormatedHours(value);
+                },
+              },
+            },
+          ],
         },
         tooltips: {
           callbacks: {
-            label (tooltipItem, data) {
+            label(tooltipItem, data) {
               return data.datasets[tooltipItem.datasetIndex].label + ' : ' +
-              that.secondsDurationToFormatedHours(tooltipItem.yLabel)
-            }
-          }
-        }
+              that.secondsDurationToFormatedHours(tooltipItem.yLabel);
+            },
+          },
+        },
       },
       activitiesPerDay: {},
       durationsPerDay: {},
       durationsPerCategory: {},
       durationsPerCategoryAndDay: {},
       categoriesPowers: {},
-      customSettings: {}
-    }
+      customSettings: {},
+    };
   },
   methods: {
-    secondsDurationToFormatedHours (value) {
-      let hours = Math.floor(this.$moment.duration(value, 'seconds').asHours())
-      let minutes = Math.floor(this.$moment.duration(value - hours * 3600, 'seconds').asMinutes())
-      let seconds = Math.floor(this.$moment.duration(value - hours * 3600 - minutes * 60, 'seconds').asSeconds())
+    secondsDurationToFormatedHours(value) {
+      const hours = Math.floor(this.$moment.duration(value, 'seconds').asHours());
+      const minutes = Math.floor(
+        this.$moment.duration(value - hours * 3600, 'seconds').asMinutes());
+      const seconds = Math.floor(
+        this.$moment.duration(value - hours * 3600 - minutes * 60, 'seconds').asSeconds());
 
-      let result = ''
+      let result = '';
       if (hours < 10) {
-        result += '00'
+        result += '00';
       } else if (hours < 100) {
-        result += '0'
+        result += '0';
       }
-      result += hours + ':'
+      result += hours + ':';
       if (minutes < 10) {
-        result += '0'
+        result += '0';
       }
-      result += minutes + ':'
+      result += minutes + ':';
       if (seconds < 10) {
-        result += '0'
+        result += '0';
       }
-      result += seconds
+      result += seconds;
 
-      return result
-    }
+      return result;
+    },
   },
   computed: {
-    activities () {
-      return this.$store.getters[this.$store.getters['manager/current']._id + '/activitiesSortedByTime'] || []
+    activities() {
+      return this.$store.getters[
+        this.$store.getters['manager/current']._id + '/activitiesSortedByTime'
+      ] || [];
     },
-    filteredActivities () {
-      let that = this
-      return this.activities.filter(activity => {
-        let result = true
+    filteredActivities() {
+      const that = this;
+      return this.activities.filter((activity) => {
+        let result = true;
 
-        if (that.fromDate !== null && that.fromDate !== undefined && activity.start_date !== undefined) {
-          result &= (that.$moment(activity.start_date, 'YYYY-MM-DD') >= that.$moment(that.fromDate, 'YYYY-MM-DD'))
+        if (  that.fromDate !== null &&
+              that.fromDate !== undefined &&
+              activity.start_date !== undefined) {
+          result &=
+            (that.$moment(activity.start_date, 'YYYY-MM-DD') >= that.$moment(that.fromDate, 'YYYY-MM-DD'));
         }
 
-        if (that.toDate !== null && that.toDate !== undefined && activity.stop_date !== undefined) {
-          result &= (that.$moment(activity.stop_date, 'YYYY-MM-DD') < that.$moment(that.toDate, 'YYYY-MM-DD'))
+        if (  that.toDate !== null &&
+              that.toDate !== undefined &&
+              activity.stop_date !== undefined) {
+          result &=
+            (that.$moment(activity.stop_date, 'YYYY-MM-DD') < that.$moment(that.toDate, 'YYYY-MM-DD'));
         }
 
-        that.$store.state[that.$store.state.manager.current].customFields.fields.forEach(customField => {
+        that.$store.state[
+          that.$store.state.manager.current
+        ].customFields.fields.forEach((customField) => {
           if (that.customSettings[customField.name] !== undefined) {
             if (that.customSettings[customField.name].enabled) {
               if (activity[customField.name] !== undefined) {
-                let value = that.customSettings[customField.name].value
+                let value = that.customSettings[customField.name].value;
                 if (customField.type === 'checkbox' && value === false) {
-                  value = ''
+                  value = '';
                 }
-                result &= (activity[customField.name] === value)
+                result &= (activity[customField.name] === value);
               } else {
-                result &= false
+                result &= false;
               }
             }
           }
-        })
+        });
 
-        return result
-      })
+        return result;
+      });
     },
-    categoriesCollection () {
-      let that = this
+    categoriesCollection() {
+      const that = this;
 
-      let data = {}
-      this.filteredActivities.forEach(activity => {
-        if (activity.start_date && activity.start_hour && activity.stop_date && activity.stop_hour && activity.categories && activity.categories.length > 0) {
-          activity.categories.forEach(category => {
-            let deltaT = tools.deltaT(
+      const data = {};
+      this.filteredActivities.forEach((activity) => {
+        if (  activity.start_date &&
+              activity.start_hour &&
+              activity.stop_date &&
+              activity.stop_hour &&
+              activity.categories &&
+              activity.categories.length > 0) {
+          activity.categories.forEach((category) => {
+            const deltaT = tools.deltaT(
               that.$moment,
               activity.start_date,
               activity.start_hour,
               activity.start_seconds,
               activity.stop_date,
               activity.stop_hour,
-              activity.stop_seconds)
-            let $deltaT = that.$moment.duration(deltaT)
+              activity.stop_seconds);
+            const $deltaT = that.$moment.duration(deltaT);
 
-            let newDuration = $deltaT.get('hours') * 3600 + $deltaT.get('minutes') * 60 + $deltaT.get('seconds')
+            let newDuration = $deltaT.get('hours') * 3600;
+            newDuration += $deltaT.get('minutes') * 60;
+            newDuration += $deltaT.get('seconds');
 
             if (data[category] !== undefined) {
-              newDuration += data[category]
+              newDuration += data[category];
             }
 
-            Vue.set(data, category, newDuration)
-          })
+            Vue.set(data, category, newDuration);
+          });
         }
-      })
+      });
 
-      let labels = Object.keys(data)
-      labels = labels.sort((a, b) => data[b] - data[a])
+      let labels = Object.keys(data);
+      labels = labels.sort((a, b) => data[b] - data[a]);
 
-      let durations = []
-      let colors = []
-      labels.forEach(e => {
-        durations.push(data[e])
-        colors.push(tools.computeColorFromText(e))
-      })
+      const durations = [];
+      const colors = [];
+      labels.forEach((e) => {
+        durations.push(data[e]);
+        colors.push(tools.computeColorFromText(e));
+      });
 
       return {
         labels: labels,
@@ -331,125 +352,137 @@ export default {
             label: that.$t('Total duration per category'),
             backgroundColor: colors,
             borderColor: '#555',
-            data: durations
-          }
-        ]
-      }
+            data: durations,
+          },
+        ],
+      };
     },
-    categoriesPerDayCollection () {
-      let that = this
+    categoriesPerDayCollection() {
+      const that = this;
 
-      let data = {}
-      this.filteredActivities.forEach(activity => {
-        if (activity.start_date && activity.start_hour && activity.stop_date && activity.stop_hour && activity.categories && activity.categories.length > 0) {
-          activity.categories.forEach(category => {
-            let deltaT = tools.deltaT(
+      const data = {};
+      this.filteredActivities.forEach((activity) => {
+        if (  activity.start_date &&
+              activity.start_hour &&
+              activity.stop_date &&
+              activity.stop_hour &&
+              activity.categories &&
+              activity.categories.length > 0) {
+          activity.categories.forEach((category) => {
+            const deltaT = tools.deltaT(
               that.$moment,
               activity.start_date,
               activity.start_hour,
               activity.start_seconds,
               activity.stop_date,
               activity.stop_hour,
-              activity.stop_seconds)
-            let $deltaT = that.$moment.duration(deltaT)
+              activity.stop_seconds);
+            const $deltaT = that.$moment.duration(deltaT);
 
-            let newDuration = $deltaT.get('hours') * 3600 + $deltaT.get('minutes') * 60 + $deltaT.get('seconds')
+            let newDuration = $deltaT.get('hours') * 3600;
+            newDuration += $deltaT.get('minutes') * 60;
+            newDuration += $deltaT.get('seconds');
 
             if (data[category] === undefined) {
-              Vue.set(data, category, {})
+              Vue.set(data, category, {});
             }
 
             if (data[category][activity.start_date] !== undefined) {
-              newDuration += data[category][activity.start_date]
+              newDuration += data[category][activity.start_date];
             }
 
-            Vue.set(data[category], activity.start_date, newDuration)
-          })
+            Vue.set(data[category], activity.start_date, newDuration);
+          });
         }
-      })
+      });
 
-      let labels = []
-      Object.keys(data).forEach(category => {
-        Object.keys(data[category]).forEach(day => {
+      const labels = [];
+      Object.keys(data).forEach((category) => {
+        Object.keys(data[category]).forEach((day) => {
           if (!labels.includes(day)) {
-            labels.push(day)
+            labels.push(day);
           }
-        })
-      })
-      labels.sort()
+        });
+      });
+      labels.sort();
 
-      let datasets = []
-      Object.keys(data).forEach(category => {
-        let obj = {
+      const datasets = [];
+      Object.keys(data).forEach((category) => {
+        const obj = {
           label: category,
           backgroundColor: tools.computeColorFromText(category),
           borderColor: '#555',
           borderWidth: 1,
           stack: 'Stack 0',
-          data: []
-        }
-        labels.forEach(day => {
+          data: [],
+        };
+        labels.forEach((day) => {
           if (data[category][day] === undefined) {
-            obj.data.push(0)
+            obj.data.push(0);
           } else {
-            obj.data.push(data[category][day])
+            obj.data.push(data[category][day]);
           }
-        })
-        datasets.push(obj)
-      })
+        });
+        datasets.push(obj);
+      });
 
       return {
         labels: labels,
-        datasets: datasets
-      }
+        datasets: datasets,
+      };
     },
-    activitiesCollection () {
-      let that = this
+    activitiesCollection() {
+      const that = this;
 
-      let data = {}
-      this.filteredActivities.forEach(activity => {
-        if (activity.start_date && activity.start_hour && activity.stop_date && activity.stop_hour) {
-          let deltaT = tools.deltaT(
+      const data = {};
+      this.filteredActivities.forEach((activity) => {
+        if (  activity.start_date &&
+              activity.start_hour &&
+              activity.stop_date &&
+              activity.stop_hour) {
+          const deltaT = tools.deltaT(
             that.$moment,
             activity.start_date,
             activity.start_hour,
             activity.start_seconds,
             activity.stop_date,
             activity.stop_hour,
-            activity.stop_seconds)
-          let $deltaT = that.$moment.duration(deltaT)
+            activity.stop_seconds);
+          const $deltaT = that.$moment.duration(deltaT);
 
-          let newDuration = $deltaT.get('hours') * 3600 + $deltaT.get('minutes') * 60 + $deltaT.get('seconds')
-          let newCounter = 1
+          let newDuration = $deltaT.get('hours') * 3600;
+          newDuration += $deltaT.get('minutes') * 60;
+          newDuration += $deltaT.get('seconds');
+          let newCounter = 1;
           if (data[activity.start_date] !== undefined) {
-            newDuration += data[activity.start_date].duration
-            newCounter = data[activity.start_date].count + 1
+            newDuration += data[activity.start_date].duration;
+            newCounter = data[activity.start_date].count + 1;
           }
           Vue.set(data, activity.start_date, {
             duration: newDuration,
-            count: newCounter
-          })
+            count: newCounter,
+          });
         }
-      })
+      });
 
-      let labels = Object.keys(data)
-      labels.sort()
-      let durations = []
-      let counter = []
+      const labels = Object.keys(data);
+      labels.sort();
+      const durations = [];
+      const counter = [];
 
-      labels.forEach(label => {
+      labels.forEach((label) => {
         if (data[label] === undefined || data[label].duration === undefined) {
-          durations.push(0)
+          durations.push(0);
         } else {
-          durations.push(data[label].duration)
+          durations.push(data[label].duration);
         }
 
         if (data[label] === undefined || data[label].count === undefined) {
-          counter.push(0)
+          counter.push(0);
         } else {
-          counter.push(data[label].count)
+          counter.push(data[label].count);
         }
-      })
+      });
 
       return {
         labels: labels,
@@ -459,31 +492,33 @@ export default {
             borderColor: that.$vuetify.theme.primary,
             fill: false,
             yAxisID: 'time-axis',
-            data: durations
+            data: durations,
           },
           {
             label: that.$t('Total activities per day'),
             borderColor: that.$vuetify.theme.secondary,
             fill: false,
             yAxisID: 'counter-axis',
-            data: counter
-          }
-        ]
-      }
-    }
+            data: counter,
+          },
+        ],
+      };
+    },
   },
-  mounted () {
-    let that = this
+  mounted() {
+    const that = this;
 
     setTimeout(() => {
-      Vue.set(that, 'customSettings', {})
-      that.$store.state[that.$store.getters['manager/current']._id].customFields.fields.forEach(field => {
+      Vue.set(that, 'customSettings', {});
+      that.$store.state[
+        that.$store.getters['manager/current']._id
+      ].customFields.fields.forEach((field) => {
         Vue.set(that.customSettings, field.name, {
           enabled: false,
-          value: ((field.type === 'checkbox') ? false : '')
-        })
-      })
-    }, 500)
-  }
-}
+          value: ((field.type === 'checkbox') ? false : ''),
+        });
+      });
+    }, 500);
+  },
+};
 </script>

@@ -85,32 +85,32 @@
 <script>
 export default {
   name: 'SessionManager',
-  data () {
+  data() {
     return {
       confirmDeleteDialog: false,
       deleteConfirmObj: null,
-      typedDeleteConfirm: null
-    }
+      typedDeleteConfirm: null,
+    };
   },
   methods: {
-    goToEdit (id) {
-      this.$router.push({name: 'SessionEditor', params: {id: id}})
+    goToEdit(id) {
+      this.$router.push({name: 'SessionEditor', params: {id: id}});
     },
-    askToDelete (obj) {
-      this.deleteConfirmObj = obj
-      this.confirmDeleteDialog = true
+    askToDelete(obj) {
+      this.deleteConfirmObj = obj;
+      this.confirmDeleteDialog = true;
     },
-    confirmDeleteSession () {
-      let that = this
+    confirmDeleteSession() {
+      const that = this;
       if (this.typedDeleteConfirm === this.deleteConfirmObj.name) {
         this.$store.dispatch('manager/deleteSession', {doc: that.deleteConfirmObj}, {root: true})
           .then(() => {
-            that.deleteConfirmObj = null
-            that.typedDeleteConfirm = null
-            that.confirmDeleteDialog = false
-          })
+            that.deleteConfirmObj = null;
+            that.typedDeleteConfirm = null;
+            that.confirmDeleteDialog = false;
+          });
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>

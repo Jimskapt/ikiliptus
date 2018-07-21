@@ -26,72 +26,75 @@
 </template>
 
 <script>
-import SuggestionsList from '@/components/SuggestionsList'
+import SuggestionsList from '@/components/SuggestionsList';
+
 export default {
   name: 'CustomField',
   components: {
-    suggestionsList: SuggestionsList
+    suggestionsList: SuggestionsList,
   },
   model: {
     prop: 'value',
-    event: 'change'
+    event: 'change',
   },
   props: ['settings', 'value', 'disabled', 'autocomplete'],
-  data () {
+  data() {
     return {
       valueCopy: '',
-      list: []
-    }
+      list: [],
+    };
   },
   watch: {
-    value (newValue) {
-      this.valueCopy = newValue
+    value(newValue) {
+      this.valueCopy = newValue;
     },
-    valueCopy (newValue) {
-      this.$emit('change', newValue)
-    }
+    valueCopy(newValue) {
+      this.$emit('change', newValue);
+    },
   },
   methods: {
-    fetchAutocompleteData () {
+    fetchAutocompleteData() {
       if (this.settings.type !== 'checkbox') {
-        let that = this
+        const that = this;
 
         that.$store.state[that.$store.state.manager.current].$db
           .query('all_activities/all_activities', {include_docs: true})
-          .then(res => {
-            let temp = {}
+          .then((res) => {
+            const temp = {};
 
-            res.rows.forEach(item => {
-              if (item.doc[that.settings.name] !== undefined && item.doc[that.settings.name] !== null && item.doc[that.settings.name] !== '') {
-                that.$set(temp, item.doc[that.settings.name], true)
+            res.rows.forEach((item) => {
+              if (  item.doc[that.settings.name] !== undefined &&
+                    item.doc[that.settings.name] !== null &&
+                    item.doc[that.settings.name] !== '') {
+                that.$set(temp, item.doc[that.settings.name], true);
               }
-            })
+            });
 
-            that.list = Object.keys(temp)
+            that.list = Object.keys(temp);
           })
-          .catch(err => { alert('IKE0038:\n' + err) })
+          .catch((err) => { alert('IKE0038:\n' + err); });
       }
-    }
+    },
   },
   computed: {
-    filteredList () {
+    filteredList() {
       if (this.list === undefined) {
-        return []
+        return [];
       }
 
       return this.list
-        .filter(e => {
-          return e.toLowerCase().includes(this.valueCopy.toLowerCase()) && e !== this.valueCopy
+        .filter((e) => {
+          return e.toLowerCase().includes(this.valueCopy.toLowerCase()) && e !== this.valueCopy;
         })
-        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
-    }
+        .sort((a, b) => { return a.toLowerCase().localeCompare(b.toLowerCase()); });
+    },
   },
-  mounted () {
-    this.valueCopy = this.value
+  mounted() {
+    this.valueCopy = this.value;
 
     if (this.autocomplete) {
-      this.fetchAutocompleteData()
+      this.fetchAutocompleteData();
     }
-  }
-}
+  },
+};
 </script>

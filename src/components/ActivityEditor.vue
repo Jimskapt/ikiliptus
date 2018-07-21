@@ -56,32 +56,33 @@
 </template>
 
 <script>
-import ActivityForm from '@/components/ActivityForm'
+import ActivityForm from '@/components/ActivityForm';
 
 export default {
   name: 'ActivityEditor',
   props: {
     id: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   methods: {
-    routerGoBack () {
-      let that = this
+    routerGoBack() {
+      const that = this;
+
       setTimeout(() => {
-        that.$router.go(-1)
-      }, 1000)
-    }
+        that.$router.go(-1);
+      }, 1000);
+    },
   },
   components: {
-    activityForm: ActivityForm
+    activityForm: ActivityForm,
   },
-  mounted () {
-    this.$eventBus.$on('saveconfirm', this.routerGoBack)
+  mounted() {
+    this.$eventBus.$on('saveconfirm', this.routerGoBack);
   },
-  destroyed () {
-    this.$eventBus.$off('saveconfirm', this.routerGoBack)
-  }
-}
+  destroyed() {
+    this.$eventBus.$off('saveconfirm', this.routerGoBack);
+  },
+};
 </script>

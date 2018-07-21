@@ -161,16 +161,16 @@
 </template>
 
 <script>
-import tools from '../tools/index.js'
-import CustomField from '@/components/CustomField'
+import tools from '../tools';
+import CustomField from '@/components/CustomField';
 
 export default {
   name: 'SessionEditor',
   props: ['id'],
   components: {
-    CustomField: CustomField
+    CustomField: CustomField,
   },
-  data () {
+  data() {
     return {
       hasSelectedColor: false,
       newSessionName: '',
@@ -180,87 +180,87 @@ export default {
       fieldView: '',
       dbDataFields: {
         _id: 'custom_fields',
-        fields: []
-      }
-    }
+        fields: [],
+      },
+    };
   },
   methods: {
-    addField () {
-      let alphabet = 'abcdefghijklmnopqrstuvwxyz'
-      let randomName = ''
+    addField() {
+      const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+      let randomName = '';
       for (let i = 0; i < 10; i++) {
-        randomName += alphabet[Math.floor(Math.random() * alphabet.length)]
+        randomName += alphabet[Math.floor(Math.random() * alphabet.length)];
       }
       this.dbDataFields.fields.push({
         icon: 'texture',
         name: randomName,
         label: randomName,
-        type: 'textfield'
-      })
+        type: 'textfield',
+      });
     },
-    removeField (field) {
-      this.dbDataFields.fields = this.dbDataFields.fields.filter(e => e !== field)
+    removeField(field) {
+      this.dbDataFields.fields = this.dbDataFields.fields.filter((e) => e !== field);
     },
-    refreshNewSessionColor () {
+    refreshNewSessionColor() {
       if (!this.hasSelectedColor) {
-        this.newSessionColor = tools.computeColorFromText(this.newSessionName)
+        this.newSessionColor = tools.computeColorFromText(this.newSessionName);
       }
-      this.fieldView = ''
+      this.fieldView = '';
     },
-    colorChange () {
+    colorChange() {
       if (this.newSessionColor === '') {
-        this.hasSelectedColor = false
+        this.hasSelectedColor = false;
       } else {
-        this.hasSelectedColor = true
+        this.hasSelectedColor = true;
       }
-      this.refreshNewSessionColor()
+      this.refreshNewSessionColor();
     },
-    save () {
-      let that = this
+    save() {
+      const that = this;
       this.$store
         .dispatch('manager/saveSession', {doc: this.newData}, {root: true})
-        .then(res => {
+        .then((res) => {
           that.$store
             .dispatch(res.id + '/saveCustomFields', {doc: this.dbDataFields}, {root: true})
-            .then(() => { that.$router.go(-1) })
-            .catch(err => { alert('IKE0049:\n' + err) })
+            .then(() => { that.$router.go(-1); })
+            .catch((err) => { alert('IKE0049:\n' + err); });
         })
-        .catch(err => { alert('IKE0048:\n' + err) })
+        .catch((err) => { alert('IKE0048:\n' + err); });
     },
-    toggleFieldSettings (fieldID) {
+    toggleFieldSettings(fieldID) {
       if (this.fieldView === 'panel-' + fieldID) {
-        this.fieldView = ''
+        this.fieldView = '';
       } else {
-        this.fieldView = 'panel-' + fieldID
+        this.fieldView = 'panel-' + fieldID;
       }
-    }
+    },
   },
   computed: {
-    newData () {
-      let result = this.dbData
+    newData() {
+      const result = this.dbData;
 
-      result.name = this.newSessionName
-      result.color = this.newSessionColor
-      result.remote = this.newSessionRemote
+      result.name = this.newSessionName;
+      result.color = this.newSessionColor;
+      result.remote = this.newSessionRemote;
 
-      return result
+      return result;
     },
-    thereIsID () {
-      return (this.id !== null && this.id !== undefined && this.id !== '' && this.id !== '0')
+    thereIsID() {
+      return (this.id !== null && this.id !== undefined && this.id !== '' && this.id !== '0');
+    },
+  },
+  mounted() {
+    if (this.thereIsID) {
+      this.hasSelectedColor = true;
+
+      this.dbData = this.$store.state[this.id].doc;
+      this.newSessionName = this.dbData.name;
+      this.newSessionColor = this.dbData.color;
+      this.refreshNewSessionColor();
+      this.newSessionRemote = this.dbData.remote;
+
+      this.dbDataFields = this.$store.state[this.id].customFields;
     }
   },
-  mounted () {
-    if (this.thereIsID) {
-      this.hasSelectedColor = true
-
-      this.dbData = this.$store.state[this.id].doc
-      this.newSessionName = this.dbData.name
-      this.newSessionColor = this.dbData.color
-      this.refreshNewSessionColor()
-      this.newSessionRemote = this.dbData.remote
-
-      this.dbDataFields = this.$store.state[this.id].customFields
-    }
-  }
-}
+};
 </script>

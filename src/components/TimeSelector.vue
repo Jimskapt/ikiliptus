@@ -76,38 +76,39 @@ export default {
   name: 'TimeSelector',
   model: {
     prop: 'value',
-    event: 'change'
+    event: 'change',
   },
   props: ['type', 'label', 'disabled', 'value', 'seconds'],
-  data () {
+  data() {
     return {
       showMenu: false,
-      copyValue: null
-    }
+      copyValue: null,
+    };
   },
   watch: {
-    copyValue (newValue) {
-      this.$emit('change', newValue)
+    copyValue(newValue) {
+      this.$emit('change', newValue);
     },
-    value (newValue) {
-      this.copyValue = newValue
-    }
+    value(newValue) {
+      this.copyValue = newValue;
+    },
   },
   computed: {
-    dayDisplay () {
+    dayDisplay() {
       if (this.value && this.value != null) {
-        return this.$moment(this.value, 'YYYY-MM-DD').format(this.$t('date_format'))
+        return this.$moment(this.value, 'YYYY-MM-DD').format(this.$t('date_format'));
       }
 
-      return ''
+      return '';
     },
-    hourDisplay () {
+    hourDisplay() {
       if (this.value && this.value != null) {
-        return this.$moment(this.value + ':' + this.seconds, 'HH:mm:ss').format(this.$t('hour_format'))
+        const hours = this.$moment(this.value + ':' + this.seconds, 'HH:mm:ss');
+        return hours.format(this.$t('hour_format'));
       }
 
-      return ''
-    }
-  }
-}
+      return '';
+    },
+  },
+};
 </script>

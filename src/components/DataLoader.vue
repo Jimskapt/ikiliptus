@@ -38,22 +38,22 @@
 <script>
 export default {
   name: 'DataLoader',
-  data () {
+  data() {
     return {
-      input: ''
-    }
+      input: '',
+    };
   },
   methods: {
-    save () {
-      let sessionID = this.$store.getters['manager/current']._id
+    save() {
+      const sessionID = this.$store.getters['manager/current']._id;
 
-      let data = JSON.parse(this.input)
+      const data = JSON.parse(this.input);
 
-      data.forEach(e => {
-        this.$delete(e, '_rev')
-        this.$store.dispatch(sessionID + '/saveActivity', {doc: e}, {root: true})
-      })
-    }
-  }
-}
+      data.forEach((e) => {
+        this.$delete(e, '_rev');
+        this.$store.dispatch(sessionID + '/saveActivity', {doc: e}, {root: true});
+      });
+    },
+  },
+};
 </script>

@@ -5,12 +5,12 @@
 <script>
 export default {
   name: 'DataUpgrade',
-  data () {
+  data() {
     return {
-      result: {}
-    }
+      result: {},
+    };
   },
-  mounted () {
+  mounted() {
     /*
     let that = this
 
@@ -29,6 +29,6 @@ export default {
       })
       .catch(err => alert('IKE0012:\n' + err))
     */
-  }
-}
+  },
+};
 </script>

@@ -70,44 +70,47 @@
 </template>
 
 <script>
+const LOCAL_DESCRIPTION = 'local_description';
+const US_LOCALE_DESCRIPTION = 'US_locale_description';
+
 export default {
   name: 'SettingsPage',
-  data () {
+  data() {
     return {
       locale: {
         value: this.$settings.locale.get(),
-        local: this.$i18n.messages[this.$settings.locale.get()]['local_description'],
-        us: this.$i18n.messages[this.$settings.locale.get()]['US_locale_description']
-      }
-    }
+        local: this.$i18n.messages[this.$settings.locale.get()][LOCAL_DESCRIPTION],
+        us: this.$i18n.messages[this.$settings.locale.get()][US_LOCALE_DESCRIPTION],
+      },
+    };
   },
   computed: {
-    available_locales () {
-      let result = []
+    available_locales() {
+      const result = [];
 
       // eslint-disable-next-line
-      Object.keys(this.$i18n.messages).forEach(m => {
-        let item = {
-          value: m
-        }
+      Object.keys(this.$i18n.messages).forEach((m) => {
+        const item = {
+          value: m,
+        };
 
-        item.local = this.$i18n.messages[m]['local_description']
-        item.us = this.$i18n.messages[m]['US_locale_description']
+        item.local = this.$i18n.messages[m][LOCAL_DESCRIPTION];
+        item.us = this.$i18n.messages[m][US_LOCALE_DESCRIPTION];
 
-        result.push(item)
-      })
+        result.push(item);
+      });
 
-      return result
-    }
+      return result;
+    },
   },
   methods: {
-    save () {
-      this.$settings.locale.set(this.locale.value)
-      this.$router.go(-1)
+    save() {
+      this.$settings.locale.set(this.locale.value);
+      this.$router.go(-1);
     },
-    forceRefresh () {
-      location.reload()
-    }
-  }
-}
+    forceRefresh() {
+      location.reload();
+    },
+  },
+};
 </script>

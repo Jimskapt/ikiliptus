@@ -26,44 +26,44 @@ export default {
   props: ['name', 'list', 'value'],
   model: {
     prop: 'value',
-    event: 'change'
+    event: 'change',
   },
-  data () {
+  data() {
     return {
-      display: this.name === 'categories'
-    }
+      display: this.name === 'categories',
+    };
   },
   watch: {
-    value (newValue, oldValue) {
-      let before = ''
+    value(newValue, oldValue) {
+      let before = '';
       if (Array.isArray(oldValue)) {
-        before = oldValue.join(',')
+        before = oldValue.join(',');
       } else {
-        before = 'not an Array'
+        before = 'not an Array';
       }
 
-      let after = ''
+      let after = '';
       if (Array.isArray(newValue)) {
-        after = newValue.join(',')
+        after = newValue.join(',');
       } else {
-        after = 'not an Array'
+        after = 'not an Array';
       }
 
       if (before === after || after === '') {
-        this.display = true
+        this.display = true;
       }
-    }
+    },
   },
   methods: {
-    select (value) {
+    select(value) {
       if (Array.isArray(this.value)) {
-        let copy = this.value
-        copy.push(value)
-        this.$emit('change', copy)
+        const copy = this.value;
+        copy.push(value);
+        this.$emit('change', copy);
       } else {
-        this.$emit('change', value)
+        this.$emit('change', value);
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
