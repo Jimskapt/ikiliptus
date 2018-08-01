@@ -5,6 +5,16 @@ module.exports = {
   pluginOptions: {
     enableInSFC: false,
   },
+
   baseUrl: '',
-  outputDir: './www'
+  outputDir: './www',
+  assetsDir: undefined,
+  runtimeCompiler: true,
+  productionSourceMap: undefined,
+  parallel: undefined,
+  css: undefined,
+
+  pwa: {
+    name: 'Ikiliptus'
+  }
 }

@@ -4,6 +4,7 @@ import moment from 'moment';
 import PouchDB from 'pouchdb-browser';
 
 import tools from './tools';
+import { cpus } from 'os';
 
 declare var atlan: any;
 
@@ -116,6 +117,7 @@ const session = {
         // .catch(() => {}); errors about this are not important
     },
     fetchActivities(context: any) {
+      console.log('fetchActivities', context.state.$db);
       context.state.$db
         .query('all_activities/all_activities', {include_docs: true})
         .then((res: any) => {
@@ -127,7 +129,7 @@ const session = {
     saveActivity(context: any, payload: any) {
       const db = context.state.$db;
 
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve: any) => {
         const errorFunc = (err: any) => { throw new Error(err); };
 
         const callBack = (res: any) => {
@@ -159,7 +161,7 @@ const session = {
       });
     },
     deleteActivity(context: any, payload: any) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve: any) => {
         context.state.$db
           .remove(payload.doc)
           .then((res: any) => {
@@ -174,7 +176,7 @@ const session = {
       });
     },
     saveCustomFields(context: any, payload: any) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve: any) => {
         const errorFunc = (err: any) => { throw new Error(err); };
 
         const callBack = (res: any) => {
@@ -202,13 +204,13 @@ const session = {
           .catch(errorFunc);
       });
     },
-    checkAndCreateViews(context: any, payload: any) {
-      const allActivitiesPromise = new Promise((resolve, reject) => {
+    checkAndCreateViews(context: any) {
+      const allActivitiesPromise = new Promise((resolve: any, reject: any) => {
         context.state.$db
           .query('all_activities/all_activities')
           .then(() => { resolve(); })
           .catch(() => {
-            const ddoc = {
+            const ddoc: any = {
               _id: '_design/all_activities',
               views: {
                 all_activities: {
@@ -223,14 +225,17 @@ if (doc.data_type) { \
               },
             };
 
+            console.log('tyjttytjnty', context.state.$db.put);
             context.state.$db
               .put(ddoc)
               .then(() => { resolve(); })
-              .catch((err: any) => { throw new Error(err); });
+              .catch((err: any) => { reject(err); throw new Error(err); });
           });
+
+        setTimeout(() => { reject('AllActivities Timeout'); }, 2000);
       });
 
-      const subjectsPointsPromise = new Promise((resolve, reject) => {
+      const subjectsPointsPromise = new Promise((resolve: any, reject: any) => {
         context.state.$db
           .query('subjects_powers/subjects_powers')
           .then((res: any) => { resolve(); })
@@ -256,9 +261,11 @@ return sum(values); \
               .then(() => { resolve(); })
               .catch((err: any) => { throw new Error(err); });
           });
+
+        setTimeout(() => { reject('SubjectsPoints Timeout'); }, 2000);
       });
 
-      const categoriesPointsPromise = new Promise((resolve, reject) => {
+      const categoriesPointsPromise = new Promise((resolve: any, reject: any) => {
         context.state.$db
           .query('categories_powers/categories_powers')
           .then((res: any) => { resolve(); })
@@ -286,13 +293,16 @@ return sum(values); \
               .then(() => { resolve(); })
               .catch((err: any) => { throw new Error(err); });
           });
+
+        setTimeout(() => { reject('CategoriesPoints Timeout'); }, 3000);
       });
 
       return Promise.all([
         allActivitiesPromise,
         subjectsPointsPromise,
         categoriesPointsPromise,
-      ]);
+      ])
+      .catch((err: any) => { alert(err); });
     },
   },
 };
@@ -335,9 +345,9 @@ const manager = {
       const newSession = Object.assign(session, {
         state: {
           doc: payload.doc,
-          $db: $db,
-          $sync: $sync,
-          $remote: $remote,
+          $db,
+          $sync,
+          $remote,
           customFields: {
             _id: 'custom_fields',
             fields: [],
@@ -376,8 +386,8 @@ const manager = {
     },
     setCurrent(context: any, payload: any) {
       context.commit('setCurrent', payload);
-      context.dispatch(payload.sessionID + '/fetchActivities', null, {root: true});
-      context.dispatch(payload.sessionID + '/checkAndCreateViews', null, {root: true});
+      context.dispatch(payload.sessionID + '/fetchActivities', {}, {root: true});
+      context.dispatch(payload.sessionID + '/checkAndCreateViews', {}, {root: true});
 
       interface Gamma {
         name: string;
@@ -394,7 +404,7 @@ const manager = {
 
       const state = (store.state as Alpha);
 
-      if (state.$sync !== null) {
+      if (state.$sync !== null && state.$sync !== undefined) {
         (state.$sync as any)
           .on('complete', (info: any) => {
             console.log(
@@ -408,7 +418,7 @@ const manager = {
 
             if (change.direction === 'push') {
               change.change.docs.forEach((doc: any) => {
-                context.commit(payload.sessionID + '/setActivity', {doc: doc}, {root: true});
+                context.commit(payload.sessionID + '/setActivity', {doc}, {root: true});
               });
             }
           })
@@ -422,7 +432,7 @@ const manager = {
       }
     },
     saveSession(context: any, payload: any) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve: any) => {
         const errorFunc = (err: any) => { throw new Error(err); };
 
         const callBack = (res: any) => {
@@ -458,7 +468,7 @@ const manager = {
       });
     },
     deleteSession(context: any, payload: any) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve: any) => {
         if (context.state.current === payload.doc._id) {
           context.dispatch('setCurrent', {sessionID: 'ikiliptus'});
         }
@@ -485,7 +495,7 @@ const manager = {
 
 const store = new Vuex.Store({
   modules: {
-    manager: manager,
+    manager,
   },
 });
 

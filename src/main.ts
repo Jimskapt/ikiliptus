@@ -1,7 +1,8 @@
 import '@babel/polyfill';
 import './registerServiceWorker';
-import './plugins/vuetify';
+import './plugins/vuetify.js';
 import 'material-design-icons-iconfont/dist/material-design-icons.css';
+import './plugins/moment.js';
 
 import Vue from 'vue';
 import App from './App.vue';
