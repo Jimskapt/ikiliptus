@@ -51,7 +51,7 @@ export default {
 
       data.forEach((e) => {
         this.$delete(e, '_rev');
-        this.$store.dispatch(sessionID + '/saveActivity', {doc: e}, {root: true});
+        // this.$store.dispatch(sessionID + '/saveActivity', {doc: e}, {root: true});
       });
     },
   },

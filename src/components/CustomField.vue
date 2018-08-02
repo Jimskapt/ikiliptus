@@ -55,6 +55,7 @@ export default {
   methods: {
     fetchAutocompleteData() {
       if (this.settings.type !== 'checkbox') {
+        /*
         const that = this;
 
         that.$store.state[that.$store.state.manager.current].$db
@@ -73,6 +74,7 @@ export default {
             that.list = Object.keys(temp);
           })
           .catch((err) => { alert('IKE0038:\n' + err); });
+        */
       }
     },
   },

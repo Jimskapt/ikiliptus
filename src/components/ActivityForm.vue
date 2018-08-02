@@ -58,6 +58,7 @@
       v-model="dbData.categories"
     ></suggestions-list>
 
+    <!--
     <template v-for="item in $store.state[$store.state.manager.current].customFields.fields">
       <custom-field
         :key="'custom-' + item.name"
@@ -65,6 +66,7 @@
         v-model="dbData[item.name]"
       ></custom-field>
     </template>
+    -->
 
     <v-text-field
       :label="$t('Details')"
@@ -141,6 +143,7 @@ export default {
   },
   methods: {
     save(payload) {
+      /*
       const that = this;
 
       this.$store
@@ -156,6 +159,7 @@ export default {
           }
         })
         .catch((err) => { alert('IKE0046:\n' + err); });
+      */
     },
     setStop(args) {
       if (args === undefined) {
@@ -169,6 +173,7 @@ export default {
       this.save({origin: 'stop'});
     },
     refreshData() {
+      /*
       if (this.id !== undefined) {
         this.$set(  this,
                     'dbData',
@@ -177,10 +182,12 @@ export default {
                     ][this.id],
                 );
       }
+      */
     },
     fetchAutocompleteData() {
       const that = this;
 
+      /*
       this.$store.state[this.$store.state.manager.current].$db
         .query('subjects_powers/subjects_powers', {group: true})
         .then((res) => {
@@ -200,6 +207,7 @@ export default {
           });
         });
         // .catch(err => { alert('IKE0008:\n' + err) })
+      */
     },
     findText(array, value) {
       if (value === undefined || array === undefined) {
@@ -301,11 +309,13 @@ export default {
     }, 750);
 
     that.fetchAutocompleteData();
+    /*
     that.$store.state[that.$store.state.manager.current].customFields.fields.forEach((field) => {
       if (that.dbData[field.name] === undefined) {
         that.$set(that.dbData, field.name, '');
       }
     });
+    */
   },
   destroyed() {
     this.$eventBus

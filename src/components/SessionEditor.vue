@@ -216,6 +216,7 @@ export default {
       this.refreshNewSessionColor();
     },
     save() {
+      /*
       const that = this;
       this.$store
         .dispatch('manager/saveSession', {doc: this.newData}, {root: true})
@@ -226,6 +227,7 @@ export default {
             .catch((err) => { alert('IKE0049:\n' + err); });
         })
         .catch((err) => { alert('IKE0048:\n' + err); });
+      */
     },
     toggleFieldSettings(fieldID) {
       if (this.fieldView === 'panel-' + fieldID) {
@@ -253,13 +255,13 @@ export default {
     if (this.thereIsID) {
       this.hasSelectedColor = true;
 
-      this.dbData = this.$store.state[this.id].doc;
+      // this.dbData = this.$store.state[this.id].doc;
       this.newSessionName = this.dbData.name;
       this.newSessionColor = this.dbData.color;
       this.refreshNewSessionColor();
       this.newSessionRemote = this.dbData.remote;
 
-      this.dbDataFields = this.$store.state[this.id].customFields;
+      // this.dbDataFields = this.$store.state[this.id].customFields;
     }
   },
 };

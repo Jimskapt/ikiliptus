@@ -100,22 +100,23 @@ export default {
   },
   computed: {
     current() {
-      return this.$store.getters['manager/current'];
+      // return this.$store.getters['manager/current'];
+      return '';
     },
   },
   mounted() {
     this.release = Package.version;
 
-    this.$store.dispatch('manager/fetchAvailable');
+    // this.$store.dispatch('manager/fetchAvailable');
 
     const that = this;
-    // TODO
+    /*/ TODO
     setTimeout(() => {
       const id = tools.getCookies().last_session;
       if (Object.keys(that.$store.state.manager.available).includes(id)) {
         that.$store.dispatch('manager/setCurrent', {sessionID: id}, {root: true});
       }
-    }, 1000);
+    }, 1000);*/
   },
   methods: {
     openGithub() {

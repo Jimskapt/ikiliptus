@@ -19,6 +19,7 @@
 
           <v-list two-line subheader>
             <v-subheader>{{ $t('Available sessions') }}</v-subheader>
+            <!--
             <template v-for="session in $store.state.manager.available">
               <v-divider :key="'divider-' + session._id"></v-divider>
               <v-list-tile avatar :key="'list-' + session._id" @click="$store.dispatch('manager/setCurrent', {sessionID: session._id}, {root: true})">
@@ -47,6 +48,7 @@
                 </v-list-tile-action>
               </v-list-tile>
             </template>
+            -->
           </v-list>
         </v-container>
       </v-card>
@@ -101,6 +103,7 @@ export default {
       this.confirmDeleteDialog = true;
     },
     confirmDeleteSession() {
+      /*
       const that = this;
       if (this.typedDeleteConfirm === this.deleteConfirmObj.name) {
         this.$store.dispatch('manager/deleteSession', {doc: that.deleteConfirmObj}, {root: true})
@@ -110,7 +113,17 @@ export default {
             that.confirmDeleteDialog = false;
           });
       }
+      */
     },
+  },
+  mounted() {
+    // temporary testing, should move it to unit tests quickly :
+    // this.$store.commit('setCurrent');
+    this.$store.commit('setCurrent', {value: null});
+    this.$store.commit('setCurrent', {value: undefined});
+    this.$store.commit('setCurrent', {value: ''});
+    this.$store.commit('setCurrent', {value: 'toto'});
+    this.$store.commit('setCurrent', {value: 'ikiliptus'});
   },
 };
 </script>

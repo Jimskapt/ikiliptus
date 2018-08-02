@@ -19,6 +19,7 @@
         <div v-if="customSettings !== undefined && Object.keys(customSettings).length > 0">
           <v-divider></v-divider>
           <v-container>
+            <!--
             <template v-for="(item, i) in $store.state[$store.state.manager.current].customFields.fields">
               <v-layout align-baseline row :key="'row-' + i">
                 <v-flex xs2 sm1>
@@ -34,6 +35,7 @@
                 </v-flex>
               </v-layout>
             </template>
+            -->
           </v-container>
         </div>
       </v-card>
@@ -256,9 +258,12 @@ export default {
   },
   computed: {
     activities() {
+      /*
       return this.$store.getters[
         this.$store.getters['manager/current']._id + '/activitiesSortedByTime'
       ] || [];
+      */
+      return [];
     },
     filteredActivities() {
       const that = this;
@@ -279,6 +284,7 @@ export default {
             (that.$moment(activity.stop_date, 'YYYY-MM-DD') < that.$moment(that.toDate, 'YYYY-MM-DD'));
         }
 
+        /*
         that.$store.state[
           that.$store.state.manager.current
         ].customFields.fields.forEach((customField) => {
@@ -296,6 +302,7 @@ export default {
             }
           }
         });
+        */
 
         return result;
       });
@@ -506,6 +513,7 @@ export default {
     },
   },
   mounted() {
+    /*
     const that = this;
 
     setTimeout(() => {
@@ -519,6 +527,7 @@ export default {
         });
       });
     }, 500);
+    */
   },
 };
 </script>

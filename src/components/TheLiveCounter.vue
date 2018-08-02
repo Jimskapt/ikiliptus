@@ -143,7 +143,8 @@
                 </v-list-tile-sub-title>
                 <v-list-tile-sub-title>
                   <v-layout row>
-                    <v-chip small disabled v-if="item[field.name] && item[field.name] !== '' && field.type !== 'checkbox'" v-for="field in $store.state[$store.state.manager.current].customFields.fields" v-bind:key="'chip-' + item._id + '-' + field.name">
+                    <!-- <v-chip small disabled v-if="item[field.name] && item[field.name] !== '' && field.type !== 'checkbox'" v-for="field in $store.state[$store.state.manager.current].customFields.fields" v-bind:key="'chip-' + item._id + '-' + field.name"> -->
+                    <v-chip small disabled v-if="item[field.name] && item[field.name] !== '' && field.type !== 'checkbox'" v-for="field in []" v-bind:key="'chip-' + item._id + '-' + field.name">
                       <v-avatar>
                         <v-icon>{{field.icon}}</v-icon>
                       </v-avatar>
@@ -270,12 +271,14 @@ export default {
         Vue.set(document, 'data_version', 1);
       }
 
+      /*
       this.$store
         .dispatch(  this.$store.getters['manager/current']._id + '/saveActivity',
                     {doc: document},
                     {root: true})
         .then((res) => { that.currentID = res.id; })
         .catch((err) => { alert('IKE0045:\n' + err); });
+      */
     },
     stopCounter() {
       this.$eventBus.$emit('setStop', new Date());
@@ -315,6 +318,7 @@ export default {
       this.askedDeleteDocument = document;
     },
     confirmDeleteActivity() {
+      /*
       const that = this;
       this.$store.dispatch( this.$store.getters['manager/current']._id + '/deleteActivity',
                             {doc: that.askedDeleteDocument},
@@ -324,6 +328,7 @@ export default {
           that.askedDeleteDocument = null;
         })
         .catch((err) => { alert('IKE0052:\n' + err); });
+      */
     },
     confirmActivityCopy() {
       const that = this;
@@ -345,6 +350,7 @@ export default {
         document.data_version = 1;
       }
 
+      /*
       this.$store
         .dispatch(  this.$store.getters['manager/current']._id + '/saveActivity',
                     {doc: document},
@@ -354,6 +360,7 @@ export default {
           that.askedCopyDocument = null;
         })
         .catch((err) => {alert('IKE0047:\n' + err); });
+      */
     },
     deltaTime(activity) {
       return tools.deltaT(
@@ -384,9 +391,12 @@ export default {
       }
 
       let searchText = this.activitiesSearch;
+      /*
       let res = this.$store.getters[
         this.$store.state.manager.current + '/finishedActivities'
       ] || [];
+      */
+      let res = [];
 
       /*
 TESTS :
@@ -734,6 +744,7 @@ categories:aaa, bbb ,ccc test
       this.activitiesSearch = cookies.research;
     }
 
+    /*
     setTimeout(() => {
       const running = this.$store.getters[
         this.$store.state.manager.current + '/runningActivities'
@@ -742,6 +753,7 @@ categories:aaa, bbb ,ccc test
         this.currentID = running[0]._id;
       }
     }, 500);
+    */
   },
   destroyed() {
     this.$eventBus
