@@ -7771,9 +7771,9 @@ vuetify@^1.0.5:
   version "1.0.13"
   resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-1.0.13.tgz#54a802932e1fda1f9d8d1d8586c477a09c179ef3"
 
-vuex@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/vuex/-/vuex-3.0.1.tgz#e761352ebe0af537d4bb755a9b9dc4be3df7efd2"
+vuex@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/vuex/-/vuex-3.1.1.tgz#0c264bfe30cdbccf96ab9db3177d211828a5910e"
 
 vuvuzela@1.0.3:
   version "1.0.3"
